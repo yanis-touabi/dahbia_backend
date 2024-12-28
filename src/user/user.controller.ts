@@ -1,30 +1,68 @@
 import {
-  Body,
   Controller,
   Get,
+  Post,
+  Body,
   Patch,
+  Param,
+  Delete,
+  ValidationPipe,
   UseGuards,
+  Req,
 } from '@nestjs/common';
-import { User } from '@prisma/client';
-import { GetUser } from '../auth/decorator';
-import { JwtGuard } from '../auth/guard';
-import { EditUserDto } from './dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { AuthGuard } from './guard/index';
 import { UserService } from './user.service';
 
-@UseGuards(JwtGuard)
-@Controller('users')
+@Controller('user')
 export class UserController {
-  constructor(private userService: UserService) {}
-  @Get('me')
-  getMe(@GetUser() user: User) {
-    return user;
+  constructor(private readonly userService: UserService) {}
+  @Post()
+  @UseGuards(AuthGuard)
+  create(
+    @Body(
+      new ValidationPipe({
+        forbidNonWhitelisted: true,
+        whitelist: true, // Explicitly strip non-whitelisted properties
+        transform: true, // Transform payloads to DTO instances
+      }),
+    )
+    createUserDto: CreateUserDto,
+    @Req() req,
+  ) {
+    // business logic
+    return this.userService.create(createUserDto, req.user);
   }
 
-  @Patch()
-  editUser(
-    @GetUser('id') userId: number,
-    @Body() dto: EditUserDto,
-  ) {
-    return this.userService.editUser(userId, dto);
-  }
+  // @Get()
+  // findAll() {
+  //   return this.userService.findAll();
+  // }
+
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.userService.findOne(+id);
+  // }
+
+  // @Patch(':id')
+  // update(
+  //   @Param('id') id: string,
+  //   @Body() updateUserDto: UpdateUserDto,
+  // ) {
+  //   return this.userService.update(+id, updateUserDto);
+  // }
+
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.userService.remove(+id);
+  // }
+}
+function UseGuard(
+  AuthGuard: (
+    type?: string | string[],
+  ) => import('@nestjs/passport').Type<
+    import('@nestjs/passport').IAuthGuard
+  >,
+) {
+  throw new Error('Function not implemented.');
 }
