@@ -9,15 +9,24 @@ import {
   ValidationPipe,
   UseGuards,
   Req,
+  ParseIntPipe,
 } from '@nestjs/common';
+import { Roles } from './decorator/roles.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AuthGuard } from './guard/index';
 import { UserService } from './user.service';
+import { Role } from '@prisma/client';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  //  @docs   Admin Can Create User
+  //  @Route  POST /user
+  //  @access Private [admin]
   @Post()
+  @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
   create(
     @Body(
@@ -34,35 +43,45 @@ export class UserController {
     return this.userService.create(createUserDto, req.user);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.userService.findAll();
-  // }
+  //  @docs   Admin Can Get User
+  //  @Route  GET /user
+  //  @access Private [admin]
+  @Get()
+  @Roles([Role.ADMIN])
+  @UseGuards(AuthGuard)
+  findAll() {
+    return this.userService.findAll();
+  }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.userService.findOne(+id);
-  // }
+  //  @docs   Admin Can Get User by id
+  //  @Route  GET /user/:id
+  //  @access Private [admin]
+  @Get(':id')
+  @Roles([Role.ADMIN])
+  @UseGuards(AuthGuard)
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.userService.findOne(id);
+  }
 
-  // @Patch(':id')
-  // update(
-  //   @Param('id') id: string,
-  //   @Body() updateUserDto: UpdateUserDto,
-  // ) {
-  //   return this.userService.update(+id, updateUserDto);
-  // }
+  //  @docs   Admin Can Update a single user
+  //  @Route  UPDATE /user/:id
+  //  @access Private [admin]
+  @Patch(':id')
+  @Roles([Role.ADMIN])
+  @UseGuards(AuthGuard)
+  update(
+    @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
+    updateUserDto: UpdateUserDto,
+    @Param('id', ParseIntPipe)
+    id: number,
+  ) {
+    return this.userService.update(id, updateUserDto);
+  }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.userService.remove(+id);
-  // }
-}
-function UseGuard(
-  AuthGuard: (
-    type?: string | string[],
-  ) => import('@nestjs/passport').Type<
-    import('@nestjs/passport').IAuthGuard
-  >,
-) {
-  throw new Error('Function not implemented.');
+  @Delete(':id')
+  @Roles([Role.ADMIN])
+  @UseGuards(AuthGuard)
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.userService.remove(id);
+  }
 }
