@@ -7,6 +7,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '60s' },
+      signOptions: { expiresIn: '6000000s' },
     }),
     PrismaModule,
     UserModule,
@@ -30,6 +31,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
         },
       },
     }),
+    CategoryModule,
   ],
 })
 export class AppModule {}

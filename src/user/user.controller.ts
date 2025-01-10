@@ -41,7 +41,7 @@ export class UserController {
     @Req() req,
   ) {
     // business logic
-    return this.userService.create(createUserDto, req.user);
+    return this.userService.create(createUserDto);
   }
 
   //  @docs   Admin Can Get User

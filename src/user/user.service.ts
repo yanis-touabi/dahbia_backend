@@ -15,16 +15,11 @@ const saltOrRounds = 10;
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async create(
-    createUserDto: CreateUserDto,
-    payload,
-  ): Promise<{
+  async create(createUserDto: CreateUserDto): Promise<{
     status: number;
     message: string;
     data: User;
   }> {
-    console.log(payload);
-
     // check if the email already exists in the database
     const existingUser = await this.prisma.user.findUnique({
       where: {
@@ -96,7 +91,6 @@ export class UserService {
         // updatedAt: true,
       },
     });
-    console.log('users', users);
     return {
       status: 200,
       message: 'Users found successfully',
