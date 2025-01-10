@@ -10,6 +10,7 @@ import {
   UseGuards,
   Req,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { Roles } from './decorator/roles.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -49,8 +50,8 @@ export class UserController {
   @Get()
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
-  findAll() {
-    return this.userService.findAll();
+  findAll(@Query() query) {
+    return this.userService.findAll(query);
   }
 
   //  @docs   Admin Can Get User by id
@@ -63,7 +64,7 @@ export class UserController {
     return this.userService.findOne(id);
   }
 
-  //  @docs   Admin Can Update a single user
+  //  @docs   Admin Can Update a user
   //  @Route  UPDATE /user/:id
   //  @access Private [admin]
   @Patch(':id')
@@ -78,10 +79,53 @@ export class UserController {
     return this.userService.update(id, updateUserDto);
   }
 
+  //  @docs   Admin Can delete user
+  //  @Route  DELETE /user/:id
+  //  @access Private [admin]
   @Delete(':id')
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.userService.remove(id);
+  }
+}
+
+@Controller('userMe')
+export class UserMeController {
+  constructor(private readonly userService: UserService) {}
+
+  // For User
+  //  @docs   Any User can get data on your account
+  //  @Route  GET /api/v1/user/me
+  //  @access Private [user, admin]
+  @Get()
+  @Roles([Role.ADMIN, Role.USER])
+  @UseGuards(AuthGuard)
+  getMe(@Req() req) {
+    return this.userService.getMe(req.user);
+  }
+
+  //  @docs   Any User can update data on your account
+  //  @Route  PATCH /api/v1/user/me
+  //  @access Private [user, admin]
+  @Patch()
+  @Roles([Role.ADMIN, Role.USER])
+  @UseGuards(AuthGuard)
+  updateMe(
+    @Req() req,
+    @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
+    updateUserDto: UpdateUserDto,
+  ) {
+    return this.userService.updateMe(req.user, updateUserDto);
+  }
+
+  //  @docs   Any User can unActive his account
+  //  @Route  PATCH /api/v1/user/me
+  //  @access Private [user, admin]
+  @Delete()
+  @Roles([Role.ADMIN, Role.USER])
+  @UseGuards(AuthGuard)
+  deleteMe(@Req() req) {
+    return this.userService.deleteMe(req.user);
   }
 }

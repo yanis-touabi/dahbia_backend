@@ -8,6 +8,7 @@ import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { Roles } from '../decorator/roles.decorator';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -33,6 +34,11 @@ export class AuthGuard implements CanActivate {
         secret: process.env.JWT_SECRET,
       });
 
+      if (payload.id && payload.role == Role.ADMIN) {
+        request['user'] = payload;
+        return true;
+      }
+
       if (
         !payload.role ||
         payload.role === '' ||
@@ -44,7 +50,7 @@ export class AuthGuard implements CanActivate {
       // 💡 We're assigning the payload to the request object here
       // so that we can access it in our route handlers
       request['user'] = payload;
-    } catch {
+    } catch (e) {
       throw new UnauthorizedException();
     }
     return true;
