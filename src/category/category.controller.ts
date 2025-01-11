@@ -42,11 +42,17 @@ export class CategoryController {
     return this.categoryService.findAll();
   }
 
+  //  @docs   Any User Can get any category
+  //  @Route  GET /category/:id
+  //  @access Public
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.categoryService.findOne(id);
   }
 
+  //  @docs   Admin Can update any category
+  //  @Route  UPDATE /category/:id
+  //  @access Private [Amdin]
   @Patch(':id')
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
@@ -58,6 +64,9 @@ export class CategoryController {
     return this.categoryService.update(id, updateCategoryDto);
   }
 
+  //  @docs   Admin Can delete any category
+  //  @Route  DELETE /category/:id
+  //  @access Private [Amdin]
   @Delete(':id')
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
