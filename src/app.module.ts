@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { CategoryModule } from './category/category.module';
 import { SubCategoryModule } from './subCategory/sub-category.module';
+import { BrandModule } from './brand/brand.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { SubCategoryModule } from './subCategory/sub-category.module';
     }),
     CategoryModule,
     SubCategoryModule,
+    BrandModule,
   ],
 })
 export class AppModule {}
