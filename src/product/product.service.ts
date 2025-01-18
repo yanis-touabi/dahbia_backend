@@ -103,20 +103,6 @@ export class ProductService {
         );
       }
     }
-
-    // Verify inventory exists if provided
-    if (dto.inventoryId) {
-      const inventory = await this.prisma.productInventory.findUnique(
-        {
-          where: { id: dto.inventoryId },
-        },
-      );
-      if (!inventory) {
-        throw new NotFoundException(
-          `Inventory with ID ${dto.inventoryId} not found`,
-        );
-      }
-    }
   }
 
   async findAll(dto: FindAllProductsDto) {
