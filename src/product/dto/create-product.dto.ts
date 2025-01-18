@@ -99,14 +99,6 @@ export class CreateProductDto {
   supplierId: number;
 
   @IsOptional()
-  @IsInt({ message: 'inventoryId must be a valid integer' })
-  @IsPositive({ message: 'inventoryId must be a positive number' })
-  @Min(1, {
-    message: 'inventoryId must be greater than or equal to 1',
-  })
-  inventoryId: number;
-
-  @IsOptional()
   @IsInt({ message: 'subCategoryId must be a valid integer' })
   @IsPositive({ message: 'subCategoryId must be a positive number' })
   subCategoryId: number;
