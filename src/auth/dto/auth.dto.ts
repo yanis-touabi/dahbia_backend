@@ -4,9 +4,14 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class SignUpDto {
   // firstName
+  @ApiProperty({
+    example: 'Yanis',
+    description: 'User first name',
+  })
   @IsString({ message: 'firstName must be a string' })
   @MinLength(3, {
     message: 'firstName must be at least 3 characters',
@@ -16,6 +21,10 @@ export class SignUpDto {
   })
   firstName: string;
   // lastName
+  @ApiProperty({
+    example: 'Touabi',
+    description: 'User last name',
+  })
   @IsString({ message: 'lastName must be a string' })
   @MinLength(3, { message: 'lastName must be at least 3 characters' })
   @MaxLength(30, {
@@ -23,11 +32,19 @@ export class SignUpDto {
   })
   lastName: string;
   // Email
+  @ApiProperty({
+    example: 'yanis.touabi@example.com',
+    description: 'User email',
+  })
   @IsString({ message: 'Email must be a string' })
   @MinLength(0, { message: 'Thie Email Must be Required' })
   @IsEmail({}, { message: 'Email is not valid' })
   email: string;
   // Password
+  @ApiProperty({
+    example: 'password123',
+    description: 'User password',
+  })
   @IsString({ message: 'Password must be a string' })
   @MinLength(3, { message: 'password must be at least 3 characters' })
   @MaxLength(20, {
@@ -37,11 +54,19 @@ export class SignUpDto {
 }
 export class SignInDto {
   // Email
+  @ApiProperty({
+    example: 'yanis.touabi@example.com',
+    description: 'User email',
+  })
   @IsString({ message: 'Email must be a string' })
   @MinLength(0, { message: 'Thie Email Must be Required' })
   @IsEmail({}, { message: 'Email is not valid' })
   email: string;
   // Password
+  @ApiProperty({
+    example: 'password123',
+    description: 'User password',
+  })
   @IsString({ message: 'Password must be a string' })
   @MinLength(3, { message: 'password must be at least 3 characters' })
   @MaxLength(20, {
@@ -52,6 +77,10 @@ export class SignInDto {
 
 export class ResetPasswordDto {
   // Email
+  @ApiProperty({
+    example: 'yanis.touabi@example.com',
+    description: 'User email',
+  })
   @IsString({ message: 'Email must be a string' })
   @MinLength(0, { message: 'Thie Email Must be Required' })
   @IsEmail({}, { message: 'Email is not valid' })

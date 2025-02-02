@@ -16,7 +16,9 @@ import { UpdateSubCategoryDto } from './dto/update-sub-category.dto';
 import { AuthGuard } from 'src/user/guard/Auth.guard';
 import { Roles } from 'src/user/decorator/roles.decorator';
 import { Role } from '@prisma/client';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
+@ApiTags('SubCategory') // Organizes endpoints in Swagger UI
 @Controller('sub-category')
 export class SubCategoryController {
   constructor(
@@ -25,10 +27,15 @@ export class SubCategoryController {
 
   //  @docs   Admin Can create a new sub-category
   //  @Route  POST /sub-category
-  //  @access Private [Amdin]
+  //  @access Private [Admin]
   @Post()
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Create a new SubCategory' }) // Describe endpoint
+  @ApiResponse({
+    status: 201,
+    description: 'SubCategory successfully created.',
+  }) // Response info
   create(
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
     createSubCategoryDto: CreateSubCategoryDto,
@@ -36,10 +43,15 @@ export class SubCategoryController {
     return this.subCategoryService.create(createSubCategoryDto);
   }
 
-  //  @docs   Any User Can get sub-categorys
+  //  @docs   Any User Can get sub-categories
   //  @Route  GET /sub-category
   //  @access Public
   @Get()
+  @ApiOperation({ summary: 'Get all SubCategories' }) // Describe endpoint
+  @ApiResponse({
+    status: 200,
+    description: 'List of all sub-categories.',
+  }) // Response info
   findAll() {
     return this.subCategoryService.findAll();
   }
@@ -48,16 +60,23 @@ export class SubCategoryController {
   //  @Route  GET /sub-category/:id
   //  @access Public
   @Get(':id')
+  @ApiOperation({ summary: 'Get a single SubCategory' }) // Describe endpoint
+  @ApiResponse({ status: 200, description: 'SubCategory details.' }) // Response info
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.subCategoryService.findOne(id);
   }
 
   //  @docs   Admin Can update any sub-category
-  //  @Route  UPDATE /sub-category/:id
-  //  @access Private [Amdin]
+  //  @Route  PATCH /sub-category/:id
+  //  @access Private [Admin]
   @Patch(':id')
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Update a SubCategory' }) // Describe endpoint
+  @ApiResponse({
+    status: 200,
+    description: 'SubCategory successfully updated.',
+  }) // Response info
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
@@ -68,10 +87,15 @@ export class SubCategoryController {
 
   //  @docs   Admin Can delete any sub-category
   //  @Route  DELETE /sub-category/:id
-  //  @access Private [Amdin]
+  //  @access Private [Admin]
   @Delete(':id')
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Delete a SubCategory' }) // Describe endpoint
+  @ApiResponse({
+    status: 200,
+    description: 'SubCategory successfully deleted.',
+  }) // Response info
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.subCategoryService.remove(id);
   }

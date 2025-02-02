@@ -19,7 +19,9 @@ import { UpdateProductSpecificationDto } from './dto/update-product-specificatio
 import { AuthGuard } from 'src/user/guard/Auth.guard';
 import { Roles } from 'src/user/decorator/roles.decorator';
 import { Role } from '@prisma/client';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
+@ApiTags('Product Specification') // Organizes endpoints in Swagger UI
 @Controller('product-specification')
 export class ProductSpecificationController {
   constructor(
@@ -28,10 +30,15 @@ export class ProductSpecificationController {
 
   //  @docs   Admin Can create a new Product Specification
   //  @Route  POST /product-specification
-  //  @access Private [Amdin]
+  //  @access Private [Admin]
   @Post()
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Create a new Product Specification' }) // Describe endpoint
+  @ApiResponse({
+    status: 201,
+    description: 'Product specification successfully created.',
+  }) // Response info
   create(
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
     createProductSpecificationDto: CreateProductSpecificationDto,
@@ -45,24 +52,39 @@ export class ProductSpecificationController {
   //  @Route  GET /product-specification
   //  @access Public
   @Get()
+  @ApiOperation({ summary: 'Get all Product Specifications' }) // Describe endpoint
+  @ApiResponse({
+    status: 200,
+    description: 'List of all product specifications.',
+  }) // Response info
   findAll(@Query('productId', ParseIntPipe) productId: number) {
     return this.productSpecificationService.findAll(productId);
   }
 
   //  @docs   Any User Can get single Product Specification
-  //  @Route  GET /product-specification
+  //  @Route  GET /product-specification/:id
   //  @access Public
   @Get(':id')
+  @ApiOperation({ summary: 'Get a single Product Specification' }) // Describe endpoint
+  @ApiResponse({
+    status: 200,
+    description: 'Product specification details.',
+  }) // Response info
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.productSpecificationService.findOne(id);
   }
 
   //  @docs   Admin can update a Product Specification
-  //  @Route  PATCH /api/v1/product-specification
-  //  @access Private [admin]
+  //  @Route  PATCH /product-specification/:id
+  //  @access Private [Admin]
   @Patch(':id')
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Update a Product Specification' }) // Describe endpoint
+  @ApiResponse({
+    status: 200,
+    description: 'Product specification successfully updated.',
+  }) // Response info
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
@@ -75,11 +97,16 @@ export class ProductSpecificationController {
   }
 
   //  @docs   Admin can delete a Product Specification
-  //  @Route  DELETE /api/v1/product-specification
-  //  @access Private [admin]
+  //  @Route  DELETE /product-specification/:id
+  //  @access Private [Admin]
   @Delete(':id')
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Delete a Product Specification' }) // Describe endpoint
+  @ApiResponse({
+    status: 200,
+    description: 'Product specification successfully deleted.',
+  }) // Response info
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.productSpecificationService.remove(id);
   }

@@ -9,12 +9,23 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateCouponDto {
-  @IsString({ message: 'name must be a string' })
-  @MinLength(3, { message: 'name must be at least 3 characters' })
-  @MaxLength(100, { message: 'name must be at most 100 characters' })
+  @ApiProperty({
+    example: 'SUMMER2023',
+    description: 'The coupon code',
+  })
+  @IsString({ message: 'code must be a string' })
+  @MinLength(3, { message: 'code must be at least 3 characters' })
+  @MaxLength(100, { message: 'code must be at most 100 characters' })
   code: string;
+
+  @ApiProperty({
+    example: '2023-01-01',
+    description:
+      'The start date of the coupon in the format YYYY-MM-DD',
+  })
   @IsString({ message: 'startDate must be a string' })
   @IsDateString(
     {},
@@ -24,6 +35,12 @@ export class CreateCouponDto {
     },
   )
   startDate: string;
+
+  @ApiProperty({
+    example: '2023-12-31',
+    description:
+      'The end date of the coupon in the format YYYY-MM-DD',
+  })
   @IsString({ message: 'endDate must be a string' })
   @IsDateString(
     {},
@@ -33,10 +50,21 @@ export class CreateCouponDto {
     },
   )
   endDate: string;
+
+  @ApiProperty({
+    example: 10,
+    description: 'The discount value of the coupon',
+  })
   @IsNumber({}, { message: 'discount must be a number' })
   @Min(0, { message: 'discount must be at least 0' })
   discount: number;
-  // Role
+
+  @ApiProperty({
+    example: 'PERCENTAGE',
+    description: 'The type of the coupon (PERCENTAGE or FIXED)',
+    enum: ['PERCENTAGE', 'FIXED'],
+    required: false,
+  })
   @IsEnum(['PERCENTAGE', 'FIXED'], {
     message: 'type must be percentage or fixed',
   })

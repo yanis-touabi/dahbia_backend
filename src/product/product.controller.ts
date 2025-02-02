@@ -20,7 +20,9 @@ import { FindAllProductsDto } from './dto/find-all-products.dto';
 import { AuthGuard } from 'src/user/guard/Auth.guard';
 import { Roles } from 'src/user/decorator/roles.decorator';
 import { Role } from '@prisma/client';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
+@ApiTags('Product') // Organizes endpoints in Swagger UI
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
@@ -31,6 +33,11 @@ export class ProductController {
   @Post()
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Create a new Product' }) // Describe endpoint
+  @ApiResponse({
+    status: 201,
+    description: 'Product successfully created.',
+  }) // Response info
   create(
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
     createProductDto: CreateProductDto,
@@ -44,6 +51,8 @@ export class ProductController {
   @Get()
   @Roles([Role.USER, Role.ADMIN])
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Get all Products' }) // Describe endpoint
+  @ApiResponse({ status: 200, description: 'List of all products.' }) // Response info
   findAll(
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
     findAllProductsDto: FindAllProductsDto,
@@ -57,6 +66,8 @@ export class ProductController {
   @Get(':id')
   @Roles([Role.USER, Role.ADMIN])
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Get a single Product' }) // Describe endpoint
+  @ApiResponse({ status: 200, description: 'Product details.' }) // Response info
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.productService.findOne(id);
   }
@@ -67,6 +78,11 @@ export class ProductController {
   @Patch(':id')
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Update a Product' }) // Describe endpoint
+  @ApiResponse({
+    status: 200,
+    description: 'Product successfully updated.',
+  }) // Response info
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
@@ -81,6 +97,11 @@ export class ProductController {
   @Delete(':id')
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Delete a Product' }) // Describe endpoint
+  @ApiResponse({
+    status: 200,
+    description: 'Product successfully deleted.',
+  }) // Response info
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.productService.remove(id);
   }

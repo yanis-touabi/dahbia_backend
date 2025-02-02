@@ -17,17 +17,24 @@ import { UpdateCouponDto } from './dto/update-coupon.dto';
 import { AuthGuard } from 'src/user/guard/Auth.guard';
 import { Roles } from 'src/user/decorator/roles.decorator';
 import { Role } from '@prisma/client';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
+@ApiTags('Coupon') // Organizes endpoints in Swagger UI
 @Controller('coupon')
 export class CouponController {
   constructor(private readonly couponService: CouponService) {}
 
-  //  @docs   Admin Can create a new Brand
+  //  @docs   Admin Can create a new Coupon
   //  @Route  POST /coupon
-  //  @access Private [Amdin]
+  //  @access Private [Admin]
   @Post()
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Create a new Coupon' }) // Describe endpoint
+  @ApiResponse({
+    status: 201,
+    description: 'Coupon successfully created.',
+  }) // Response info
   create(
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
     createCouponDto: CreateCouponDto,
@@ -45,26 +52,35 @@ export class CouponController {
   @Get()
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Get all Coupons' }) // Describe endpoint
+  @ApiResponse({ status: 200, description: 'List of all coupons.' }) // Response info
   findAll() {
     return this.couponService.findAll();
   }
 
   //  @docs   Any User Can get single Coupon
-  //  @Route  GET /coupon
+  //  @Route  GET /coupon/:id
   //  @access Public
   @Get(':id')
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Get a single Coupon' }) // Describe endpoint
+  @ApiResponse({ status: 200, description: 'Coupon details.' }) // Response info
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.couponService.findOne(id);
   }
 
   //  @docs   Admin can update a Coupon
-  //  @Route  PATCH /coupon
-  //  @access Private [admin]
+  //  @Route  PATCH /coupon/:id
+  //  @access Private [Admin]
   @Patch(':id')
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Update a Coupon' }) // Describe endpoint
+  @ApiResponse({
+    status: 200,
+    description: 'Coupon successfully updated.',
+  }) // Response info
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
@@ -78,11 +94,16 @@ export class CouponController {
   }
 
   //  @docs   Admin can delete a Coupon
-  //  @Route  DELETE /coupon
-  //  @access Private [admin]
+  //  @Route  DELETE /coupon/:id
+  //  @access Private [Admin]
   @Delete(':id')
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Delete a Coupon' }) // Describe endpoint
+  @ApiResponse({
+    status: 200,
+    description: 'Coupon successfully deleted.',
+  }) // Response info
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.couponService.remove(id);
   }

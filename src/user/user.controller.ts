@@ -18,7 +18,9 @@ import { AuthGuard } from './guard/index';
 import { UserService } from './user.service';
 import { Role } from '@prisma/client';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
+@ApiTags('User') // Organizes endpoints in Swagger UI
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -29,6 +31,11 @@ export class UserController {
   @Post()
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Create a new User' }) // Describe endpoint
+  @ApiResponse({
+    status: 201,
+    description: 'User successfully created.',
+  }) // Response info
   create(
     @Body(
       new ValidationPipe({
@@ -50,6 +57,8 @@ export class UserController {
   @Get()
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Get all Users' }) // Describe endpoint
+  @ApiResponse({ status: 200, description: 'List of all users.' }) // Response info
   findAll(@Query() query) {
     return this.userService.findAll(query);
   }
@@ -60,16 +69,23 @@ export class UserController {
   @Get(':id')
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Get a single User' }) // Describe endpoint
+  @ApiResponse({ status: 200, description: 'User details.' }) // Response info
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.userService.findOne(id);
   }
 
   //  @docs   Admin Can Update a user
-  //  @Route  UPDATE /user/:id
+  //  @Route  PATCH /user/:id
   //  @access Private [admin]
   @Patch(':id')
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Update a User' }) // Describe endpoint
+  @ApiResponse({
+    status: 200,
+    description: 'User successfully updated.',
+  }) // Response info
   update(
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
     updateUserDto: UpdateUserDto,
@@ -85,11 +101,17 @@ export class UserController {
   @Delete(':id')
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Delete a User' }) // Describe endpoint
+  @ApiResponse({
+    status: 200,
+    description: 'User successfully deleted.',
+  }) // Response info
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.userService.remove(id);
   }
 }
 
+@ApiTags('UserMe') // Organizes endpoints in Swagger UI
 @Controller('userMe')
 export class UserMeController {
   constructor(private readonly userService: UserService) {}
@@ -101,6 +123,8 @@ export class UserMeController {
   @Get()
   @Roles([Role.ADMIN, Role.USER])
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Get User Account Data' }) // Describe endpoint
+  @ApiResponse({ status: 200, description: 'User account details.' }) // Response info
   getMe(@Req() req) {
     return this.userService.getMe(req.user);
   }
@@ -111,6 +135,11 @@ export class UserMeController {
   @Patch()
   @Roles([Role.ADMIN, Role.USER])
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Update User Account Data' }) // Describe endpoint
+  @ApiResponse({
+    status: 200,
+    description: 'User account successfully updated.',
+  }) // Response info
   updateMe(
     @Req() req,
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
@@ -120,11 +149,16 @@ export class UserMeController {
   }
 
   //  @docs   Any User can unActive his account
-  //  @Route  PATCH /api/v1/user/me
+  //  @Route  DELETE /api/v1/user/me
   //  @access Private [user, admin]
   @Delete()
   @Roles([Role.ADMIN, Role.USER])
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Deactivate User Account' }) // Describe endpoint
+  @ApiResponse({
+    status: 200,
+    description: 'User account successfully deactivated.',
+  }) // Response info
   deleteMe(@Req() req) {
     return this.userService.deleteMe(req.user);
   }

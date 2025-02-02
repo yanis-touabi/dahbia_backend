@@ -12,9 +12,14 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
   // FirstName
+  @ApiProperty({
+    example: 'John',
+    description: 'The first name of the user',
+  })
   @IsString({ message: 'FirstName must be a string' })
   @MinLength(3, {
     message: 'FirstName must be at least 3 characters',
@@ -23,7 +28,12 @@ export class CreateUserDto {
     message: 'FirstName must be at most 30 characters',
   })
   firstName: string;
+
   // LastName
+  @ApiProperty({
+    example: 'Doe',
+    description: 'The last name of the user',
+  })
   @IsString({ message: 'LastName must be a string' })
   @MinLength(3, {
     message: 'LastName must be at least 3 characters',
@@ -32,14 +42,24 @@ export class CreateUserDto {
     message: 'LastName must be at most 30 characters',
   })
   lastName: string;
+
   // Email
+  @ApiProperty({
+    example: 'john.doe@example.com',
+    description: 'The email address of the user',
+  })
   @IsString({ message: 'Email must be a string' })
   @MinLength(0, {
-    message: 'Thie Email Must be Required',
+    message: 'The Email Must be Required',
   })
   @IsEmail({}, { message: 'Email is not valid' })
   email: string;
+
   // Password
+  @ApiProperty({
+    example: 'password123',
+    description: 'The password of the user',
+  })
   @IsString({
     message: 'Password must be a string',
   })
@@ -50,25 +70,50 @@ export class CreateUserDto {
     message: 'password must be at most 20 characters',
   })
   password: string;
+
   // Role
+  @ApiProperty({
+    example: 'USER',
+    description: 'The role of the user (USER or ADMIN)',
+    enum: ['USER', 'ADMIN'],
+    required: false,
+  })
   @IsEnum(['USER', 'ADMIN'], {
     message: 'role must be user or admin',
   })
   @MinLength(0, {
-    message: 'Thie role Must be Required',
+    message: 'The role Must be Required',
   })
   @IsOptional()
   role: Role;
+
   // Avatar
+  @ApiProperty({
+    example: 'https://example.com/avatar.png',
+    description: 'The URL of the user avatar',
+    required: false,
+  })
   @IsString({ message: 'avatar must be a string' })
   @IsUrl({}, { message: 'avatar must be a valid URL' })
   @IsOptional()
   avatar: string;
-  //   Age
+
+  // Age
+  @ApiProperty({
+    example: 25,
+    description: 'The age of the user',
+    required: false,
+  })
   @IsNumber({}, { message: 'age must be a number' })
   @IsOptional()
   age: number;
+
   // PhoneNumber
+  @ApiProperty({
+    example: '+213123456789',
+    description: 'The phone number of the user',
+    required: false,
+  })
   @IsString({
     message: 'phoneNumber must be a string',
   })
@@ -77,7 +122,13 @@ export class CreateUserDto {
   // })
   @IsOptional()
   phoneNumber: string;
+
   // Active
+  @ApiProperty({
+    example: true,
+    description: 'Indicates if the user account is active',
+    required: false,
+  })
   @IsBoolean({
     message: 'active must be a boolean',
   })
@@ -86,7 +137,13 @@ export class CreateUserDto {
   })
   @IsOptional()
   isActive: boolean;
+
   // VerificationCode
+  @ApiProperty({
+    example: '123456',
+    description: 'The verification code for the user',
+    required: false,
+  })
   @IsString({
     message: 'verificationCode must be a string',
   })
@@ -95,7 +152,14 @@ export class CreateUserDto {
     message: 'verificationCode must be 6 characters',
   })
   verificationCode: string;
+
   // Gender
+  @ApiProperty({
+    example: 'MALE',
+    description: 'The gender of the user (MALE or FEMALE)',
+    enum: ['MALE', 'FEMALE'],
+    required: false,
+  })
   @IsEnum(['MALE', 'FEMALE'], {
     message: 'gender must be male or female',
   })
