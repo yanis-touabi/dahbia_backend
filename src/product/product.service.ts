@@ -13,42 +13,64 @@ export class ProductService {
     // Verify related entities exist
     await this.verifyRelatedEntitiesExist(createProductDto);
 
+    const { specifications, ...productData } = createProductDto;
+
     return this.prisma.$transaction(async (tx) => {
-      // Create inventory first
-      const inventory = await tx.productInventory.create({
-        data: {
-          quantity: createProductDto.quantity || 0,
-        },
-      });
-
-      // Then create product with inventory relation
-      // Remove quantity from product data since it's only used for inventory
-      const { quantity, ...productData } = createProductDto;
-
+      // Create the product
       const newProduct = await tx.product.create({
         data: {
           ...productData,
-          inventoryId: inventory.id,
-          images: createProductDto.images || [],
-          colors: createProductDto.colors || [],
-          specifications: {
-            create: createProductDto.specifications || [],
-          },
+          images: productData.images || [],
+          priceAfterDiscount: productData.priceAfterDiscount || null,
         },
+      });
+
+      // Insert product inventory if specifications are provided
+      if (specifications && specifications.length > 0) {
+        for (const inventory of specifications) {
+          // Check for unique constraints before inserting
+          const existingInventory =
+            await tx.productInventory.findFirst({
+              where: {
+                productId: newProduct.id,
+                sizeId: inventory.sizeId,
+                colorId: inventory.colorId,
+                materialId: inventory.materialId,
+              },
+            });
+
+          if (existingInventory) {
+            throw new NotFoundException(
+              `Product inventory with the same size, color, and material already exists for product ID ${newProduct.id}`,
+            );
+          }
+
+          // Insert the inventory
+          await tx.productInventory.create({
+            data: {
+              ...inventory,
+              productId: newProduct.id,
+            },
+          });
+        }
+      }
+
+      // Return product with full details
+      const fullProduct = await tx.product.findUnique({
+        where: { id: newProduct.id },
         include: {
           category: true,
           subCategory: true,
           brand: true,
           supplier: true,
-          inventory: true,
-          specifications: true,
+          inventories: true,
         },
       });
 
       return {
         status: 200,
         message: 'Product created successfully',
-        data: newProduct,
+        data: fullProduct,
       };
     });
   }
@@ -174,8 +196,7 @@ export class ProductService {
           subCategory: { select: { id: true, name: true } },
           brand: { select: { id: true, name: true } },
           supplier: { select: { id: true, name: true } },
-          inventory: true,
-          specifications: true,
+          inventories: true,
         },
         orderBy,
       }),
@@ -207,8 +228,7 @@ export class ProductService {
         subCategory: true,
         brand: true,
         supplier: true,
-        inventory: true,
-        specifications: true,
+        inventories: true,
       },
     });
 
@@ -236,19 +256,13 @@ export class ProductService {
         data: {
           ...updateProductDto,
           images: updateProductDto.images || undefined,
-          colors: updateProductDto.colors || undefined,
-          specifications: {
-            deleteMany: {},
-            create: updateProductDto.specifications || [],
-          },
         },
         include: {
           category: true,
           subCategory: true,
           brand: true,
           supplier: true,
-          inventory: true,
-          specifications: true,
+          inventories: true,
         },
       });
 

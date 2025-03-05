@@ -63,6 +63,7 @@ model Token {
   @@map("tokens")
 }
 
+// seperate the wilaya from the address table
 model Address {
   id           Int     @id @default(autoincrement())
   userId       Int
@@ -129,25 +130,22 @@ model Product {
 
   // Optional fields
   priceAfterDiscount Decimal? @db.Decimal(10, 2)
-  colors             String[]
 
   // Relations
   categoryId    Int
-  category      Category         @relation(fields: [categoryId], references: [id])
+  category      Category     @relation(fields: [categoryId], references: [id])
   subCategoryId Int?
-  subCategory   SubCategory?     @relation(fields: [subCategoryId], references: [id])
+  subCategory   SubCategory? @relation(fields: [subCategoryId], references: [id])
   brandId       Int?
-  brand         Brand?           @relation(fields: [brandId], references: [id])
+  brand         Brand?       @relation(fields: [brandId], references: [id])
   supplierId    Int?
-  supplier      Supplier?        @relation(fields: [supplierId], references: [id])
-  inventoryId   Int              @unique
-  inventory     ProductInventory @relation(fields: [inventoryId], references: [id], onDelete: Restrict)
+  supplier      Supplier?    @relation(fields: [supplierId], references: [id])
 
   // Child relations
-  specifications ProductSpecification[]
-  reviews        Review[]
-  cartItems      CartItem[]
-  orderItems     OrderItem[]
+  inventories ProductInventory[]
+  reviews     Review[]
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -155,21 +153,44 @@ model Product {
 }
 
 model ProductInventory {
-  id         Int       @id @default(autoincrement())
+  id         Int  @id @default(autoincrement())
+  productId  Int
   quantity   Int
+  sizeId     Int?
+  colorId    Int?
+  materialId Int?
+
   createdAt  DateTime  @default(now())
   modifiedAt DateTime? @updatedAt
   deletedAt  DateTime?
 
-  product Product?
+  product  Product   @relation(fields: [productId], references: [id])
+  size     Size?     @relation(fields: [sizeId], references: [id])
+  color    Color?    @relation(fields: [colorId], references: [id])
+  material Material? @relation(fields: [materialId], references: [id])
+
+  @@unique([productId, quantity, sizeId, colorId, materialId])
 }
 
-model ProductSpecification {
-  id        Int     @id @default(autoincrement())
-  key       String // e.g., "size", "color", "material"
-  value     String
-  productId Int
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+model Size {
+  id               Int                @id @default(autoincrement())
+  name             String
+  ProductInventory ProductInventory[]
+  CartItem         CartItem[]
+}
+
+model Color {
+  id               Int                @id @default(autoincrement())
+  name             String
+  ProductInventory ProductInventory[]
+  CartItem         CartItem[]
+}
+
+model Material {
+  id               Int                @id @default(autoincrement())
+  name             String
+  ProductInventory ProductInventory[]
+  CartItem         CartItem[]
 }
 
 model Review {
@@ -201,14 +222,19 @@ model Cart {
 }
 
 model CartItem {
-  id        Int     @id @default(autoincrement())
-  cartId    Int
-  productId Int
-  quantity  Int     @default(1)
-  color     String?
+  id         Int @id @default(autoincrement())
+  cartId     Int
+  productId  Int
+  quantity   Int @default(1)
+  colorId    Int
+  sizeId     Int
+  materialId Int
 
-  cart    Cart    @relation(fields: [cartId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
+  cart     Cart     @relation(fields: [cartId], references: [id])
+  color    Color    @relation(fields: [colorId], references: [id])
+  size     Size     @relation(fields: [sizeId], references: [id])
+  material Material @relation(fields: [materialId], references: [id])
+  product  Product  @relation(fields: [productId], references: [id])
 
   @@unique([cartId, productId])
 }
@@ -251,11 +277,11 @@ model Shipping {
   wilayaId Int
   amount   Int
 
-  wilaya wilaya  @relation(fields: [wilayaId], references: [id])
+  wilaya Wilaya  @relation(fields: [wilayaId], references: [id])
   Order  Order[]
 }
 
-model wilaya {
+model Wilaya {
   id       Int        @id @default(autoincrement())
   code     Int
   name     String

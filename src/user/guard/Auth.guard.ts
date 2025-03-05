@@ -21,6 +21,8 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
 
+    console.log('token', token);
+
     const roles = this.reflactor.get(Roles, context.getHandler());
     if (!roles) {
       return true;
@@ -44,6 +46,8 @@ export class AuthGuard implements CanActivate {
         payload.role === '' ||
         !roles.includes(payload.role)
       ) {
+        console.log(payload);
+        console.log('rani hna');
         throw new UnauthorizedException();
       }
 

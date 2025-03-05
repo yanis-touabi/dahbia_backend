@@ -30,6 +30,7 @@
     "test:e2e": "dotenv -e .env.test -- jest --watch --no-cache --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@faker-js/faker": "^9.4.0",
     "@nestjs-modules/mailer": "^2.0.2",
     "@nestjs/common": "^10.4.15",
     "@nestjs/config": "^3.3.0",
@@ -78,7 +79,7 @@
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.3"
   },
   "jest": {
     "moduleFileExtensions": [

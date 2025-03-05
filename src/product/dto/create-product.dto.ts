@@ -1,7 +1,6 @@
 import {
   IsArray,
   IsInt,
-  IsMongoId,
   IsNumber,
   IsOptional,
   IsPositive,
@@ -10,28 +9,49 @@ import {
   Max,
   Min,
   MinLength,
-  IsBoolean,
   IsEnum,
   ValidateNested,
 } from 'class-validator';
 import { Gender } from '@prisma/client';
-import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
-export class ProductSpecificationDto {
+export class ProductInventoryDto {
   @ApiProperty({
-    example: 'color',
-    description: 'The key of the product specification',
+    example: 100,
+    description: 'The quantity of the product in stock',
   })
-  @IsString()
-  key: string;
-
+  @IsInt({ message: 'quantity must be a valid integer' })
+  @IsPositive({ message: 'quantity must be a positive number' })
+  @Min(0, { message: 'quantity must be greater than or equal to 0' })
+  quantity: number;
   @ApiProperty({
-    example: 'red',
-    description: 'The value of the product specification',
+    example: 1,
+    description: 'The ID of the size of the product',
+    required: false,
   })
-  @IsString()
-  value: string;
+  @IsOptional()
+  @IsInt({ message: 'sizeId must be a valid integer' })
+  @IsPositive({ message: 'sizeId must be a positive number' })
+  sizeId: number;
+  @ApiProperty({
+    example: 1,
+    description: 'The ID of the color of the product',
+    required: false,
+  })
+  @IsOptional()
+  @IsInt({ message: 'colorId must be a valid integer' })
+  @IsPositive({ message: 'colorId must be a positive number' })
+  colorId: number;
+  @ApiProperty({
+    example: 1,
+    description: 'The ID of the material of the product',
+    required: false,
+  })
+  @IsOptional()
+  @IsInt({ message: 'materialId must be a valid integer' })
+  @IsPositive({ message: 'materialId must be a positive number' })
+  materialId: number;
 }
 
 export class CreateProductDto {
@@ -88,16 +108,6 @@ export class CreateProductDto {
   images: string[];
 
   @ApiProperty({
-    example: 100,
-    description: 'The number of sold units of the product',
-    required: false,
-  })
-  @IsNumber({}, { message: 'sold Must be a Number' })
-  @IsPositive({ message: 'sold must be a positive number' })
-  @IsOptional()
-  sold: number;
-
-  @ApiProperty({
     example: 199.99,
     description: 'The price of the product',
   })
@@ -120,15 +130,6 @@ export class CreateProductDto {
   priceAfterDiscount: number;
 
   @ApiProperty({
-    example: true,
-    description: 'Indicates if the product is a best seller',
-    required: false,
-  })
-  @IsOptional()
-  @IsBoolean({ message: 'isBestSeller must be a boolean' })
-  isBestSeller: boolean;
-
-  @ApiProperty({
     example: 'MALE',
     description: 'The gender the product is intended for',
     enum: Gender,
@@ -139,16 +140,6 @@ export class CreateProductDto {
     message: 'gender must be MALE, FEMALE or UNISEX',
   })
   gender: Gender;
-
-  @ApiProperty({
-    example: ['red', 'blue', 'green'],
-    description: 'An array of colors available for the product',
-    required: false,
-  })
-  @IsArray({ message: 'Colors Must be an array' })
-  @IsString({ each: true, message: 'Each color must be a string' })
-  @IsOptional()
-  colors: string[];
 
   @ApiProperty({
     example: 1,
@@ -192,15 +183,6 @@ export class CreateProductDto {
   brandId: number;
 
   @ApiProperty({
-    example: 100,
-    description: 'The quantity of the product in stock',
-  })
-  @IsInt({ message: 'quantity must be a valid integer' })
-  @IsPositive({ message: 'quantity must be a positive number' })
-  @Min(0, { message: 'quantity must be greater than or equal to 0' })
-  quantity: number;
-
-  @ApiProperty({
     example: [
       { key: 'color', value: 'red' },
       { key: 'size', value: 'M' },
@@ -211,6 +193,6 @@ export class CreateProductDto {
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => ProductSpecificationDto)
-  specifications: ProductSpecificationDto[];
+  @Type(() => ProductInventoryDto)
+  specifications: ProductInventoryDto[];
 }
