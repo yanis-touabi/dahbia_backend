@@ -9,7 +9,7 @@ import {
   UseGuards,
   ParseIntPipe,
 } from '@nestjs/common';
-import { SpecificationService } from './specification.service';
+import { SpecificationService } from './specifications.service';
 import { AuthGuard } from 'src/user/guard/Auth.guard';
 import { Roles } from 'src/user/decorator/roles.decorator';
 import { Role } from '@prisma/client';
@@ -21,8 +21,8 @@ import { UpdateColorDto } from './dto/update-color.dto';
 import { CreateMaterialDto } from './dto/create-material.dto';
 import { UpdateMaterialDto } from './dto/update-material.dto';
 
-@ApiTags('Product-Specification')
-@Controller('product-specification')
+@ApiTags('Specification')
+@Controller('specification')
 export class SpecificationController {
   constructor(
     private readonly specificationService: SpecificationService,

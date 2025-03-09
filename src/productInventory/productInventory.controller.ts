@@ -40,8 +40,10 @@ export class ProductInventoryController {
     status: 200,
     description: 'Product inventory details.',
   }) // Response info
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.productInventoryService.findOne(id);
+  findOne(@Param('id', ParseIntPipe) productSpecificationId: number) {
+    return this.productInventoryService.findOne(
+      productSpecificationId,
+    );
   }
 
   @Patch(':id')

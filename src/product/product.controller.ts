@@ -48,7 +48,7 @@ export class ProductController {
   //  @docs   Any authenticated user can get all products
   //  @Route  GET /product
   //  @access Private [User]
-  @Get()
+  @Post('allProducts')
   @Roles([Role.USER, Role.ADMIN])
   @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Get all Products' }) // Describe endpoint

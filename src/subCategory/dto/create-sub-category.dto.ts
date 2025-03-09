@@ -37,16 +37,6 @@ export class CreateSubCategoryDto {
   description: string;
 
   @ApiProperty({
-    example: 'https://example.com/image.png',
-    description: 'The URL of the sub-category image',
-    required: false,
-  })
-  @IsString({ message: 'image must be a string' })
-  @IsUrl({}, { message: 'image must be a valid URL' })
-  @IsOptional()
-  image: string;
-
-  @ApiProperty({
     example: 1,
     description: 'The ID of the parent category',
   })

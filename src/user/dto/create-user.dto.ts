@@ -17,7 +17,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateUserDto {
   // FirstName
   @ApiProperty({
-    example: 'John',
+    example: 'hafidha',
     description: 'The first name of the user',
   })
   @IsString({ message: 'FirstName must be a string' })
@@ -31,7 +31,7 @@ export class CreateUserDto {
 
   // LastName
   @ApiProperty({
-    example: 'Doe',
+    example: 'front',
     description: 'The last name of the user',
   })
   @IsString({ message: 'LastName must be a string' })
@@ -45,7 +45,7 @@ export class CreateUserDto {
 
   // Email
   @ApiProperty({
-    example: 'john.doe@example.com',
+    example: 'hafidha@gmail.com',
     description: 'The email address of the user',
   })
   @IsString({ message: 'Email must be a string' })
@@ -100,7 +100,7 @@ export class CreateUserDto {
 
   // Age
   @ApiProperty({
-    example: 25,
+    example: 31,
     description: 'The age of the user',
     required: false,
   })

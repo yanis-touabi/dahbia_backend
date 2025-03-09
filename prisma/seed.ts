@@ -12,7 +12,6 @@ function generateUserData() {
     lastName: faker.person.lastName()?.substring(0, 50),
     email: faker.internet.email().substring(0, 100),
     password: bcrypt.hashSync('password123', 10),
-    role: faker.helpers.arrayElement(['ADMIN', 'USER']),
     gender: faker.helpers.arrayElement(['MALE', 'FEMALE', 'UNISEX']),
     avatar: faker.image.avatar(),
     age: faker.number.int({ min: 18, max: 80 }),
@@ -23,11 +22,7 @@ function generateUserData() {
 }
 
 // Function to generate random product data
-function generateProductData(
-  categoryId: number,
-  subCategoryId: number,
-  brandId: number,
-) {
+function generateProductData(categoryId: number, brandId: number) {
   return {
     name: faker.commerce.productName(),
     description: faker.commerce.productDescription(),
@@ -44,7 +39,6 @@ function generateProductData(
     isBestSeller: faker.datatype.boolean(),
     gender: faker.helpers.arrayElement(['MALE', 'FEMALE', 'UNISEX']),
     categoryId,
-    subCategoryId,
     brandId,
   };
 }
@@ -277,6 +271,30 @@ async function main() {
 
   const materials = await prisma.material.findMany();
 
+  // create the admin user
+  const user = await prisma.user.create({
+    data: {
+      firstName: 'yanis',
+      lastName: 'touabi',
+      email: 'yanis.touabi@gmail.com',
+      password: bcrypt.hashSync('123456', 10),
+      role: 'ADMIN',
+      gender: 'MALE',
+      age: 25,
+      phoneNumber: '0658294692',
+      isActive: true,
+    },
+  });
+
+  await prisma.admin.create({
+    data: {
+      userId: user.id,
+      permissionLevel: 0,
+    },
+  });
+
+  return 0;
+
   // Create Users
   const users = [];
   for (let i = 0; i < NUM_USERS; i++) {
@@ -337,7 +355,6 @@ async function main() {
     const product = await prisma.product.create({
       data: generateProductData(
         getRandom(category).id,
-        getRandom(subCategory).id,
         getRandom(brand).id,
       ),
     });
@@ -357,13 +374,21 @@ async function main() {
   for (let i = 0; i < NUM_PRODUCT_SPECIFICATIONS; i++) {
     const randomProduct =
       products[faker.number.int({ min: 0, max: NUM_PRODUCTS - 1 })];
+
+    const productSpecification =
+      await prisma.productSpecification.create({
+        data: {
+          productId: randomProduct.id,
+          sizeId: getRandom(sizes).id,
+          colorId: getRandom(colors).id,
+          materialId: getRandom(materials).id,
+        },
+      });
+
     await prisma.productInventory.create({
       data: {
-        productId: randomProduct.id,
+        productSpecificationId: productSpecification.id,
         quantity: faker.number.int({ min: 0, max: 1000 }),
-        colorId: getRandom(colors).id,
-        sizeId: getRandom(sizes).id,
-        materialId: getRandom(materials).id,
       },
     });
   }
@@ -383,18 +408,33 @@ async function main() {
           ];
 
         // Check if the CartItem already exists
-        const existingCartItem = await prisma.cartItem.findFirst({
-          where: {
-            cartId: cart.id,
-            productId: randomProduct.id,
-          },
-        });
-
-        // Only create the CartItem if it doesn't already exist
-        if (!existingCartItem) {
-          await prisma.cartItem.create({
-            data: generateCartItemData(cart.id, randomProduct.id),
+        const randomProductSpecification =
+          await prisma.productSpecification.findMany({
+            where: {
+              productId: randomProduct.id,
+            },
           });
+
+        if (randomProductSpecification.length > 0) {
+          const existingCartItem = await prisma.cartItem.findFirst({
+            where: {
+              cartId: cart.id,
+              productSpecificationId:
+                randomProductSpecification[0].id,
+            },
+          });
+
+          // Only create the CartItem if it doesn't already exist
+          if (!existingCartItem) {
+            await prisma.cartItem.create({
+              data: {
+                cartId: cart.id,
+                productSpecificationId:
+                  randomProductSpecification[0].id,
+                quantity: faker.number.int({ min: 1, max: 10 }),
+              },
+            });
+          }
         }
       }
     }
@@ -430,9 +470,29 @@ async function main() {
           products[
             faker.number.int({ min: 0, max: NUM_PRODUCTS - 1 })
           ];
-        await prisma.orderItem.create({
-          data: generateOrderItemData(order.id, randomProduct.id),
-        });
+
+        const randomProductSpecification =
+          await prisma.productSpecification.findMany({
+            where: {
+              productId: randomProduct.id,
+            },
+          });
+
+        if (randomProductSpecification.length > 0) {
+          await prisma.orderItem.create({
+            data: {
+              orderId: order.id,
+              productSpecificationId:
+                randomProductSpecification[0].id,
+              quantity: faker.number.int({ min: 1, max: 10 }),
+              unitPrice: faker.number.float({
+                min: 10,
+                max: 100,
+                fractionDigits: 2,
+              }),
+            },
+          });
+        }
       }
     }
   }
@@ -461,4 +521,5 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
+    console.log('Database connection closed.');
   });

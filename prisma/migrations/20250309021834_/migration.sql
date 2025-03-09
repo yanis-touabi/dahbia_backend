@@ -23,12 +23,12 @@ CREATE TABLE "User" (
     "lastName" VARCHAR(50),
     "email" TEXT NOT NULL,
     "avatar" VARCHAR(255),
-    "age" INTEGER NOT NULL,
+    "age" INTEGER,
     "password" VARCHAR(255) NOT NULL,
     "phoneNumber" VARCHAR(20),
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "verificationCode" VARCHAR(255),
-    "role" "Role" NOT NULL DEFAULT E'USER',
+    "role" "Role" DEFAULT 'USER',
     "gender" "Gender",
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -43,6 +43,18 @@ CREATE TABLE "Admin" (
     "permissionLevel" INTEGER NOT NULL,
 
     CONSTRAINT "Admin_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tokens" (
+    "id" TEXT NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "refreshToken" TEXT NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "tokens_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -108,14 +120,11 @@ CREATE TABLE "Product" (
     "images" TEXT[],
     "sold" INTEGER NOT NULL DEFAULT 0,
     "isBestSeller" BOOLEAN NOT NULL DEFAULT false,
-    "gender" "Gender" DEFAULT E'UNISEX',
+    "gender" "Gender" DEFAULT 'UNISEX',
     "priceAfterDiscount" DECIMAL(10,2),
-    "colors" TEXT[],
     "categoryId" INTEGER NOT NULL,
-    "subCategoryId" INTEGER,
     "brandId" INTEGER,
     "supplierId" INTEGER,
-    "inventoryId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
@@ -124,8 +133,23 @@ CREATE TABLE "Product" (
 );
 
 -- CreateTable
+CREATE TABLE "ProductSpecification" (
+    "id" SERIAL NOT NULL,
+    "productId" INTEGER NOT NULL,
+    "sizeId" INTEGER,
+    "colorId" INTEGER,
+    "materialId" INTEGER,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modifiedAt" TIMESTAMP(3),
+    "deletedAt" TIMESTAMP(3),
+
+    CONSTRAINT "ProductSpecification_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "ProductInventory" (
     "id" SERIAL NOT NULL,
+    "productSpecificationId" INTEGER NOT NULL,
     "quantity" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modifiedAt" TIMESTAMP(3),
@@ -135,13 +159,27 @@ CREATE TABLE "ProductInventory" (
 );
 
 -- CreateTable
-CREATE TABLE "ProductSpecification" (
+CREATE TABLE "Size" (
     "id" SERIAL NOT NULL,
-    "key" TEXT NOT NULL,
-    "value" TEXT NOT NULL,
-    "productId" INTEGER NOT NULL,
+    "name" TEXT NOT NULL,
 
-    CONSTRAINT "ProductSpecification_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Size_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Color" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+
+    CONSTRAINT "Color_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Material" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+
+    CONSTRAINT "Material_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -174,9 +212,8 @@ CREATE TABLE "Cart" (
 CREATE TABLE "CartItem" (
     "id" SERIAL NOT NULL,
     "cartId" INTEGER NOT NULL,
-    "productId" INTEGER NOT NULL,
+    "productSpecificationId" INTEGER NOT NULL,
     "quantity" INTEGER NOT NULL DEFAULT 1,
-    "color" TEXT,
 
     CONSTRAINT "CartItem_pkey" PRIMARY KEY ("id")
 );
@@ -192,9 +229,9 @@ CREATE TABLE "Order" (
     "taxAmount" DECIMAL(10,2),
     "discountAmount" DECIMAL(10,2),
     "totalAmount" DECIMAL(10,2) NOT NULL,
-    "status" "OrderStatus" NOT NULL DEFAULT E'PENDING',
-    "paymentStatus" "PaymentStatus" NOT NULL DEFAULT E'PENDING',
-    "paymentMethod" "PaymentMethodType" NOT NULL DEFAULT E'CASH',
+    "status" "OrderStatus" NOT NULL DEFAULT 'PENDING',
+    "paymentStatus" "PaymentStatus" NOT NULL DEFAULT 'PENDING',
+    "paymentMethod" "PaymentMethodType" NOT NULL DEFAULT 'CASH',
     "paidAt" TIMESTAMP(3),
     "shippedAt" TIMESTAMP(3),
     "deliveredAt" TIMESTAMP(3),
@@ -215,19 +252,19 @@ CREATE TABLE "Shipping" (
 );
 
 -- CreateTable
-CREATE TABLE "wilaya" (
+CREATE TABLE "Wilaya" (
     "id" SERIAL NOT NULL,
     "code" INTEGER NOT NULL,
     "name" TEXT NOT NULL,
 
-    CONSTRAINT "wilaya_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Wilaya_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "OrderItem" (
     "id" SERIAL NOT NULL,
     "orderId" INTEGER NOT NULL,
-    "productId" INTEGER NOT NULL,
+    "productSpecificationId" INTEGER NOT NULL,
     "quantity" INTEGER NOT NULL,
     "unitPrice" DECIMAL(10,2) NOT NULL,
     "color" TEXT,
@@ -275,10 +312,10 @@ CREATE UNIQUE INDEX "Admin_userId_key" ON "Admin"("userId");
 CREATE UNIQUE INDEX "Product_sku_key" ON "Product"("sku");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Product_inventoryId_key" ON "Product"("inventoryId");
+CREATE UNIQUE INDEX "ProductInventory_productSpecificationId_key" ON "ProductInventory"("productSpecificationId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "CartItem_cartId_productId_key" ON "CartItem"("cartId", "productId");
+CREATE UNIQUE INDEX "CartItem_cartId_productSpecificationId_key" ON "CartItem"("cartId", "productSpecificationId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Order_orderNumber_key" ON "Order"("orderNumber");
@@ -293,6 +330,9 @@ CREATE UNIQUE INDEX "Supplier_email_key" ON "Supplier"("email");
 ALTER TABLE "Admin" ADD CONSTRAINT "Admin_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "tokens" ADD CONSTRAINT "tokens_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Address" ADD CONSTRAINT "Address_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -302,19 +342,25 @@ ALTER TABLE "SubCategory" ADD CONSTRAINT "SubCategory_categoryId_fkey" FOREIGN K
 ALTER TABLE "Product" ADD CONSTRAINT "Product_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Product" ADD CONSTRAINT "Product_subCategoryId_fkey" FOREIGN KEY ("subCategoryId") REFERENCES "SubCategory"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_brandId_fkey" FOREIGN KEY ("brandId") REFERENCES "Brand"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_supplierId_fkey" FOREIGN KEY ("supplierId") REFERENCES "Supplier"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Product" ADD CONSTRAINT "Product_inventoryId_fkey" FOREIGN KEY ("inventoryId") REFERENCES "ProductInventory"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ProductSpecification" ADD CONSTRAINT "ProductSpecification_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProductSpecification" ADD CONSTRAINT "ProductSpecification_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "ProductSpecification" ADD CONSTRAINT "ProductSpecification_sizeId_fkey" FOREIGN KEY ("sizeId") REFERENCES "Size"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ProductSpecification" ADD CONSTRAINT "ProductSpecification_colorId_fkey" FOREIGN KEY ("colorId") REFERENCES "Color"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ProductSpecification" ADD CONSTRAINT "ProductSpecification_materialId_fkey" FOREIGN KEY ("materialId") REFERENCES "Material"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ProductInventory" ADD CONSTRAINT "ProductInventory_productSpecificationId_fkey" FOREIGN KEY ("productSpecificationId") REFERENCES "ProductSpecification"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Review" ADD CONSTRAINT "Review_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -332,7 +378,7 @@ ALTER TABLE "Cart" ADD CONSTRAINT "Cart_couponId_fkey" FOREIGN KEY ("couponId") 
 ALTER TABLE "CartItem" ADD CONSTRAINT "CartItem_cartId_fkey" FOREIGN KEY ("cartId") REFERENCES "Cart"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "CartItem" ADD CONSTRAINT "CartItem_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "CartItem" ADD CONSTRAINT "CartItem_productSpecificationId_fkey" FOREIGN KEY ("productSpecificationId") REFERENCES "ProductSpecification"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Order" ADD CONSTRAINT "Order_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -344,10 +390,10 @@ ALTER TABLE "Order" ADD CONSTRAINT "Order_addressId_fkey" FOREIGN KEY ("addressI
 ALTER TABLE "Order" ADD CONSTRAINT "Order_shippingId_fkey" FOREIGN KEY ("shippingId") REFERENCES "Shipping"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Shipping" ADD CONSTRAINT "Shipping_wilayaId_fkey" FOREIGN KEY ("wilayaId") REFERENCES "wilaya"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Shipping" ADD CONSTRAINT "Shipping_wilayaId_fkey" FOREIGN KEY ("wilayaId") REFERENCES "Wilaya"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_productSpecificationId_fkey" FOREIGN KEY ("productSpecificationId") REFERENCES "ProductSpecification"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

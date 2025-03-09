@@ -15,7 +15,16 @@ export class ProductInventoryService {
   async findAll() {
     const inventories = await this.prisma.productInventory.findMany({
       where: { deletedAt: null },
-      include: { product: true },
+      include: {
+        productSpecification: {
+          include: {
+            size: true,
+            color: true,
+            material: true,
+            product: true,
+          },
+        },
+      },
     });
 
     return {
@@ -26,10 +35,19 @@ export class ProductInventoryService {
     };
   }
 
-  async findOne(id: number) {
+  async findOne(productSpecificationId: number) {
     const inventory = await this.prisma.productInventory.findUnique({
-      where: { id },
-      include: { product: true },
+      where: { productSpecificationId },
+      include: {
+        productSpecification: {
+          include: {
+            size: true,
+            color: true,
+            material: true,
+            product: true,
+          },
+        },
+      },
     });
 
     if (!inventory || inventory.deletedAt) {

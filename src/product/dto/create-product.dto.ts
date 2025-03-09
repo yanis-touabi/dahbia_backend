@@ -164,16 +164,6 @@ export class CreateProductDto {
 
   @ApiProperty({
     example: 1,
-    description: 'The ID of the sub-category the product belongs to',
-    required: false,
-  })
-  @IsOptional()
-  @IsInt({ message: 'subCategoryId must be a valid integer' })
-  @IsPositive({ message: 'subCategoryId must be a positive number' })
-  subCategoryId: number;
-
-  @ApiProperty({
-    example: 1,
     description: 'The ID of the brand of the product',
     required: false,
   })
@@ -184,10 +174,20 @@ export class CreateProductDto {
 
   @ApiProperty({
     example: [
-      { key: 'color', value: 'red' },
-      { key: 'size', value: 'M' },
+      {
+        quantity: 10,
+        sizeId: 1,
+        colorId: 2,
+        materialId: 3,
+      },
+      {
+        quantity: 5,
+        sizeId: 2,
+        colorId: 1,
+        materialId: 2,
+      },
     ],
-    description: 'An array of product specifications',
+    description: 'An array of product inventory specifications',
     required: false,
   })
   @IsOptional()

@@ -33,7 +33,7 @@ export class SignUpDto {
   lastName: string;
   // Email
   @ApiProperty({
-    example: 'yanis.touabi@example.com',
+    example: 'yanis.touabi@gmail.com',
     description: 'User email',
   })
   @IsString({ message: 'Email must be a string' })
@@ -42,7 +42,7 @@ export class SignUpDto {
   email: string;
   // Password
   @ApiProperty({
-    example: 'password123',
+    example: '123456',
     description: 'User password',
   })
   @IsString({ message: 'Password must be a string' })
@@ -55,7 +55,7 @@ export class SignUpDto {
 export class SignInDto {
   // Email
   @ApiProperty({
-    example: 'yanis.touabi@example.com',
+    example: 'yanis.touabi@gmail.com',
     description: 'User email',
   })
   @IsString({ message: 'Email must be a string' })
@@ -64,7 +64,7 @@ export class SignInDto {
   email: string;
   // Password
   @ApiProperty({
-    example: 'password123',
+    example: '123456',
     description: 'User password',
   })
   @IsString({ message: 'Password must be a string' })

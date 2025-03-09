@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -27,29 +31,21 @@ export class ProductService {
 
       // Insert product inventory if specifications are provided
       if (specifications && specifications.length > 0) {
-        for (const inventory of specifications) {
-          // Check for unique constraints before inserting
-          const existingInventory =
-            await tx.productInventory.findFirst({
-              where: {
+        for (const specification of specifications) {
+          const { quantity, ...specData } = specification;
+          // Insert in the product specification table
+          const productSpecification =
+            await tx.productSpecification.create({
+              data: {
                 productId: newProduct.id,
-                sizeId: inventory.sizeId,
-                colorId: inventory.colorId,
-                materialId: inventory.materialId,
+                ...specData,
               },
             });
-
-          if (existingInventory) {
-            throw new NotFoundException(
-              `Product inventory with the same size, color, and material already exists for product ID ${newProduct.id}`,
-            );
-          }
-
           // Insert the inventory
           await tx.productInventory.create({
             data: {
-              ...inventory,
-              productId: newProduct.id,
+              productSpecificationId: productSpecification.id,
+              quantity: quantity,
             },
           });
         }
@@ -60,10 +56,16 @@ export class ProductService {
         where: { id: newProduct.id },
         include: {
           category: true,
-          subCategory: true,
           brand: true,
           supplier: true,
-          inventories: true,
+          productSpecification: {
+            include: {
+              size: true,
+              color: true,
+              material: true,
+              productInventory: true,
+            },
+          },
         },
       });
 
@@ -78,16 +80,17 @@ export class ProductService {
   private async verifyRelatedEntitiesExist(
     dto: CreateProductDto | UpdateProductDto,
   ) {
-    // verify if the product already exists
+    // Verify if the product already exists
     const product = await this.prisma.product.findFirst({
       where: { name: dto.name },
     });
 
     if (product) {
-      throw new NotFoundException(
+      throw new ConflictException(
         `Product with name ${dto.name} already exists`,
       );
     }
+
     // Verify category exists
     if (dto.categoryId) {
       const category = await this.prisma.category.findUnique({
@@ -96,18 +99,6 @@ export class ProductService {
       if (!category) {
         throw new NotFoundException(
           `Category with ID ${dto.categoryId} not found`,
-        );
-      }
-    }
-
-    // Verify subCategory exists
-    if (dto.subCategoryId) {
-      const subCategory = await this.prisma.subCategory.findUnique({
-        where: { id: dto.subCategoryId },
-      });
-      if (!subCategory) {
-        throw new NotFoundException(
-          `SubCategory with ID ${dto.subCategoryId} not found`,
         );
       }
     }
@@ -138,9 +129,12 @@ export class ProductService {
   }
 
   async findAll(dto: FindAllProductsDto) {
+    console.log('rani hna');
     // Validate pagination parameters
     const page = Math.max(1, dto.page);
     const limit = Math.min(Math.max(1, dto.limit), 100); // Limit max page size to 100
+
+    console.log('rani hna');
 
     // Build where clause with type safety
     const where: Prisma.ProductWhereInput = {
@@ -156,6 +150,8 @@ export class ProductService {
         },
       ].filter(Boolean),
     };
+
+    console.log('rani hna');
 
     // Add search conditions if provided
     if (dto.search) {
@@ -184,6 +180,8 @@ export class ProductService {
       [isValidSortField ? dto.sortField : 'createdAt']: sortDirection,
     };
 
+    console.log('rani hna');
+
     // Execute single transaction for both count and find
     const [total, products] = await this.prisma.$transaction([
       this.prisma.product.count({ where }),
@@ -193,10 +191,16 @@ export class ProductService {
         where,
         include: {
           category: { select: { id: true, name: true } },
-          subCategory: { select: { id: true, name: true } },
           brand: { select: { id: true, name: true } },
           supplier: { select: { id: true, name: true } },
-          inventories: true,
+          productSpecification: {
+            include: {
+              size: true,
+              color: true,
+              material: true,
+              productInventory: true,
+            },
+          },
         },
         orderBy,
       }),
@@ -225,10 +229,16 @@ export class ProductService {
       where: { id, deletedAt: null },
       include: {
         category: true,
-        subCategory: true,
         brand: true,
         supplier: true,
-        inventories: true,
+        productSpecification: {
+          include: {
+            size: true,
+            color: true,
+            material: true,
+            productInventory: true,
+          },
+        },
       },
     });
 
@@ -259,10 +269,16 @@ export class ProductService {
         },
         include: {
           category: true,
-          subCategory: true,
           brand: true,
           supplier: true,
-          inventories: true,
+          productSpecification: {
+            include: {
+              size: true,
+              color: true,
+              material: true,
+              productInventory: true,
+            },
+          },
         },
       });
 

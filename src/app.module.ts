@@ -14,7 +14,8 @@ import { CouponModule } from './coupon/coupon.module';
 import { SuppliersModule } from './suppliers/suppliers.module';
 import { ProductModule } from './product/product.module';
 import { ProductInventoryModule } from './productInventory/productInventory.module';
-import { ProductSpecificationModule } from './productSpecification/specification.module';
+import { SpecificationModule } from './specifications/specifications.module';
+import { ProductSpecificationModule } from './productSpecification/productSpecification.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { ProductSpecificationModule } from './productSpecification/specification
     ProductModule,
     ProductInventoryModule,
     ProductSpecificationModule,
+    SpecificationModule,
   ],
 })
 export class AppModule {}

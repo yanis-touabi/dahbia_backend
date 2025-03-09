@@ -142,7 +142,7 @@ export class AuthService {
       `;
 
     await this.mailService.sendMail({
-      from: `Ecommerce-Nest.JS <${process.env.MAIL_USER}>`,
+      from: `Ecommerce-Nest.JS <${process.env.EMAIL_USERNAME}>`,
       to: email,
       subject: `renitialize your password`,
       html: htmlMessage,

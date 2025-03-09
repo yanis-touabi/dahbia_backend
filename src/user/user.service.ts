@@ -68,8 +68,8 @@ export class UserService {
       role,
     } = query;
 
-    const take = Number.isNaN(Number(limit)) ? Number(limit) : 10;
-    const skip = Number.isNaN(Number(offset)) ? Number(offset) : 0;
+    const take = !isNaN(Number(limit)) ? Number(limit) : 10;
+    const skip = !isNaN(Number(offset)) ? Number(offset) : 0;
 
     if (!['asc', 'desc'].includes(orderBy)) {
       throw new HttpException('Invalid sort value', 400);
