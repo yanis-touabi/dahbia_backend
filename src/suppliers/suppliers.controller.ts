@@ -29,7 +29,7 @@ export class SuppliersController {
   @Post()
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
-  @ApiOperation({ summary: 'Create a new Supplier' }) // Describe endpoint
+  @ApiOperation({ summary: 'Create a new Supplier' })
   @ApiResponse({
     status: 201,
     description: 'Supplier successfully created.',
@@ -45,6 +45,8 @@ export class SuppliersController {
   //  @Route  GET /supplier
   //  @access Public
   @Get()
+  @Roles([Role.ADMIN])
+  @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Get all Suppliers' }) // Describe endpoint
   @ApiResponse({ status: 200, description: 'List of all suppliers.' }) // Response info
   findAll() {
@@ -55,23 +57,22 @@ export class SuppliersController {
   //  @Route  GET /supplier/:id
   //  @access Public
   @Get(':id')
+  @Roles([Role.ADMIN])
+  @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Get a single Supplier' }) // Describe endpoint
   @ApiResponse({ status: 200, description: 'Supplier details.' }) // Response info
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.suppliersService.findOne(id);
   }
 
-  //  @docs   Admin can update a Supplier
-  //  @Route  PATCH /supplier/:id
-  //  @access Private [Admin]
   @Patch(':id')
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
-  @ApiOperation({ summary: 'Update a Supplier' }) // Describe endpoint
+  @ApiOperation({ summary: 'Update a Supplier' })
   @ApiResponse({
     status: 200,
     description: 'Supplier successfully updated.',
-  }) // Response info
+  })
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
@@ -80,17 +81,14 @@ export class SuppliersController {
     return this.suppliersService.update(id, updateSuppliersDto);
   }
 
-  //  @docs   Admin can delete a Supplier
-  //  @Route  DELETE /supplier/:id
-  //  @access Private [Admin]
   @Delete(':id')
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
-  @ApiOperation({ summary: 'Delete a Supplier' }) // Describe endpoint
+  @ApiOperation({ summary: 'Delete a Supplier' })
   @ApiResponse({
     status: 200,
     description: 'Supplier successfully deleted.',
-  }) // Response info
+  })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.suppliersService.remove(id);
   }

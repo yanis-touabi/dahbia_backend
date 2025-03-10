@@ -17,7 +17,7 @@ import { Roles } from 'src/user/decorator/Roles.decorator';
 import { Role } from '@prisma/client';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
-@ApiTags('Product Inventory') // Organizes endpoints in Swagger UI
+@ApiTags('Product Inventory')
 @Controller('product-inventory')
 export class ProductInventoryController {
   constructor(
@@ -25,11 +25,11 @@ export class ProductInventoryController {
   ) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get all Product Inventories' }) // Describe endpoint
+  @ApiOperation({ summary: 'Get all Product Inventories' })
   @ApiResponse({
     status: 200,
     description: 'List of all product inventories.',
-  }) // Response info
+  })
   findAll() {
     return this.productInventoryService.findAll();
   }
@@ -39,7 +39,7 @@ export class ProductInventoryController {
   @ApiResponse({
     status: 200,
     description: 'Product inventory details.',
-  }) // Response info
+  })
   findOne(@Param('id', ParseIntPipe) productSpecificationId: number) {
     return this.productInventoryService.findOne(
       productSpecificationId,
@@ -53,7 +53,7 @@ export class ProductInventoryController {
   @ApiResponse({
     status: 200,
     description: 'Product inventory successfully updated.',
-  }) // Response info
+  })
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
@@ -72,7 +72,7 @@ export class ProductInventoryController {
   @ApiResponse({
     status: 200,
     description: 'Product inventory successfully deleted.',
-  }) // Response info
+  })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.productInventoryService.remove(id);
   }

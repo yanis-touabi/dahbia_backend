@@ -18,22 +18,19 @@ import { Roles } from 'src/user/decorator/roles.decorator';
 import { Role } from '@prisma/client';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
-@ApiTags('Category') // Organizes endpoints in Swagger UI
+@ApiTags('Category')
 @Controller('category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
-  //  @docs   Admin Can create a new category
-  //  @Route  POST /category
-  //  @access Private [Admin]
   @Post()
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
-  @ApiOperation({ summary: 'Create a new Category' }) // Describe endpoint
+  @ApiOperation({ summary: 'Create a new Category' })
   @ApiResponse({
     status: 201,
     description: 'Category successfully created.',
-  }) // Response info
+  })
   create(
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
     createCategoryDto: CreateCategoryDto,
@@ -41,40 +38,31 @@ export class CategoryController {
     return this.categoryService.create(createCategoryDto);
   }
 
-  //  @docs   Any User Can get categories
-  //  @Route  GET /category
-  //  @access Public
   @Get()
-  @ApiOperation({ summary: 'Get all Categories' }) // Describe endpoint
+  @ApiOperation({ summary: 'Get all Categories' })
   @ApiResponse({
     status: 200,
     description: 'List of all categories.',
-  }) // Response info
+  })
   findAll() {
     return this.categoryService.findAll();
   }
 
-  //  @docs   Any User Can get any category
-  //  @Route  GET /category/:id
-  //  @access Public
   @Get(':id')
-  @ApiOperation({ summary: 'Get a single Category' }) // Describe endpoint
-  @ApiResponse({ status: 200, description: 'Category details.' }) // Response info
+  @ApiOperation({ summary: 'Get a single Category' })
+  @ApiResponse({ status: 200, description: 'Category details.' })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.categoryService.findOne(id);
   }
 
-  //  @docs   Admin Can update any category
-  //  @Route  PATCH /category/:id
-  //  @access Private [Admin]
   @Patch(':id')
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
-  @ApiOperation({ summary: 'Update a Category' }) // Describe endpoint
+  @ApiOperation({ summary: 'Update a Category' })
   @ApiResponse({
     status: 200,
     description: 'Category successfully updated.',
-  }) // Response info
+  })
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
@@ -83,17 +71,14 @@ export class CategoryController {
     return this.categoryService.update(id, updateCategoryDto);
   }
 
-  //  @docs   Admin Can delete any category
-  //  @Route  DELETE /category/:id
-  //  @access Private [Admin]
   @Delete(':id')
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
-  @ApiOperation({ summary: 'Delete a Category' }) // Describe endpoint
+  @ApiOperation({ summary: 'Delete a Category' })
   @ApiResponse({
     status: 200,
     description: 'Category successfully deleted.',
-  }) // Response info
+  })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.categoryService.remove(id);
   }

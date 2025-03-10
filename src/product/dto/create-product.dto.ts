@@ -16,7 +16,7 @@ import { Gender } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
-export class ProductInventoryDto {
+export class ProductSpecificationDto {
   @ApiProperty({
     example: 100,
     description: 'The quantity of the product in stock',
@@ -193,6 +193,6 @@ export class CreateProductDto {
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => ProductInventoryDto)
-  specifications: ProductInventoryDto[];
+  @Type(() => ProductSpecificationDto)
+  specifications: ProductSpecificationDto[];
 }

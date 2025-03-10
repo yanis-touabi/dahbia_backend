@@ -48,7 +48,7 @@ model Admin {
   id              Int  @id @default(autoincrement())
   userId          Int  @unique
   permissionLevel Int // 0 = super admin, 1 = editor, 2 = viewer
-  user            User @relation(fields: [userId], references: [id])
+  user            User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Token {
@@ -75,7 +75,7 @@ model Address {
   country      String
   phoneNumber  String?
 
-  user   User    @relation(fields: [userId], references: [id])
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   orders Order[]
 }
 
@@ -100,7 +100,7 @@ model SubCategory {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  category Category @relation(fields: [categoryId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 }
 
 model Brand {
@@ -126,6 +126,7 @@ model Product {
   sold         Int      @default(0)
   isBestSeller Boolean  @default(false)
   gender       Gender?  @default(UNISEX)
+  isPromo      Boolean  @default(false)
 
   // Optional fields
   priceAfterDiscount Decimal? @db.Decimal(10, 2)
@@ -142,9 +143,20 @@ model Product {
   reviews              Review[]
   productSpecification ProductSpecification[]
 
+  // Implicit Many-to-Many Relationship with Tags
+  tags Tag[]
+
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
+}
+
+model Tag {
+  id   Int    @id @default(autoincrement())
+  name String @unique @db.VarChar(100)
+
+  // Implicit Many-to-Many Relationship with Products
+  products Product[]
 }
 
 model ProductSpecification {
@@ -158,7 +170,7 @@ model ProductSpecification {
   modifiedAt DateTime? @updatedAt
   deletedAt  DateTime?
 
-  product          Product           @relation(fields: [productId], references: [id])
+  product          Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
   size             Size?             @relation(fields: [sizeId], references: [id])
   color            Color?            @relation(fields: [colorId], references: [id])
   material         Material?         @relation(fields: [materialId], references: [id])
@@ -176,7 +188,7 @@ model ProductInventory {
   modifiedAt DateTime? @updatedAt
   deletedAt  DateTime?
 
-  productSpecification ProductSpecification @relation(fields: [productSpecificationId], references: [id])
+  productSpecification ProductSpecification @relation(fields: [productSpecificationId], references: [id], onDelete: Cascade)
 }
 
 model Size {
@@ -206,23 +218,28 @@ model Review {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  user    User    @relation(fields: [userId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 // Shopping Management
 model Cart {
   id                      Int      @id @default(autoincrement())
-  userId                  Int
+  userId                  Int?
+  sessionId               String?  @unique
   totalPrice              Decimal  @db.Decimal(10, 2)
   totalPriceAfterDiscount Decimal? @db.Decimal(10, 2)
   couponId                Int?
   createdAt               DateTime @default(now())
   updatedAt               DateTime @updatedAt
+  lastActivityAt          DateTime @default(now())
 
-  user      User       @relation(fields: [userId], references: [id])
+  user      User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
   coupon    Coupon?    @relation(fields: [couponId], references: [id])
   cartItems CartItem[]
+
+  @@index([sessionId])
+  @@index([userId])
 }
 
 model CartItem {
@@ -231,8 +248,8 @@ model CartItem {
   productSpecificationId Int
   quantity               Int @default(1)
 
-  cart                 Cart                 @relation(fields: [cartId], references: [id])
-  productSpecification ProductSpecification @relation(fields: [productSpecificationId], references: [id])
+  cart                 Cart                 @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productSpecification ProductSpecification @relation(fields: [productSpecificationId], references: [id], onDelete: Cascade)
 
   @@unique([cartId, productSpecificationId])
 }
@@ -314,8 +331,8 @@ model OrderItem {
   unitPrice              Decimal @db.Decimal(10, 2)
   color                  String?
 
-  order                Order                @relation(fields: [orderId], references: [id])
-  productSpecification ProductSpecification @relation(fields: [productSpecificationId], references: [id])
+  order                Order                @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productSpecification ProductSpecification @relation(fields: [productSpecificationId], references: [id], onDelete: Cascade)
 }
 
 // Payment Management

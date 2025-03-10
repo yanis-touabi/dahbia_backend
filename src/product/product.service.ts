@@ -34,6 +34,8 @@ export class ProductService {
         for (const specification of specifications) {
           const { quantity, ...specData } = specification;
           // Insert in the product specification table
+          //! verify tat the product specification is unique before creating it
+          //! we should also verify this in the front part
           const productSpecification =
             await tx.productSpecification.create({
               data: {
@@ -41,6 +43,9 @@ export class ProductService {
                 ...specData,
               },
             });
+          if (!productSpecification) {
+            throw new Error('Failed to create product specification');
+          }
           // Insert the inventory
           await tx.productInventory.create({
             data: {
@@ -129,12 +134,9 @@ export class ProductService {
   }
 
   async findAll(dto: FindAllProductsDto) {
-    console.log('rani hna');
     // Validate pagination parameters
     const page = Math.max(1, dto.page);
     const limit = Math.min(Math.max(1, dto.limit), 100); // Limit max page size to 100
-
-    console.log('rani hna');
 
     // Build where clause with type safety
     const where: Prisma.ProductWhereInput = {
@@ -150,8 +152,6 @@ export class ProductService {
         },
       ].filter(Boolean),
     };
-
-    console.log('rani hna');
 
     // Add search conditions if provided
     if (dto.search) {
@@ -179,8 +179,6 @@ export class ProductService {
     const orderBy: Prisma.ProductOrderByWithRelationInput = {
       [isValidSortField ? dto.sortField : 'createdAt']: sortDirection,
     };
-
-    console.log('rani hna');
 
     // Execute single transaction for both count and find
     const [total, products] = await this.prisma.$transaction([

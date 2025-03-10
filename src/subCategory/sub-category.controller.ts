@@ -25,17 +25,14 @@ export class SubCategoryController {
     private readonly subCategoryService: SubCategoryService,
   ) {}
 
-  //  @docs   Admin Can create a new sub-category
-  //  @Route  POST /sub-category
-  //  @access Private [Admin]
   @Post()
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
-  @ApiOperation({ summary: 'Create a new SubCategory' }) // Describe endpoint
+  @ApiOperation({ summary: 'Create a new SubCategory' })
   @ApiResponse({
     status: 201,
     description: 'SubCategory successfully created.',
-  }) // Response info
+  })
   create(
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
     createSubCategoryDto: CreateSubCategoryDto,
@@ -43,40 +40,31 @@ export class SubCategoryController {
     return this.subCategoryService.create(createSubCategoryDto);
   }
 
-  //  @docs   Any User Can get sub-categories
-  //  @Route  GET /sub-category
-  //  @access Public
   @Get()
-  @ApiOperation({ summary: 'Get all SubCategories' }) // Describe endpoint
+  @ApiOperation({ summary: 'Get all SubCategories' })
   @ApiResponse({
     status: 200,
     description: 'List of all sub-categories.',
-  }) // Response info
+  })
   findAll() {
     return this.subCategoryService.findAll();
   }
 
-  //  @docs   Any User Can get any sub-category
-  //  @Route  GET /sub-category/:id
-  //  @access Public
   @Get(':id')
-  @ApiOperation({ summary: 'Get a single SubCategory' }) // Describe endpoint
-  @ApiResponse({ status: 200, description: 'SubCategory details.' }) // Response info
+  @ApiOperation({ summary: 'Get a single SubCategory' })
+  @ApiResponse({ status: 200, description: 'SubCategory details.' })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.subCategoryService.findOne(id);
   }
 
-  //  @docs   Admin Can update any sub-category
-  //  @Route  PATCH /sub-category/:id
-  //  @access Private [Admin]
   @Patch(':id')
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
-  @ApiOperation({ summary: 'Update a SubCategory' }) // Describe endpoint
+  @ApiOperation({ summary: 'Update a SubCategory' })
   @ApiResponse({
     status: 200,
     description: 'SubCategory successfully updated.',
-  }) // Response info
+  })
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
@@ -85,17 +73,14 @@ export class SubCategoryController {
     return this.subCategoryService.update(id, updateSubCategoryDto);
   }
 
-  //  @docs   Admin Can delete any sub-category
-  //  @Route  DELETE /sub-category/:id
-  //  @access Private [Admin]
   @Delete(':id')
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
-  @ApiOperation({ summary: 'Delete a SubCategory' }) // Describe endpoint
+  @ApiOperation({ summary: 'Delete a SubCategory' })
   @ApiResponse({
     status: 200,
     description: 'SubCategory successfully deleted.',
-  }) // Response info
+  })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.subCategoryService.remove(id);
   }

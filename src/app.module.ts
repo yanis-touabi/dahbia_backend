@@ -16,6 +16,7 @@ import { ProductModule } from './product/product.module';
 import { ProductInventoryModule } from './productInventory/productInventory.module';
 import { SpecificationModule } from './specifications/specifications.module';
 import { ProductSpecificationModule } from './productSpecification/productSpecification.module';
+import { CartModule } from './cart/cart.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { ProductSpecificationModule } from './productSpecification/productSpecif
     ProductInventoryModule,
     ProductSpecificationModule,
     SpecificationModule,
+    CartModule,
   ],
 })
 export class AppModule {}

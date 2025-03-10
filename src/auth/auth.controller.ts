@@ -16,15 +16,13 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-  //  @docs   Sign Up
-  //  @Route  POST /api/v1/auth/sign-up
-  //  @access Public
+
   @Post('sign-up')
-  @ApiOperation({ summary: 'Sign Up' }) // Describe endpoint
+  @ApiOperation({ summary: 'Sign Up' })
   @ApiResponse({
     status: 200,
     description: 'User successfully signed up.',
-  }) // Response info
+  })
   signUp(
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
     signUpDto: SignUpDto,
@@ -32,15 +30,12 @@ export class AuthController {
     return this.authService.signup(signUpDto);
   }
 
-  //  @docs   Sign In
-  //  @Route  POST /api/auth/sign-in
-  //  @access Public
   @Post('sign-in')
-  @ApiOperation({ summary: 'Sign In' }) // Describe endpoint
+  @ApiOperation({ summary: 'Sign In' })
   @ApiResponse({
     status: 200,
     description: 'User successfully signed in.',
-  }) // Response info
+  })
   signIn(
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
     signInDto: SignInDto,
@@ -48,15 +43,12 @@ export class AuthController {
     return this.authService.signIn(signInDto);
   }
 
-  //  @docs   Any User Can Reset Password
-  //  @Route  POST /api/v1/auth/reset-password
-  //  @access Public
   @Post('reset-password')
-  @ApiOperation({ summary: 'Reset Password' }) // Describe endpoint
+  @ApiOperation({ summary: 'Reset Password' })
   @ApiResponse({
     status: 200,
     description: 'Password reset email sent.',
-  }) // Response info
+  })
   resetPassword(
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
     email: ResetPasswordDto,
@@ -64,15 +56,12 @@ export class AuthController {
     return this.authService.resetPassword(email);
   }
 
-  //  @docs   Any User Can Verify Code
-  //  @Route  POST /auth/verify-code
-  //  @access Public
   @Post('verify-code')
-  @ApiOperation({ summary: 'Verify Code' }) // Describe endpoint
+  @ApiOperation({ summary: 'Verify Code' })
   @ApiResponse({
     status: 200,
     description: 'Code successfully verified.',
-  }) // Response info
+  })
   verifyCode(
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
     verifyCode: {
@@ -83,15 +72,12 @@ export class AuthController {
     return this.authService.verifyCode(verifyCode);
   }
 
-  //  @docs   Any User Can Change Password
-  //  @Route  POST /auth/change-password
-  //  @access Private for users=> admin, user
   @Post('change-password')
-  @ApiOperation({ summary: 'Change Password' }) // Describe endpoint
+  @ApiOperation({ summary: 'Change Password' })
   @ApiResponse({
     status: 200,
     description: 'Password successfully changed.',
-  }) // Response info
+  })
   changePassword(
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
     changePasswordData: SignInDto,
