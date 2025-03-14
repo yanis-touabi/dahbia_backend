@@ -302,8 +302,6 @@ async function main() {
     },
   });
 
-  return 0;
-
   // Create Users
   const users = [];
   for (let i = 0; i < NUM_USERS; i++) {
