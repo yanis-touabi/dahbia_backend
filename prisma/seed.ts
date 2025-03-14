@@ -50,7 +50,7 @@ function generateAddressData(userId: number) {
     addressLine1: faker.location.streetAddress(),
     addressLine2: faker.location.secondaryAddress(),
     commune: faker.location.city(),
-    willaya: faker.location.state(),
+    wilayaId: faker.number.int({ min: 1, max: 58 }),
     postalCode: faker.location.zipCode(),
     country: faker.location.country(),
     phoneNumber: faker.phone.number(),
@@ -110,6 +110,11 @@ function generateOrderData(
       max: 1000,
       fractionDigits: 2,
     }),
+    shippingCost: faker.number.float({
+      min: 1,
+      max: 100,
+      fractionDigits: 2,
+    }),
     taxAmount: faker.number.float({
       min: 1,
       max: 100,
@@ -153,7 +158,6 @@ function generateOrderItemData(orderId: number, productId: number) {
       max: 100,
       fractionDigits: 2,
     }),
-    color: faker.color.human(),
   };
 }
 
@@ -161,7 +165,7 @@ function generateOrderItemData(orderId: number, productId: number) {
 function generateShippingData(wilayaId: number) {
   return {
     company: faker.company.name(),
-    wilayaId: 1,
+    wilayaId: faker.number.int({ min: 1, max: 58 }),
     amount: faker.number.int({ min: 5, max: 50 }),
   };
 }
@@ -249,6 +253,11 @@ async function main() {
     { name: 'PURPLE' },
     { name: 'BROWN' },
   ];
+
+  // inserting wilaya
+  await prisma.wilaya.createMany({
+    data: WILAYAS,
+  });
 
   // inserting colors variables
   await prisma.color.createMany({
@@ -439,11 +448,6 @@ async function main() {
       }
     }
   }
-
-  // create wilaya
-  await prisma.wilaya.createMany({
-    data: WILAYAS,
-  });
 
   const wilayas = await prisma.wilaya.findMany();
 

@@ -86,14 +86,16 @@ export class ProductService {
     dto: CreateProductDto | UpdateProductDto,
   ) {
     // Verify if the product already exists
-    const product = await this.prisma.product.findFirst({
-      where: { name: dto.name },
-    });
+    if (dto.name) {
+      const product = await this.prisma.product.findFirst({
+        where: { name: dto.name },
+      });
 
-    if (product) {
-      throw new ConflictException(
-        `Product with name ${dto.name} already exists`,
-      );
+      if (product) {
+        throw new ConflictException(
+          `Product with name ${dto.name} already exists`,
+        );
+      }
     }
 
     // Verify category exists
@@ -253,7 +255,15 @@ export class ProductService {
 
   async update(id: number, updateProductDto: UpdateProductDto) {
     // Check if product exists
-    await this.findOne(id);
+    const product = await this.prisma.product.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!product) {
+      throw new NotFoundException(`Product with ID ${id} not found`);
+    }
 
     // Verify related entities exist
     await this.verifyRelatedEntitiesExist(updateProductDto);

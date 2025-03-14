@@ -11,6 +11,7 @@ import {
   MinLength,
   IsEnum,
   ValidateNested,
+  IsBoolean,
 } from 'class-validator';
 import { Gender } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
@@ -171,6 +172,36 @@ export class CreateProductDto {
   @IsInt({ message: 'brandId must be a valid integer' })
   @IsPositive({ message: 'brandId must be a positive number' })
   brandId: number;
+
+  // is free shipping
+  @ApiProperty({
+    example: true,
+    description: 'Indicates if the order is free shipping',
+    required: false,
+  })
+  @IsBoolean({
+    message: 'is free shipping must be a boolean',
+  })
+  @IsEnum([true, false], {
+    message: 'is free shipping must be true or false',
+  })
+  @IsOptional()
+  isFreeShipping: boolean;
+
+  // Is promo
+  @ApiProperty({
+    example: true,
+    description: 'Indicates if the order is in promo or not',
+    required: false,
+  })
+  @IsBoolean({
+    message: 'is promo must be a boolean',
+  })
+  @IsEnum([true, false], {
+    message: 'is promo must be true or false',
+  })
+  @IsOptional()
+  isPromo: boolean;
 
   @ApiProperty({
     example: [

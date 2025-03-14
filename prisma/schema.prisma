@@ -70,12 +70,13 @@ model Address {
   addressLine1 String
   addressLine2 String?
   commune      String
-  willaya      String
+  wilayaId     Int
   postalCode   String
   country      String
   phoneNumber  String?
 
   user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wilaya Wilaya  @relation(fields: [wilayaId], references: [id], onDelete: Cascade)
   orders Order[]
 }
 
@@ -116,17 +117,18 @@ model Brand {
 }
 
 model Product {
-  id           Int      @id @default(autoincrement())
-  sku          String?  @unique @db.VarChar(50)
-  name         String   @db.VarChar(255)
-  description  String   @db.Text
-  price        Decimal  @db.Decimal(10, 2)
-  imageCover   String   @db.VarChar(255)
-  images       String[]
-  sold         Int      @default(0)
-  isBestSeller Boolean  @default(false)
-  gender       Gender?  @default(UNISEX)
-  isPromo      Boolean  @default(false)
+  id             Int      @id @default(autoincrement())
+  sku            String?  @unique @db.VarChar(50)
+  name           String   @db.VarChar(255)
+  description    String   @db.Text
+  price          Decimal  @db.Decimal(10, 2)
+  imageCover     String   @db.VarChar(255)
+  images         String[]
+  sold           Int      @default(0)
+  isBestSeller   Boolean  @default(false)
+  gender         Gender?  @default(UNISEX)
+  isPromo        Boolean  @default(false)
+  isFreeShipping Boolean  @default(false)
 
   // Optional fields
   priceAfterDiscount Decimal? @db.Decimal(10, 2)
@@ -263,6 +265,7 @@ model Order {
 
   // Pricing
   subtotal       Decimal  @db.Decimal(10, 2)
+  shippingCost   Decimal  @db.Decimal(10, 2)
   taxAmount      Decimal? @db.Decimal(10, 2)
   discountAmount Decimal? @db.Decimal(10, 2)
   totalAmount    Decimal  @db.Decimal(10, 2)
@@ -289,10 +292,10 @@ model Order {
 model Shipping {
   id       Int    @id @default(autoincrement())
   company  String
-  wilayaId Int
+  wilayaId Int?
   amount   Int
 
-  wilaya Wilaya  @relation(fields: [wilayaId], references: [id])
+  wilaya Wilaya? @relation(fields: [wilayaId], references: [id])
   order  Order[]
 }
 
@@ -301,6 +304,7 @@ model Wilaya {
   code     Int
   name     String
   shipping Shipping[]
+  Address  Address[]
 }
 
 enum OrderStatus {
@@ -329,7 +333,6 @@ model OrderItem {
   productSpecificationId Int
   quantity               Int
   unitPrice              Decimal @db.Decimal(10, 2)
-  color                  String?
 
   order                Order                @relation(fields: [orderId], references: [id], onDelete: Cascade)
   productSpecification ProductSpecification @relation(fields: [productSpecificationId], references: [id], onDelete: Cascade)

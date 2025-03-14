@@ -1,4 +1,3 @@
--- SQLBook: Code
 -- CreateEnum
 CREATE TYPE "Role" AS ENUM ('ADMIN', 'USER');
 
@@ -65,7 +64,7 @@ CREATE TABLE "Address" (
     "addressLine1" TEXT NOT NULL,
     "addressLine2" TEXT,
     "commune" TEXT NOT NULL,
-    "willaya" TEXT NOT NULL,
+    "wilayaId" INTEGER NOT NULL,
     "postalCode" TEXT NOT NULL,
     "country" TEXT NOT NULL,
     "phoneNumber" TEXT,
@@ -123,6 +122,7 @@ CREATE TABLE "Product" (
     "isBestSeller" BOOLEAN NOT NULL DEFAULT false,
     "gender" "Gender" DEFAULT 'UNISEX',
     "isPromo" BOOLEAN NOT NULL DEFAULT false,
+    "isFreeShipping" BOOLEAN NOT NULL DEFAULT false,
     "priceAfterDiscount" DECIMAL(10,2),
     "categoryId" INTEGER NOT NULL,
     "brandId" INTEGER,
@@ -238,6 +238,7 @@ CREATE TABLE "Order" (
     "addressId" INTEGER NOT NULL,
     "shippingId" INTEGER NOT NULL,
     "subtotal" DECIMAL(10,2) NOT NULL,
+    "shippingCost" DECIMAL(10,2) NOT NULL,
     "taxAmount" DECIMAL(10,2),
     "discountAmount" DECIMAL(10,2),
     "totalAmount" DECIMAL(10,2) NOT NULL,
@@ -257,7 +258,7 @@ CREATE TABLE "Order" (
 CREATE TABLE "Shipping" (
     "id" SERIAL NOT NULL,
     "company" TEXT NOT NULL,
-    "wilayaId" INTEGER NOT NULL,
+    "wilayaId" INTEGER,
     "amount" INTEGER NOT NULL,
 
     CONSTRAINT "Shipping_pkey" PRIMARY KEY ("id")
@@ -279,7 +280,6 @@ CREATE TABLE "OrderItem" (
     "productSpecificationId" INTEGER NOT NULL,
     "quantity" INTEGER NOT NULL,
     "unitPrice" DECIMAL(10,2) NOT NULL,
-    "color" TEXT,
 
     CONSTRAINT "OrderItem_pkey" PRIMARY KEY ("id")
 );
@@ -371,6 +371,9 @@ ALTER TABLE "tokens" ADD CONSTRAINT "tokens_userId_fkey" FOREIGN KEY ("userId") 
 ALTER TABLE "Address" ADD CONSTRAINT "Address_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Address" ADD CONSTRAINT "Address_wilayaId_fkey" FOREIGN KEY ("wilayaId") REFERENCES "Wilaya"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "SubCategory" ADD CONSTRAINT "SubCategory_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -425,7 +428,7 @@ ALTER TABLE "Order" ADD CONSTRAINT "Order_addressId_fkey" FOREIGN KEY ("addressI
 ALTER TABLE "Order" ADD CONSTRAINT "Order_shippingId_fkey" FOREIGN KEY ("shippingId") REFERENCES "Shipping"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Shipping" ADD CONSTRAINT "Shipping_wilayaId_fkey" FOREIGN KEY ("wilayaId") REFERENCES "Wilaya"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Shipping" ADD CONSTRAINT "Shipping_wilayaId_fkey" FOREIGN KEY ("wilayaId") REFERENCES "Wilaya"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE CASCADE ON UPDATE CASCADE;
