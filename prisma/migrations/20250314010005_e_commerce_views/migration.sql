@@ -1,4 +1,43 @@
 -- SQLBook: Code
+CREATE VIEW "ProductInfo" AS
+SELECT 
+    p.id AS "productId",
+    p.sku,
+    p.name AS "productName",
+    p.description,
+    p.price,
+    p."imageCover",
+    p.images,
+    p.sold,
+    p."isBestSeller",
+    p.gender,
+    p."isPromo",
+    p."isFreeShipping",
+    p."priceAfterDiscount",
+    p."categoryId",
+    p."brandId",
+    p."supplierId",
+    ps.id AS "productSpecificationId",
+    s.name AS size,
+    c.name AS color,
+    m.name AS material,
+    ps."createdAt" AS "product_spec_created_at",
+    ps."modifiedAt" AS "product_spec_modified_at",
+    ps."deletedAt" AS "product_spec_deleted_at",
+    b.name AS "brandName",
+    b.description AS "brandDescription",
+    sup.name AS "supplierName",
+    sup.phone AS "supplierPhone",
+    sup.email AS "supplierEmail"
+FROM "Product" p
+LEFT JOIN "ProductSpecification" ps ON p.id = ps."productId"
+LEFT JOIN "Size" s ON ps."sizeId" = s.id
+LEFT JOIN "Color" c ON ps."colorId" = c.id
+LEFT JOIN "Material" m ON ps."materialId" = m.id
+LEFT JOIN "Brand" b ON p."brandId" = b.id
+LEFT JOIN "Supplier" sup ON p."supplierId" = sup.id;
+
+
 CREATE VIEW "ProductQuantity" AS
 SELECT
     p.id AS "productId",
@@ -9,28 +48,14 @@ SELECT
     p."imageCover" AS "imageCover",
     p.sold,
     b.name AS "brandName",
-    s.name AS "supplierName",
-    SUM(pi.quantity) AS "remainingQuantity"
-FROM
-    "ProductInventory" pi
-LEFT JOIN
-    "ProductSpecification" ps ON pi."productSpecificationId" = ps.id
-LEFT JOIN
-    "Product" p ON ps."productId" = p.id
-LEFT JOIN
-    "Brand" b ON b.id = p."brandId"
-LEFT JOIN
-    "Supplier" s ON s.id = p."supplierId"
-GROUP BY
-    p.id,
-    p.sku,
-    p.name,
-    p.description,
-    p.price,
-    p."imageCover",
-    p.sold,
-    b.name,
-    s.name;
+    sup.name AS "supplierName",
+    COALESCE(SUM(pi.quantity), 0) AS "remainingQuantity"
+FROM "Product" p
+LEFT JOIN "ProductSpecification" ps ON p.id = ps."productId"
+LEFT JOIN "ProductInventory" pi ON pi."productSpecificationId" = ps.id
+LEFT JOIN "Brand" b ON b.id = p."brandId"
+LEFT JOIN "Supplier" sup ON sup.id = p."supplierId"
+GROUP BY p.id, p.sku, p.name, p.description, p.price, p."imageCover", p.sold, b.name, sup.name;
 
 CREATE VIEW "ProductQuantityDetails" AS
 SELECT
@@ -105,14 +130,7 @@ SELECT
     o."createdAt",
     o."paidAt",
     o."shippedAt",
-    o."deliveredAt",
-    oi.quantity AS "orderItemQuantity",
-    oi."unitPrice" AS "orderItemUnitPrice",
-    p.id AS "productId",
-    p.name AS "productName",
-    p.sku AS "productSku",
-    p.description AS "productDescription",
-    p."imageCover" AS "productImageCover"
+    o."deliveredAt"
 FROM
     "Order" o
 LEFT JOIN
@@ -122,13 +140,43 @@ LEFT JOIN
 LEFT JOIN
     "Shipping" s ON o."shippingId" = s.id
 LEFT JOIN
-    "Wilaya" w ON a."wilayaId" = w.id
-LEFT JOIN
-    "OrderItem" oi ON o.id = oi."orderId"
-LEFT JOIN
-    "ProductSpecification" ps ON oi."productSpecificationId" = ps.id
-LEFT JOIN
-    "Product" p ON ps."productId" = p.id;
+    "Wilaya" w ON a."wilayaId" = w.id;
+
+CREATE VIEW "OrderItemDetails" AS
+SELECT
+    od."orderId",
+    od."orderNumber",
+    od."customerName",
+    od."customerEmail",
+    od."shippingWilayaName",
+    od."shippingCompany",
+    od.status,
+    oi."productSpecificationId",
+    oi.quantity AS "orderItemQuantity",
+    oi."unitPrice" AS "orderItemUnitPrice",
+    (oi.quantity * oi."unitPrice") AS "totalPrice",
+    pi."productId",
+    pi."productName",
+    pi.sku AS "productSku",
+    pi.description AS "productDescription",
+    pi."imageCover" AS "productImageCover",
+    pi."isFreeShipping",
+    pi."isPromo",
+    pi.size,
+    pi.color,
+    pi.material,
+    pi."brandName",
+    pi."supplierName",
+    od."createdAt",
+    od."paidAt",
+    od."shippedAt",
+    od."deliveredAt"
+FROM
+    "OrderDetails" od
+RIGHT JOIN
+    "OrderItem" oi ON od."orderId" = oi."orderId"
+JOIN
+    "ProductInfo" pi ON oi."productSpecificationId" = pi."productSpecificationId";
 
 CREATE VIEW "SupplierProduct" AS
 SELECT

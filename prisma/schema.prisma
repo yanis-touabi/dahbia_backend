@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["views"]
 }
 
 datasource db {
@@ -384,4 +385,138 @@ model Supplier {
   updatedAt DateTime @updatedAt
 
   products Product[]
+}
+
+// ********************************* VIEW MODELS *********************************
+
+view ProductInfo {
+  productId                Int       @unique
+  sku                      String?
+  productName              String
+  description              String
+  price                    Decimal
+  imageCover               String
+  images                   String[]
+  sold                     Int
+  isBestSeller             Boolean
+  gender                   Gender?
+  isPromo                  Boolean
+  isFreeShipping           Boolean
+  priceAfterDiscount       Decimal?
+  categoryId               Int
+  brandId                  Int?
+  supplierId               Int?
+  productSpecificationId   Int?
+  size                     String?
+  color                    String?
+  material                 String?
+  product_spec_created_at  DateTime?
+  product_spec_modified_at DateTime?
+  product_spec_deleted_at  DateTime?
+  brandName                String?
+  brandDescription         String?
+  supplierName             String?
+  supplierPhone            String?
+  supplierEmail            String?
+}
+
+view ProductQuantity {
+  productId         Int      @unique
+  productSku        String?
+  productName       String
+  description       String
+  price             Decimal
+  imageCover        String
+  sold              Int
+  brandName         String?
+  supplierName      String?
+  remainingQuantity Decimal?
+}
+
+view ProductQuantityDetails {
+  productSpecificationId Int      @unique
+  productId              Int
+  productSku             String?
+  productName            String
+  description            String
+  price                  Decimal
+  imageCover             String
+  sold                   Int
+  brandName              String?
+  supplierName           String?
+  remainingQuantity      Decimal?
+  size                   String?
+  color                  String?
+  material               String?
+}
+
+view OrderDetails {
+  orderId            Int               @unique
+  orderNumber        String
+  customerName       String
+  customerLastName   String?
+  customerEmail      String
+  shippingAddress    String
+  shippingCommune    String
+  shippingWilayaId   Int
+  shippingWilayaName String
+  shippingCompany    String
+  subtotal           Decimal
+  shippingCost       Decimal
+  taxAmount          Decimal?
+  discountAmount     Decimal?
+  totalAmount        Decimal
+  status             OrderStatus
+  paymentStatus      PaymentStatus
+  paymentMethod      PaymentMethodType
+  createdAt          DateTime
+  paidAt             DateTime?
+  shippedAt          DateTime?
+  deliveredAt        DateTime?
+}
+
+view OrderItemDetails {
+  orderId                Int
+  orderNumber            String
+  customerName           String
+  customerEmail          String
+  shippingWilayaName     String
+  shippingCompany        String
+  status                 OrderStatus
+  productSpecificationId Int
+  orderItemQuantity      Int
+  orderItemUnitPrice     Decimal
+  totalPrice             Decimal
+  productId              Int
+  productName            String
+  productSku             String?
+  productDescription     String
+  productImageCover      String
+  isFreeShipping         Boolean
+  isPromo                Boolean
+  size                   String?
+  color                  String?
+  material               String?
+  brandName              String?
+  supplierName           String?
+  createdAt              DateTime
+  paidAt                 DateTime?
+  shippedAt              DateTime?
+  deliveredAt            DateTime?
+
+  @@id([orderId, productSpecificationId]) // Define the composite primary key
+}
+
+view SupplierProduct {
+  supplierId         Int     @unique
+  supplierName       String
+  supplierEmail      String?
+  supplierPhone      String?
+  supplierWebsite    String?
+  productId          Int
+  productSku         String?
+  productName        String
+  productDescription String
+  productPrice       Decimal @db.Decimal(10, 2)
+  productImageCover  String
 }

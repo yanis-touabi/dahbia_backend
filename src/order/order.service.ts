@@ -1,9 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { Prisma } from '@prisma/client';
+import { Prisma, OrderStatus, PaymentStatus } from '@prisma/client';
 import { MailService } from 'src/mail/mail.service';
-import { User } from '@prisma/client'; // Prisma-generated type
+import { User } from '@prisma/client';
 
 @Injectable()
 export class OrderService {
@@ -213,5 +217,173 @@ export class OrderService {
         data: order,
       };
     });
+  }
+
+  async updateOrder(
+    id: number,
+    updateOrderDto: any,
+    user: any, // Assuming the user object is passed from the AuthGuard
+  ) {
+    // 1. Validate that only an admin can update orderStatus and paymentStatus.
+    if (user.role !== 'ADMIN') {
+      throw new UnauthorizedException(
+        'Only admins can update orders.',
+      );
+    }
+
+    // 2. Fetch the order items details using the OrderItemDetails view
+    const orderItemDetails =
+      await this.prisma.orderItemDetails.findMany({
+        where: { orderId: id },
+      });
+
+    if (!orderItemDetails || orderItemDetails.length === 0) {
+      throw new NotFoundException(
+        `Order items with Order ID ${id} not found`,
+      );
+    }
+
+    const updateData: Prisma.OrderUpdateInput = {};
+
+    if (updateOrderDto.orderStatus) {
+      updateData.status = updateOrderDto.orderStatus;
+    }
+
+    if (updateOrderDto.paymentStatus) {
+      updateData.paymentStatus = updateOrderDto.paymentStatus;
+    }
+
+    // 3. Update the order
+    const updatedOrder = await this.prisma.order.update({
+      where: { id: id },
+      data: updateData,
+    });
+
+    // 4. Fetch the updated order
+    const fetchedOrder = await this.prisma.order.findUnique({
+      where: { id: id },
+    });
+
+    // 5. Inventory Management
+    if (
+      fetchedOrder.status === 'DELIVERED' &&
+      fetchedOrder.paymentStatus === 'PAID'
+    ) {
+      try {
+        await this.prisma.$transaction(async (tx) => {
+          for (const orderItem of orderItemDetails) {
+            // Update the sold field in the Product table
+            await tx.product.update({
+              where: { id: orderItem.productId },
+              data: {
+                sold: {
+                  increment: orderItem.orderItemQuantity,
+                },
+              },
+            });
+
+            // Decrease the quantity in the product inventory table
+            await tx.productInventory.update({
+              where: {
+                productSpecificationId:
+                  orderItem.productSpecificationId,
+              },
+              data: {
+                quantity: {
+                  decrement: orderItem.orderItemQuantity,
+                },
+              },
+            });
+          }
+        });
+      } catch (error) {
+        // Handle potential errors during inventory update
+        console.error('Inventory update failed:', error);
+        throw new Error('Inventory update failed');
+      }
+    } else if (
+      updateOrderDto.orderStatus === 'CANCELLED' &&
+      updateOrderDto.paymentStatus === 'REFUNDED' &&
+      fetchedOrder.status === 'DELIVERED' &&
+      fetchedOrder.paymentStatus === 'PAID'
+    ) {
+      try {
+        await this.prisma.$transaction(async (tx) => {
+          for (const orderItem of orderItemDetails) {
+            // Restore the sold field in the Product table
+            await tx.product.update({
+              where: { id: orderItem.productId },
+              data: {
+                sold: {
+                  decrement: orderItem.orderItemQuantity,
+                },
+              },
+            });
+
+            // Increase the quantity in the product inventory table
+            await tx.productInventory.update({
+              where: {
+                productSpecificationId:
+                  orderItem.productSpecificationId,
+              },
+              data: {
+                quantity: {
+                  increment: orderItem.orderItemQuantity,
+                },
+              },
+            });
+          }
+        });
+      } catch (error) {
+        // Handle potential errors during inventory update
+        console.error('Inventory update failed:', error);
+        throw new Error('Inventory update failed');
+      }
+    }
+
+    // 6. If the orderStatus is CANCELLED, do nothing.
+
+    // 7. Save the updates and return the updated order details.
+    return {
+      status: 200,
+      message: 'Order updated successfully',
+      data: updatedOrder,
+    };
+  }
+
+  async getOrders(user: any) {
+    if (user.role !== 'ADMIN') {
+      throw new UnauthorizedException(
+        'Only admins can access this route.',
+      );
+    }
+
+    const orders = await this.prisma.order.findMany();
+
+    return {
+      status: 200,
+      message: 'Orders retrieved successfully',
+      data: orders,
+    };
+  }
+
+  async getOrderItems(orderId: number, user: any) {
+    if (user.role !== 'ADMIN') {
+      throw new UnauthorizedException(
+        'Only admins can access this route.',
+      );
+    }
+
+    const orderItems = await this.prisma.orderItem.findMany({
+      where: {
+        orderId: orderId,
+      },
+    });
+
+    return {
+      status: 200,
+      message: 'Order items retrieved successfully',
+      data: orderItems,
+    };
   }
 }
