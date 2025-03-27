@@ -2,6 +2,8 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as express from 'express';
+import * as path from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -40,6 +42,20 @@ async function bootstrap() {
   document.security = [{ BearerAuth: [] }]; // Global security
 
   SwaggerModule.setup('api-docs', app, document);
+
+  // Serve static files from "public" folder
+  //! this is for deployment
+  // app.use(
+  //   '/images',
+  //   express.static(path.join(__dirname, '..', 'public')),
+  // );
+
+  //! this is for developement
+  app.use(
+    '/images',
+    express.static(path.join(process.cwd(), 'public', 'images')),
+  );
+
   await app.listen(4000);
 }
 bootstrap();

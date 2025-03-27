@@ -15,7 +15,8 @@ import {
 } from 'class-validator';
 import { Gender } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
+import { Optional } from '@nestjs/common';
 
 export class ProductSpecificationDto {
   @ApiProperty({
@@ -26,6 +27,7 @@ export class ProductSpecificationDto {
   @IsPositive({ message: 'quantity must be a positive number' })
   @Min(0, { message: 'quantity must be greater than or equal to 0' })
   quantity: number;
+
   @ApiProperty({
     example: 1,
     description: 'The ID of the size of the product',
@@ -34,6 +36,7 @@ export class ProductSpecificationDto {
   @IsOptional()
   @IsInt({ message: 'sizeId must be a valid integer' })
   @IsPositive({ message: 'sizeId must be a positive number' })
+  @Transform(({ value }) => (value ? parseFloat(value) : null))
   sizeId: number;
   @ApiProperty({
     example: 1,
@@ -43,6 +46,8 @@ export class ProductSpecificationDto {
   @IsOptional()
   @IsInt({ message: 'colorId must be a valid integer' })
   @IsPositive({ message: 'colorId must be a positive number' })
+  @Optional()
+  @Transform(({ value }) => (value ? parseFloat(value) : null))
   colorId: number;
   @ApiProperty({
     example: 1,
@@ -52,6 +57,8 @@ export class ProductSpecificationDto {
   @IsOptional()
   @IsInt({ message: 'materialId must be a valid integer' })
   @IsPositive({ message: 'materialId must be a positive number' })
+  @Optional()
+  @Transform(({ value }) => (value ? parseFloat(value) : null))
   materialId: number;
 }
 
@@ -62,7 +69,6 @@ export class CreateProductDto {
     required: false,
   })
   @IsString({ message: 'sku Must be a String' })
-  @MinLength(3, { message: 'sku must be at least 3 characters' })
   @IsOptional()
   sku: string;
 
@@ -84,29 +90,25 @@ export class CreateProductDto {
   })
   description: string;
 
-  @ApiProperty({
-    example: 'https://example.com/image.png',
-    description: 'The cover image URL of the product',
-  })
-  @IsString({ message: 'imageCover Must be a String' })
-  @IsUrl({}, { message: 'imageCover Must be a URL' })
-  imageCover: string;
+  // @ApiProperty({
+  //   example: 'https://example.com/image.png',
+  //   description: 'The cover image URL of the product',
+  // })
+  // @IsString({ message: 'imageCover Must be a String' })
+  // @IsString({ message: 'imageCover Must be a String' })
+  // imageCover: string;
 
-  @ApiProperty({
-    example: [
-      'https://example.com/image1.png',
-      'https://example.com/image2.png',
-    ],
-    description: 'An array of image URLs of the product',
-    required: false,
-  })
-  @IsArray({ message: 'Images Must be an array' })
-  @IsUrl(
-    {},
-    { each: true, message: 'Each image must be a valid URL' },
-  )
-  @IsOptional()
-  images: string[];
+  // @ApiProperty({
+  //   example: [
+  //     'https://example.com/image1.png',
+  //     'https://example.com/image2.png',
+  //   ],
+  //   description: 'An array of image URLs of the product',
+  //   required: false,
+  // })
+  // @IsArray({ message: 'Images Must be an array' })
+  // @IsOptional()
+  // images: string[];
 
   @ApiProperty({
     example: 199.99,
@@ -114,7 +116,8 @@ export class CreateProductDto {
   })
   @IsNumber({}, { message: 'Price Must be a Number' })
   @Min(1, { message: 'price must be at least 1 L.E' })
-  @Max(20000, { message: 'price must be at max 20000 L.E' })
+  @Max(200000, { message: 'price must be at max 20000 L.E' })
+  @Transform(({ value }) => parseFloat(value))
   price: number;
 
   @ApiProperty({
@@ -122,12 +125,13 @@ export class CreateProductDto {
     description: 'The price of the product after discount',
     required: false,
   })
-  @IsOptional()
   @IsNumber({}, { message: 'priceAfterDiscount Must be a Number' })
   @Min(1, { message: 'priceAfterDiscount must be at least 1 L.E' })
   @Max(20000, {
     message: 'priceAfterDiscount must be at max 20000 L.E',
   })
+  @IsOptional()
+  @Transform(({ value }) => (value ? parseFloat(value) : null))
   priceAfterDiscount: number;
 
   @ApiProperty({
@@ -151,6 +155,8 @@ export class CreateProductDto {
   @Min(1, {
     message: 'categoryId must be greater than or equal to 1',
   })
+  @IsOptional()
+  @Transform(({ value }) => (value ? parseFloat(value) : null))
   categoryId: number;
 
   @ApiProperty({
@@ -161,6 +167,7 @@ export class CreateProductDto {
   @IsOptional()
   @IsInt({ message: 'supplierId must be a valid integer' })
   @IsPositive({ message: 'supplierId must be a positive number' })
+  @Transform(({ value }) => (value ? parseFloat(value) : null))
   supplierId: number;
 
   @ApiProperty({
@@ -171,6 +178,7 @@ export class CreateProductDto {
   @IsOptional()
   @IsInt({ message: 'brandId must be a valid integer' })
   @IsPositive({ message: 'brandId must be a positive number' })
+  @Transform(({ value }) => (value ? parseFloat(value) : null))
   brandId: number;
 
   // is free shipping
@@ -186,6 +194,7 @@ export class CreateProductDto {
     message: 'is free shipping must be true or false',
   })
   @IsOptional()
+  @Transform(({ value }) => value === 'true')
   isFreeShipping: boolean;
 
   // Is promo
@@ -201,6 +210,7 @@ export class CreateProductDto {
     message: 'is promo must be true or false',
   })
   @IsOptional()
+  @Transform(({ value }) => value === 'true')
   isPromo: boolean;
 
   @ApiProperty({
@@ -225,5 +235,24 @@ export class CreateProductDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ProductSpecificationDto)
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      try {
+        const parsedValue = JSON.parse(value); // Parse JSON string into an array of objects
+        return Array.isArray(parsedValue)
+          ? parsedValue.map((item) =>
+              Object.assign(new ProductSpecificationDto(), item),
+            )
+          : [];
+      } catch (e) {
+        return []; // Return empty array if parsing fails
+      }
+    }
+    return Array.isArray(value)
+      ? value.map((item) =>
+          Object.assign(new ProductSpecificationDto(), item),
+        )
+      : [];
+  })
   specifications: ProductSpecificationDto[];
 }

@@ -40,3 +40,6 @@ lerna-debug.log*
 
 # add the .env here
 .env
+
+# put the public folder in the gitignore
+/public/images/*

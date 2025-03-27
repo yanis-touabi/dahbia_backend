@@ -19,6 +19,7 @@ import { ProductSpecificationModule } from './productSpecification/productSpecif
 import { CartModule } from './cart/cart.module';
 import { OrderModule } from './order/order.module';
 import { ShippingModule } from './shipping/shipping.module';
+import { SharedModule } from './shared/shared.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { ShippingModule } from './shipping/shipping.module';
     CartModule,
     OrderModule,
     ShippingModule,
+    SharedModule,
   ],
 })
 export class AppModule {}

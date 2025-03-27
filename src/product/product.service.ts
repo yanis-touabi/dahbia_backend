@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { FileService } from '../shared/file/file.service';
 import { Prisma } from '@prisma/client';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -11,20 +12,43 @@ import { FindAllProductsDto } from './dto/find-all-products.dto';
 
 @Injectable()
 export class ProductService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private fileService: FileService,
+  ) {}
 
-  async create(createProductDto: CreateProductDto) {
+  async create(
+    createProductDto: CreateProductDto,
+    imageCoverFile: any,
+    imageFiles: any[],
+  ) {
     // Verify related entities exist
     await this.verifyRelatedEntitiesExist(createProductDto);
 
     const { specifications, ...productData } = createProductDto;
 
     return this.prisma.$transaction(async (tx) => {
+      // Save the image cover
+      const imageCover = await this.fileService.saveImage(
+        imageCoverFile[0],
+      );
+
+      // Save the images
+      const images = [];
+      if (imageFiles && imageFiles.length > 0) {
+        for (const imageFile of imageFiles) {
+          const imageUrl =
+            await this.fileService.saveImage(imageFile);
+          images.push(imageUrl);
+        }
+      }
+
       // Create the product
       const newProduct = await tx.product.create({
         data: {
           ...productData,
-          images: productData.images || [],
+          imageCover: imageCover,
+          images: images,
           priceAfterDiscount: productData.priceAfterDiscount || null,
         },
       });
@@ -83,7 +107,7 @@ export class ProductService {
   }
 
   private async verifyRelatedEntitiesExist(
-    dto: CreateProductDto | UpdateProductDto,
+    dto: CreateProductDto | UpdateProductDto | any,
   ) {
     // Verify if the product already exists
     if (dto.name) {
@@ -140,6 +164,9 @@ export class ProductService {
     const page = Math.max(1, dto.page);
     const limit = Math.min(Math.max(1, dto.limit), 100); // Limit max page size to 100
 
+    // Base URL for serving images
+    const baseUrl = 'http://localhost:4000'; // Change this as needed
+
     // Build where clause with type safety
     const where: Prisma.ProductWhereInput = {
       deletedAt: null,
@@ -163,7 +190,6 @@ export class ProductService {
           description: { contains: dto.search, mode: 'insensitive' },
         },
         { sku: { contains: dto.search, mode: 'insensitive' } },
-        // { tags: { has: search } }, // Removed since tags field doesn't exist
       ];
     }
 
@@ -206,18 +232,29 @@ export class ProductService {
       }),
     ]);
 
+    // Map products to include full image URLs
+    const formattedProducts = products.map((product) => ({
+      ...product,
+      imageCover: product.imageCover
+        ? `${baseUrl}${product.imageCover}`
+        : null,
+      images: product.images
+        ? product.images.map((image) => `${baseUrl}${image}`)
+        : [],
+    }));
+
     // Calculate pagination metadata
     const totalPages = Math.ceil(total / limit);
 
     return {
       status: 200,
       message: 'Products retrieved successfully',
-      data: products,
+      data: formattedProducts,
       meta: {
         total,
         page,
         limit,
-        totalPages: Math.ceil(total / limit),
+        totalPages,
         hasNextPage: page * limit < total,
         hasPreviousPage: page > 1,
       },
@@ -225,6 +262,8 @@ export class ProductService {
   }
 
   async findOne(id: number) {
+    const baseUrl = 'http://localhost:4000'; // Change this as needed
+
     const product = await this.prisma.product.findUnique({
       where: { id, deletedAt: null },
       include: {
@@ -246,14 +285,30 @@ export class ProductService {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }
 
+    // Format image URLs
+    const formattedProduct = {
+      ...product,
+      imageCover: product.imageCover
+        ? `${baseUrl}${product.imageCover}`
+        : null,
+      images: product.images
+        ? product.images.map((image) => `${baseUrl}${image}`)
+        : [],
+    };
+
     return {
       status: 200,
       message: 'Product retrieved successfully',
-      data: product,
+      data: formattedProduct,
     };
   }
 
-  async update(id: number, updateProductDto: UpdateProductDto) {
+  async update(
+    id: number,
+    updateProductDto: UpdateProductDto,
+    imageCoverFile: any,
+    imageFiles: any[],
+  ) {
     // Check if product exists
     const product = await this.prisma.product.findUnique({
       where: {
@@ -265,15 +320,53 @@ export class ProductService {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }
 
+    const filteredData = this.removeNullValues(updateProductDto);
+
     // Verify related entities exist
-    await this.verifyRelatedEntitiesExist(updateProductDto);
+    await this.verifyRelatedEntitiesExist(filteredData);
 
     return this.prisma.$transaction(async (tx) => {
+      let imageCover = product.imageCover; // Keep the old imageCover by default
+      let images = product.images || []; // Keep old images by default
+
+      if (imageCoverFile && imageCoverFile.length > 0) {
+        // Delete old image cover
+        if (product.imageCover) {
+          await this.fileService.deleteImage(product.imageCover);
+        }
+
+        // Save the image cover
+        imageCover = await this.fileService.saveImage(
+          imageCoverFile[0],
+        );
+      }
+
+      if (imageFiles && imageFiles.length > 0) {
+        // Delete old images
+        if (product.images && product.images.length > 0) {
+          await Promise.all(
+            product.images.map((img) =>
+              this.fileService.deleteImage(img),
+            ),
+          );
+        }
+        // Save the images
+        images = [];
+        if (imageFiles && imageFiles.length > 0) {
+          for (const imageFile of imageFiles) {
+            const imageUrl =
+              await this.fileService.saveImage(imageFile);
+            images.push(imageUrl);
+          }
+        }
+      }
+
       const updatedProduct = await tx.product.update({
         where: { id },
         data: {
-          ...updateProductDto,
-          images: updateProductDto.images || undefined,
+          ...filteredData,
+          imageCover: imageCover,
+          images: images,
         },
         include: {
           category: true,
@@ -298,7 +391,36 @@ export class ProductService {
     });
   }
 
+  private async removeNullValues(obj: Record<string, any>) {
+    return Object.fromEntries(
+      Object.entries(obj).filter(([_, value]) => value !== null),
+    );
+  }
+
   async remove(id: number) {
+    // first get the product and check if it exists
+    const product = await this.prisma.product.findUnique({
+      where: { id },
+    });
+
+    if (!product) {
+      throw new NotFoundException(`Product with ID ${id} not found`);
+    }
+
+    // delete the images related to the product
+    // Delete the imageCover
+    if (product.imageCover) {
+      await this.fileService.deleteImage(product.imageCover);
+    }
+    // Delete old images
+    if (product.images && product.images.length > 0) {
+      await Promise.all(
+        product.images.map((img) =>
+          this.fileService.deleteImage(img),
+        ),
+      );
+    }
+
     // Soft delete by setting deletedAt
     const deletedProduct = await this.prisma.product.update({
       where: { id },
