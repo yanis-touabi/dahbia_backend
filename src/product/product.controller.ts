@@ -31,8 +31,8 @@ export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Post()
-  @Roles([Role.ADMIN])
-  @UseGuards(AuthGuard)
+  // @Roles([Role.ADMIN])
+  // @UseGuards(AuthGuard)
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'imageCoverFile', maxCount: 1 },
@@ -127,8 +127,8 @@ export class ProductController {
   }
 
   @Patch(':id')
-  @Roles([Role.ADMIN])
-  @UseGuards(AuthGuard)
+  // @Roles([Role.ADMIN])
+  // @UseGuards(AuthGuard)
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'imageCoverFile', maxCount: 1 },

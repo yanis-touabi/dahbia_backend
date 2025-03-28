@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { FileService } from '../shared/file/file.service';
+import { FilterDataService } from 'src/shared/file/filterData.service';
 import { Prisma } from '@prisma/client';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -15,6 +16,7 @@ export class ProductService {
   constructor(
     private prisma: PrismaService,
     private fileService: FileService,
+    private filterDataService: FilterDataService,
   ) {}
 
   async create(
@@ -23,15 +25,18 @@ export class ProductService {
     imageFiles: any[],
   ) {
     // Verify related entities exist
-    await this.verifyRelatedEntitiesExist(createProductDto);
+    await this.verifyRelatedEntitiesExist(createProductDto, 'create');
 
     const { specifications, ...productData } = createProductDto;
 
     return this.prisma.$transaction(async (tx) => {
       // Save the image cover
-      const imageCover = await this.fileService.saveImage(
-        imageCoverFile[0],
-      );
+      let imageCover = null;
+      if (imageCoverFile || imageCoverFile.length > 0) {
+        imageCover = await this.fileService.saveImage(
+          imageCoverFile[0],
+        );
+      }
 
       // Save the images
       const images = [];
@@ -108,9 +113,10 @@ export class ProductService {
 
   private async verifyRelatedEntitiesExist(
     dto: CreateProductDto | UpdateProductDto | any,
+    operation: String,
   ) {
     // Verify if the product already exists
-    if (dto.name) {
+    if (dto.name && operation === 'create') {
       const product = await this.prisma.product.findFirst({
         where: { name: dto.name },
       });
@@ -320,12 +326,10 @@ export class ProductService {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }
 
-    const filteredData = this.removeNullValues(updateProductDto);
-
     // Verify related entities exist
-    await this.verifyRelatedEntitiesExist(filteredData);
+    await this.verifyRelatedEntitiesExist(updateProductDto, 'update');
 
-    return this.prisma.$transaction(async (tx) => {
+    return await this.prisma.$transaction(async (tx) => {
       let imageCover = product.imageCover; // Keep the old imageCover by default
       let images = product.images || []; // Keep old images by default
 
@@ -364,7 +368,7 @@ export class ProductService {
       const updatedProduct = await tx.product.update({
         where: { id },
         data: {
-          ...filteredData,
+          ...updateProductDto,
           imageCover: imageCover,
           images: images,
         },
@@ -389,12 +393,6 @@ export class ProductService {
         data: updatedProduct,
       };
     });
-  }
-
-  private async removeNullValues(obj: Record<string, any>) {
-    return Object.fromEntries(
-      Object.entries(obj).filter(([_, value]) => value !== null),
-    );
   }
 
   async remove(id: number) {

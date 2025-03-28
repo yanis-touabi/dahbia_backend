@@ -9,6 +9,8 @@ import {
   ValidationPipe,
   UseGuards,
   ParseIntPipe,
+  UseInterceptors,
+  UploadedFiles,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -16,7 +18,14 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { AuthGuard } from 'src/user/guard/Auth.guard';
 import { Roles } from 'src/user/decorator/roles.decorator';
 import { Role } from '@prisma/client';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiConsumes,
+  ApiBody,
+} from '@nestjs/swagger';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Category')
 @Controller('category')
@@ -24,18 +33,42 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
-  @Roles([Role.ADMIN])
-  @UseGuards(AuthGuard)
+  // @Roles([Role.ADMIN])
+  // @UseGuards(AuthGuard)
+  @UseInterceptors(
+    FileFieldsInterceptor([{ name: 'categoryImage', maxCount: 1 }]),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        categoryImage: {
+          type: 'string',
+          format: 'binary',
+        },
+        name: { type: 'string' },
+        description: { type: 'string' },
+      },
+    },
+  })
   @ApiOperation({ summary: 'Create a new Category' })
   @ApiResponse({
     status: 201,
     description: 'Category successfully created.',
   })
   create(
+    @UploadedFiles()
+    files: {
+      categoryImage?: Express.Multer.File[];
+    },
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
     createCategoryDto: CreateCategoryDto,
   ) {
-    return this.categoryService.create(createCategoryDto);
+    return this.categoryService.create(
+      createCategoryDto,
+      files.categoryImage,
+    );
   }
 
   @Get()
@@ -56,19 +89,44 @@ export class CategoryController {
   }
 
   @Patch(':id')
-  @Roles([Role.ADMIN])
-  @UseGuards(AuthGuard)
+  // @Roles([Role.ADMIN])
+  // @UseGuards(AuthGuard)
+  @UseInterceptors(
+    FileFieldsInterceptor([{ name: 'categoryImage', maxCount: 1 }]),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        categoryImage: {
+          type: 'string',
+          format: 'binary',
+        },
+        name: { type: 'string' },
+        description: { type: 'string' },
+      },
+    },
+  })
   @ApiOperation({ summary: 'Update a Category' })
   @ApiResponse({
     status: 200,
     description: 'Category successfully updated.',
   })
   update(
+    @UploadedFiles()
+    files: {
+      categoryImage?: Express.Multer.File[];
+    },
     @Param('id', ParseIntPipe) id: number,
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
     updateCategoryDto: UpdateCategoryDto,
   ) {
-    return this.categoryService.update(id, updateCategoryDto);
+    return this.categoryService.update(
+      id,
+      updateCategoryDto,
+      files.categoryImage,
+    );
   }
 
   @Delete(':id')

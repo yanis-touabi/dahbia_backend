@@ -32,13 +32,13 @@ export class CreateCategoryDto {
   @IsOptional()
   description: string;
 
-  @ApiProperty({
-    example: 'https://example.com/image.png',
-    description: 'The URL of the category image',
-    required: false,
-  })
-  @IsString({ message: 'image must be a string' })
-  @IsUrl({}, { message: 'image must be a valid URL' })
-  @IsOptional()
-  image: string;
+  // @ApiProperty({
+  //   example: 'https://example.com/image.png',
+  //   description: 'The URL of the category image',
+  //   required: false,
+  // })
+  // @IsString({ message: 'image must be a string' })
+  // @IsUrl({}, { message: 'image must be a valid URL' })
+  // @IsOptional()
+  // image: string;
 }

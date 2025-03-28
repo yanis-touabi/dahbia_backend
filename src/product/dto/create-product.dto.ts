@@ -194,7 +194,10 @@ export class CreateProductDto {
     message: 'is free shipping must be true or false',
   })
   @IsOptional()
-  @Transform(({ value }) => value === 'true')
+  @Transform(({ value }) => {
+    if (typeof value === 'boolean') return value; // Skip transformation if already boolean
+    return value === 'true';
+  })
   isFreeShipping: boolean;
 
   // Is promo
@@ -210,7 +213,10 @@ export class CreateProductDto {
     message: 'is promo must be true or false',
   })
   @IsOptional()
-  @Transform(({ value }) => value === 'true')
+  @Transform(({ value }) => {
+    if (typeof value === 'boolean') return value; // Skip transformation if already boolean
+    return value === 'true';
+  })
   isPromo: boolean;
 
   @ApiProperty({

@@ -69,4 +69,10 @@ export class FileService {
       );
     }
   }
+
+  async removeNullValues(obj: Record<string, any>) {
+    return Object.fromEntries(
+      Object.entries(obj).filter(([_, value]) => value !== null),
+    );
+  }
 }
