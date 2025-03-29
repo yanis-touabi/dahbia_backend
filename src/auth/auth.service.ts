@@ -13,7 +13,7 @@ import {
 } from './dto/auth.dto';
 import { Role, User } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
-import { MailerService } from '@nestjs-modules/mailer';
+import { MailService } from 'src/mail/mail.service';
 const saltOrRounds = 10;
 
 @Injectable()
@@ -21,7 +21,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
-    private readonly mailService: MailerService,
+    private mailService: MailService,
   ) {}
 
   async signup(signUpDto: SignUpDto) {
@@ -132,21 +132,20 @@ export class AuthService {
       },
     });
 
-    // send code to user email
-    const htmlMessage = `
-      <div>
-        <h1>Forgot your password? If you didn't forget your password, please ignore this email!</h1>
-        <p>Use the following code to verify your account: <h3 style="color: red; font-weight: bold; text-align: center">${code}</h3></p>
-        <h6 style="font-weight: bold">Ecommerce-Nest.JS</h6>
-      </div>
-      `;
+    // await this.mailService.sendMail({
+    //   from: `Ecommerce-Nest.JS <${process.env.EMAIL_USERNAME}>`,
+    //   to: email,
+    //   subject: `renitialize your password`,
+    //   html: htmlMessage,
+    // });
 
-    await this.mailService.sendMail({
-      from: `Ecommerce-Nest.JS <${process.env.EMAIL_USERNAME}>`,
-      to: email,
-      subject: `renitialize your password`,
-      html: htmlMessage,
-    });
+    await this.mailService.sendResetPasswordEmail(
+      email,
+      `renitialize your password`,
+      'reset-password',
+      code,
+    );
+
     return {
       status: 200,
       message: `Code sent successfully on your email (${email})`,

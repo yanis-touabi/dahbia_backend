@@ -319,16 +319,26 @@ async function main() {
   }
 
   for (let i = 0; i < NUM_CATEGORIES; i++) {
-    // Create Categories, SubCategories, and Brands
+    let categoryName: string;
+    let categoryExists: any;
+
+    do {
+      categoryName = faker.commerce.department();
+      categoryExists = await prisma.category.findUnique({
+        where: { name: categoryName },
+      });
+    } while (categoryExists); // Keep generating until a unique name is found
+
+    // Create category
     const category = await prisma.category.create({
       data: {
-        name: faker.commerce.department(),
+        name: categoryName,
         description: faker.lorem.sentence(),
       },
     });
 
     for (let j = 0; j < NUM_SUBCATEGORIES; j++) {
-      const subCategory = await prisma.subCategory.create({
+      await prisma.subCategory.create({
         data: {
           name: faker.commerce.productAdjective(),
           description: faker.lorem.sentence(),

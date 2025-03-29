@@ -1,7 +1,8 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { MailService } from './mail.service';
 import { MailerModule } from '@nestjs-modules/mailer';
-
+import * as path from 'path';
+@Global()
 @Module({
   imports: [
     MailerModule.forRoot({
@@ -10,15 +11,21 @@ import { MailerModule } from '@nestjs-modules/mailer';
         port: 587,
         secure: false, // upgrade later with STARTTLS
         auth: {
-          user: 'yanis.touabi@gmail.com',
-          pass: 'your_smtp_password',
+          user: process.env.EMAIL_USERNAME,
+          pass: process.env.EMAIL_PASSWORD,
         },
       },
       defaults: {
         from: '"No Reply" <no-reply@example.com>',
       },
       template: {
-        dir: __dirname + '/templates',
+        // dir: __dirname + '/templates', this one is for production
+        dir: path.join(
+          process.cwd(), // Ensure correct base directory
+          'src/mail/templates', // Use a consistent path
+        ),
+        adapter:
+          new (require('@nestjs-modules/mailer/dist/adapters/handlebars.adapter').HandlebarsAdapter)(), // Set Handlebars as the template engine
         options: {
           strict: true,
         },

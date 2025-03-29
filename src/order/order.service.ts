@@ -201,15 +201,14 @@ export class OrderService {
       });
 
       // 4. Order Completion & Notifications
-      // await this.mailService.sendOrderConfirmation(
-      //   email,
-      //   orderNumber,
-      //   Number(totalAmount),
-      // );
-      // await this.mailService.sendOrderNotification(
-      //   orderNumber,
-      //   Number(totalAmount),
-      // );
+      await this.mailService.sendOrderEmails(
+        email,
+        'yanis.touabi@gmail.com',
+        {
+          ...order,
+          name: user.firstName,
+        },
+      );
 
       return {
         status: 201,

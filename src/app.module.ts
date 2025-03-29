@@ -20,6 +20,7 @@ import { CartModule } from './cart/cart.module';
 import { OrderModule } from './order/order.module';
 import { ShippingModule } from './shipping/shipping.module';
 import { SharedModule } from './shared/shared.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -34,15 +35,16 @@ import { SharedModule } from './shared/shared.module';
     PrismaModule,
     UserModule,
     AuthModule,
-    MailerModule.forRoot({
-      transport: {
-        service: 'gmail',
-        auth: {
-          user: process.env.EMAIL_USERNAME,
-          pass: process.env.EMAIL_PASSWORD,
-        },
-      },
-    }),
+    // MailerModule.forRoot({
+    //   transport: {
+    //     service: 'gmail',
+    //     auth: {
+    //       user: process.env.EMAIL_USERNAME,
+    //       pass: process.env.EMAIL_PASSWORD,
+    //     },
+    //   },
+    // }),
+    MailModule,
     CategoryModule,
     SubCategoryModule,
     BrandModule,

@@ -5,35 +5,69 @@ import { MailerService } from '@nestjs-modules/mailer';
 export class MailService {
   constructor(private readonly mailerService: MailerService) {}
 
-  async sendOrderConfirmation(
+  async sendResetPasswordEmail(
     to: string,
-    orderNumber: string,
-    totalAmount: number,
+    subject: string,
+    template: string,
+    code: string,
   ) {
-    await this.mailerService.sendMail({
-      to: to,
-      subject: 'Order Confirmation',
-      template: 'order-confirmation', // `.hbs` extension is appended automatically
-      context: {
-        name: to,
-        orderNumber: orderNumber,
-        totalAmount: totalAmount,
-      },
-    });
+    try {
+      await this.mailerService.sendMail({
+        from: `Ecommerce-Nest.JS <${process.env.EMAIL_USERNAME}>`,
+        to,
+        subject,
+        template, // Template file (e.g., 'order-confirmation')
+        context: {
+          name: to,
+          code: code,
+        },
+      });
+      console.log(`Email sent to ${to}`);
+    } catch (error) {
+      console.error('Error sending email:', error);
+    }
   }
 
   async sendOrderNotification(
-    orderNumber: string,
-    totalAmount: number,
+    to: string,
+    subject: string,
+    template: string,
+    context: any,
   ) {
-    await this.mailerService.sendMail({
-      to: 'store_owner@example.com',
-      subject: 'New Order Notification',
-      template: 'order-notification', // `.hbs` extension is appended automatically
-      context: {
-        orderNumber: orderNumber,
-        totalAmount: totalAmount,
-      },
-    });
+    try {
+      await this.mailerService.sendMail({
+        from: `Ecommerce-Nest.JS <${process.env.EMAIL_USERNAME}>`,
+        to,
+        subject,
+        template,
+        context,
+      });
+      console.log(`Email sent to ${to}`);
+    } catch (error) {
+      console.error('Error sending email:', error);
+    }
+  }
+
+  async sendOrderEmails(
+    customerEmail: string,
+    storeOwnerEmail: string,
+    orderDetails: any,
+  ) {
+    console.log('orderDetails', orderDetails);
+    // notify the store owner
+    await this.sendOrderNotification(
+      storeOwnerEmail,
+      'order successfully registered',
+      'customer-notification',
+      orderDetails,
+    );
+
+    // notify the customer
+    await this.sendOrderNotification(
+      customerEmail,
+      'New Order Received',
+      'admin-notification',
+      orderDetails,
+    );
   }
 }
