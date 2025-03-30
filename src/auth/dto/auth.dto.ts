@@ -74,7 +74,6 @@ export class SignInDto {
   })
   password: string;
 }
-
 export class ResetPasswordDto {
   // Email
   @ApiProperty({
@@ -85,4 +84,23 @@ export class ResetPasswordDto {
   @MinLength(0, { message: 'Thie Email Must be Required' })
   @IsEmail({}, { message: 'Email is not valid' })
   email: string;
+}
+export class VerifyCodeDto {
+  @ApiProperty({
+    example: 'yanis.touabi@example.com',
+    description: 'User email',
+  })
+  @IsString({ message: 'Email must be a string' })
+  @MinLength(0, { message: 'Thie Email Must be Required' })
+  @IsEmail({}, { message: 'Email is not valid' })
+  email: string;
+
+  @ApiProperty({
+    example: '123456',
+    description: 'Verification code',
+  })
+  @IsString({ message: 'Code must be a string' })
+  @MinLength(6, { message: 'Code must be at least 6 characters' })
+  @MaxLength(6, { message: 'Code must be at most 6 characters' })
+  code: string;
 }

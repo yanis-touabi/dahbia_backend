@@ -153,6 +153,7 @@ export class AuthService {
   }
 
   async verifyCode({ email, code }: { email: string; code: string }) {
+    console.log('email', email, 'code', code);
     const user = await this.prisma.user.findUnique({
       where: {
         email,

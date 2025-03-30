@@ -9,6 +9,7 @@ import {
   ResetPasswordDto,
   SignInDto,
   SignUpDto,
+  VerifyCodeDto,
 } from './dto/auth.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
@@ -60,14 +61,12 @@ export class AuthController {
   @ApiOperation({ summary: 'Verify Code' })
   @ApiResponse({
     status: 200,
-    description: 'Code successfully verified.',
+    description:
+      'Code successfully verified. Returns user information.',
   })
   verifyCode(
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
-    verifyCode: {
-      email: string;
-      code: string;
-    },
+    verifyCode: VerifyCodeDto,
   ) {
     return this.authService.verifyCode(verifyCode);
   }

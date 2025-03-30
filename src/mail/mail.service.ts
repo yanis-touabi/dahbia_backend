@@ -9,7 +9,7 @@ export class MailService {
     to: string,
     subject: string,
     template: string,
-    code: string,
+    context: any,
   ) {
     try {
       await this.mailerService.sendMail({
@@ -17,10 +17,7 @@ export class MailService {
         to,
         subject,
         template, // Template file (e.g., 'order-confirmation')
-        context: {
-          name: to,
-          code: code,
-        },
+        context,
       });
       console.log(`Email sent to ${to}`);
     } catch (error) {
@@ -53,7 +50,6 @@ export class MailService {
     storeOwnerEmail: string,
     orderDetails: any,
   ) {
-    console.log('orderDetails', orderDetails);
     // notify the store owner
     await this.sendOrderNotification(
       storeOwnerEmail,
