@@ -25,9 +25,6 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  //  @docs   Admin Can Create User
-  //  @Route  POST /user
-  //  @access Private [admin]
   @Post()
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
@@ -51,9 +48,6 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  //  @docs   Admin Can Get User
-  //  @Route  GET /user
-  //  @access Private [admin]
   @Get()
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
@@ -63,9 +57,6 @@ export class UserController {
     return this.userService.findAll(query);
   }
 
-  //  @docs   Admin Can Get User by id
-  //  @Route  GET /user/:id
-  //  @access Private [admin]
   @Get(':id')
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
@@ -75,9 +66,6 @@ export class UserController {
     return this.userService.findOne(id);
   }
 
-  //  @docs   Admin Can Update a user
-  //  @Route  PATCH /user/:id
-  //  @access Private [admin]
   @Patch(':id')
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
@@ -95,9 +83,6 @@ export class UserController {
     return this.userService.update(id, updateUserDto);
   }
 
-  //  @docs   Admin Can delete user
-  //  @Route  DELETE /user/:id
-  //  @access Private [admin]
   @Delete(':id')
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
@@ -116,10 +101,6 @@ export class UserController {
 export class UserMeController {
   constructor(private readonly userService: UserService) {}
 
-  // For User
-  //  @docs   Any User can get data on your account
-  //  @Route  GET /api/v1/user/me
-  //  @access Private [user, admin]
   @Get()
   @Roles([Role.ADMIN, Role.USER])
   @UseGuards(AuthGuard)
@@ -129,9 +110,6 @@ export class UserMeController {
     return this.userService.getMe(req.user);
   }
 
-  //  @docs   Any User can update data on your account
-  //  @Route  PATCH /api/v1/user/me
-  //  @access Private [user, admin]
   @Patch()
   @Roles([Role.ADMIN, Role.USER])
   @UseGuards(AuthGuard)
@@ -148,9 +126,6 @@ export class UserMeController {
     return this.userService.updateMe(req.user, updateUserDto);
   }
 
-  //  @docs   Any User can unActive his account
-  //  @Route  DELETE /api/v1/user/me
-  //  @access Private [user, admin]
   @Delete()
   @Roles([Role.ADMIN, Role.USER])
   @UseGuards(AuthGuard)

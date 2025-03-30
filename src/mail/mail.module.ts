@@ -19,7 +19,7 @@ import * as path from 'path';
         from: '"No Reply" <no-reply@example.com>',
       },
       template: {
-        // dir: __dirname + '/templates', this one is for production
+        // dir: __dirname + '/templates', this one is for production // this is for the production
         dir: path.join(
           process.cwd(), // Ensure correct base directory
           'src/mail/templates', // Use a consistent path

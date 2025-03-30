@@ -2,6 +2,7 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductSpecificationDto } from './dto/create-product-specification.dto';
@@ -23,7 +24,13 @@ export class ProductSpecificationService {
         );
       }
     } catch (error) {
-      throw error;
+      console.error('Error in verify Product if exists:', {
+        productId,
+        error,
+      });
+      throw new InternalServerErrorException(
+        'An unexpected error occurred during product verification',
+      );
     }
   }
 
@@ -79,7 +86,19 @@ export class ProductSpecificationService {
         data: specification,
       };
     } catch (error) {
-      throw error;
+      console.error('Error in create product specification:', {
+        createDto,
+        error,
+      });
+      if (
+        error instanceof ConflictException ||
+        error instanceof NotFoundException
+      ) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        'An unexpected error occurred during product specification creation',
+      );
     }
   }
 
@@ -93,7 +112,13 @@ export class ProductSpecificationService {
         data: specifications,
       };
     } catch (error) {
-      throw error;
+      console.error(
+        'Error in find all product specifications:',
+        error,
+      );
+      throw new InternalServerErrorException(
+        'An unexpected error occurred during product specifications retrieval',
+      );
     }
   }
 
@@ -116,7 +141,16 @@ export class ProductSpecificationService {
         data: specification,
       };
     } catch (error) {
-      throw error;
+      console.error('Error in find one product specification:', {
+        id,
+        error,
+      });
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        'An unexpected error occurred during product specification retrieval',
+      );
     }
   }
 
@@ -137,7 +171,14 @@ export class ProductSpecificationService {
         data: specification,
       };
     } catch (error) {
-      throw error;
+      console.error('Error in update product specification:', {
+        id,
+        updateDto,
+        error,
+      });
+      throw new InternalServerErrorException(
+        'An unexpected error occurred during product specification update',
+      );
     }
   }
 
@@ -153,7 +194,13 @@ export class ProductSpecificationService {
         data: null,
       };
     } catch (error) {
-      throw error;
+      console.error('Error in remove product specification:', {
+        id,
+        error,
+      });
+      throw new InternalServerErrorException(
+        'An unexpected error occurred during product specification deletion',
+      );
     }
   }
 }
