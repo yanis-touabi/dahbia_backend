@@ -188,10 +188,49 @@ export class ProductService {
       ].filter(Boolean),
     };
 
+    // Add size, color, and material filters
+    const productSpecificationFilter: Prisma.ProductSpecificationWhereInput =
+      {};
+
+    if (dto.size) {
+      productSpecificationFilter.size = {
+        name: {
+          equals: dto.size,
+          mode: 'insensitive',
+        },
+      };
+    }
+
+    if (dto.color) {
+      productSpecificationFilter.color = {
+        name: {
+          equals: dto.color,
+          mode: 'insensitive',
+        },
+      };
+    }
+
+    if (dto.material) {
+      productSpecificationFilter.material = {
+        name: {
+          equals: dto.material,
+          mode: 'insensitive',
+        },
+      };
+    }
+
+    if (Object.keys(productSpecificationFilter).length > 0) {
+      where.productSpecification = {
+        some: productSpecificationFilter,
+      };
+    }
+
     // Add search conditions if provided
     if (dto.search) {
       where.OR = [
-        { name: { contains: dto.search, mode: 'insensitive' } },
+        {
+          name: { contains: dto.search, mode: 'insensitive' },
+        },
         {
           description: { contains: dto.search, mode: 'insensitive' },
         },

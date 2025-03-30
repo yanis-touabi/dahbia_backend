@@ -87,4 +87,31 @@ export class FindAllProductsDto {
   @IsOptional()
   @IsString()
   sortOrder?: string;
+
+  @ApiProperty({
+    example: 'Large',
+    description: 'The size to filter products by',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  size?: string;
+
+  @ApiProperty({
+    example: 'Blue',
+    description: 'The color to filter products by',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  color?: string;
+
+  @ApiProperty({
+    example: 'Cotton',
+    description: 'The material to filter products by',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  material?: string;
 }
