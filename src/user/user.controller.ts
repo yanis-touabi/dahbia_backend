@@ -12,7 +12,7 @@ import {
   ParseIntPipe,
   Query,
 } from '@nestjs/common';
-import { Roles } from './decorator/roles.decorator';
+import { Roles } from 'src/user/decorator/roles.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AuthGuard } from './guard/index';
 import { UserService } from './user.service';
@@ -96,8 +96,8 @@ export class UserController {
   }
 }
 
-@ApiTags('UserMe') // Organizes endpoints in Swagger UI
-@Controller('userMe')
+@ApiTags('MyAccount') // Organizes endpoints in Swagger UI
+@Controller('myAccount')
 export class UserMeController {
   constructor(private readonly userService: UserService) {}
 

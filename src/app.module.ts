@@ -6,7 +6,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { PrismaModule } from './prisma/prisma.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
-import { MailerModule } from '@nestjs-modules/mailer';
 import { CategoryModule } from './category/category.module';
 import { SubCategoryModule } from './subCategory/sub-category.module';
 import { BrandModule } from './brand/brand.module';

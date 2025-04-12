@@ -13,7 +13,7 @@ import {
 import { ProductInventoryService } from './productInventory.service';
 import { UpdateProductInventoryDto } from './dto/update-product-inventory.dto';
 import { AuthGuard } from 'src/user/guard/Auth.guard';
-import { Roles } from 'src/user/decorator/Roles.decorator';
+import { Roles } from 'src/user/decorator/roles.decorator';
 import { Role } from '@prisma/client';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 

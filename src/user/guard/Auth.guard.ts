@@ -7,7 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { Roles } from '../decorator/roles.decorator';
+import { Roles } from 'src/user/decorator/roles.decorator';
 import { Role } from '@prisma/client';
 
 @Injectable()

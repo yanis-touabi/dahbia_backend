@@ -117,6 +117,7 @@ model Brand {
   products Product[]
 }
 
+//! add isFavorite field
 model Product {
   id             Int      @id @default(autoincrement())
   sku            String?  @unique @db.VarChar(50)

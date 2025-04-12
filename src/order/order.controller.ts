@@ -15,7 +15,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthGuard } from 'src/user/guard/Auth.guard';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { Roles } from 'src/user/decorator/Roles.decorator';
+import { Roles } from 'src/user/decorator/roles.decorator';
 import { Role } from '@prisma/client';
 
 @ApiTags('Order')
