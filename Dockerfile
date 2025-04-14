@@ -19,7 +19,7 @@ RUN yarn global add nodemon
 COPY . .
 
 # Generate Prisma client (if using Prisma)
-RUN yarn prisma:generate
+# RUN yarn prisma:migrate && yarn prisma:generate
 
 # Expose app port
 EXPOSE 4000
