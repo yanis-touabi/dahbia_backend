@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 COPY package.json ./
 
 # Install required system packages
-RUN apt-get update -y && apt-get install -y openssl
+RUN apt-get update -y && apt-get install -y openssl procps
 
 # Install dependencies using Yarn
 RUN corepack enable && yarn install
