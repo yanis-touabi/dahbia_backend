@@ -69,6 +69,7 @@ export class ProductController {
         supplierId: { type: 'number', nullable: true },
         brandId: { type: 'number', nullable: true },
         isFreeShipping: { type: 'boolean', nullable: true },
+        isFavorite: { type: 'boolean', nullable: true },
         isPromo: { type: 'boolean', nullable: true },
         specifications: {
           type: 'array', // Define as array
@@ -127,8 +128,8 @@ export class ProductController {
   }
 
   @Patch(':id')
-  // @Roles([Role.ADMIN])
-  // @UseGuards(AuthGuard)
+  @Roles([Role.ADMIN])
+  @UseGuards(AuthGuard)
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'imageCoverFile', maxCount: 1 },
@@ -168,6 +169,7 @@ export class ProductController {
         supplierId: { type: 'number', nullable: true },
         brandId: { type: 'number', nullable: true },
         isFreeShipping: { type: 'boolean', nullable: true },
+        isFavorite: { type: 'boolean', nullable: true },
         isPromo: { type: 'boolean', nullable: true },
         specifications: {
           type: 'array', // Define as array

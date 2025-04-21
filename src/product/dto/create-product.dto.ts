@@ -220,6 +220,24 @@ export class CreateProductDto {
   isPromo: boolean;
 
   @ApiProperty({
+    example: true,
+    description: 'Indicates if the product is favorite or not',
+    required: false,
+  })
+  @IsBoolean({
+    message: 'isFavorite must be a boolean',
+  })
+  @IsEnum([true, false], {
+    message: 'isFavorite must be true or false',
+  })
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (typeof value === 'boolean') return value; // Skip transformation if already boolean
+    return value === 'true';
+  })
+  isFavorite: boolean;
+
+  @ApiProperty({
     example: [
       {
         quantity: 10,

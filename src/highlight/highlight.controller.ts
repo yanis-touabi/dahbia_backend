@@ -12,9 +12,9 @@ import {
   UseInterceptors,
   UploadedFiles,
 } from '@nestjs/common';
-import { BrandService } from './brand.service';
-import { CreateBrandDto } from './dto/create-brand.dto';
-import { UpdateBrandDto } from './dto/update-brand.dto';
+import { HighlightService } from './highlight.service';
+import { CreateHighlightDto } from './dto/create-highlight.dto';
+import { UpdateHighlightDto } from './dto/update-highlight.dto';
 import { AuthGuard } from 'src/user/guard/Auth.guard';
 import { Roles } from 'src/user/decorator/roles.decorator';
 import { Role } from '@prisma/client';
@@ -27,111 +27,117 @@ import {
 } from '@nestjs/swagger';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
-@ApiTags('Brand')
-@Controller('brand')
-export class BrandController {
-  constructor(private readonly brandService: BrandService) {}
+@ApiTags('Highlight')
+@Controller('highlight')
+export class HighlightController {
+  constructor(private readonly highlightService: HighlightService) {}
 
   @Post()
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
   @UseInterceptors(
-    FileFieldsInterceptor([{ name: 'brandImage', maxCount: 1 }]),
+    FileFieldsInterceptor([{ name: 'highlightImage', maxCount: 1 }]),
   )
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
       type: 'object',
       properties: {
-        brandImage: {
+        highlightImage: {
           type: 'string',
           format: 'binary',
         },
-        name: { type: 'string' },
+        title: { type: 'string' },
         description: { type: 'string' },
       },
     },
   })
-  @ApiOperation({ summary: 'Create a new Brand' }) // Describe endpoint
+  @ApiOperation({ summary: 'Create a new Highlight' })
   @ApiResponse({
     status: 201,
-    description: 'Brand successfully created.',
+    description: 'Highlight successfully created.',
   })
   create(
     @UploadedFiles()
     files: {
-      brandImage?: Express.Multer.File[];
+      highlightImage?: Express.Multer.File[];
     },
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
-    createBrandDto: CreateBrandDto,
+    createHighlightDto: CreateHighlightDto,
   ) {
-    return this.brandService.create(createBrandDto, files.brandImage);
+    return this.highlightService.create(
+      createHighlightDto,
+      files.highlightImage,
+    );
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all Brands' }) // Describe endpoint
-  @ApiResponse({ status: 200, description: 'List of all brands.' }) // Response info
+  @ApiOperation({ summary: 'Get all Highlights' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of all highlights.',
+  })
   findAll() {
-    return this.brandService.findAll();
+    return this.highlightService.findAll();
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get a single Brand' }) // Describe endpoint
-  @ApiResponse({ status: 200, description: 'Brand details.' }) // Response info
+  @ApiOperation({ summary: 'Get a single Highlight' })
+  @ApiResponse({ status: 200, description: 'Highlight details.' })
   findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.brandService.findOne(id);
+    return this.highlightService.findOne(id);
   }
 
   @Patch(':id')
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
   @UseInterceptors(
-    FileFieldsInterceptor([{ name: 'brandImage', maxCount: 1 }]),
+    FileFieldsInterceptor([{ name: 'highlightImage', maxCount: 1 }]),
   )
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
       type: 'object',
       properties: {
-        brandImage: {
+        highlightImage: {
           type: 'string',
           format: 'binary',
         },
-        name: { type: 'string' },
+        title: { type: 'string' },
         description: { type: 'string' },
       },
     },
   })
-  @ApiOperation({ summary: 'Update a Brand' }) // Describe endpoint
+  @ApiOperation({ summary: 'Update a Highlight' })
   @ApiResponse({
     status: 200,
-    description: 'Brand successfully updated.',
+    description: 'Highlight successfully updated.',
   })
   update(
     @UploadedFiles()
     files: {
-      brandImage?: Express.Multer.File[];
+      highlightImage?: Express.Multer.File[];
     },
     @Param('id', ParseIntPipe) id: number,
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
-    updateBrandDto: UpdateBrandDto,
+    updateHighlightDto: UpdateHighlightDto,
   ) {
-    return this.brandService.update(
+    return this.highlightService.update(
       id,
-      updateBrandDto,
-      files.brandImage,
+      updateHighlightDto,
+      files.highlightImage,
     );
   }
 
   @Delete(':id')
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
-  @ApiOperation({ summary: 'Delete a Brand' }) // Describe endpoint
+  @ApiOperation({ summary: 'Delete a Highlight' })
   @ApiResponse({
     status: 200,
-    description: 'Brand successfully deleted.',
+    description: 'Highlight successfully deleted.',
   })
   remove(@Param('id', ParseIntPipe) id: number) {
-    return this.brandService.remove(id);
+    return this.highlightService.remove(id);
   }
 }

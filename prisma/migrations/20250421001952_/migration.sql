@@ -120,6 +120,7 @@ CREATE TABLE "Product" (
     "images" TEXT[],
     "sold" INTEGER NOT NULL DEFAULT 0,
     "isBestSeller" BOOLEAN NOT NULL DEFAULT false,
+    "isFavorite" BOOLEAN NOT NULL DEFAULT false,
     "gender" "Gender" DEFAULT 'UNISEX',
     "isPromo" BOOLEAN NOT NULL DEFAULT false,
     "isFreeShipping" BOOLEAN NOT NULL DEFAULT false,
@@ -315,6 +316,60 @@ CREATE TABLE "Supplier" (
 );
 
 -- CreateTable
+CREATE TABLE "CompanyInfo" (
+    "id" SERIAL NOT NULL,
+    "companyName" TEXT NOT NULL DEFAULT '',
+    "address" TEXT NOT NULL DEFAULT '',
+    "city" TEXT NOT NULL DEFAULT '',
+    "state" TEXT NOT NULL DEFAULT '',
+    "zipCode" TEXT NOT NULL DEFAULT '',
+    "country" TEXT NOT NULL DEFAULT '',
+    "phoneNumber" TEXT NOT NULL DEFAULT '',
+    "email" TEXT NOT NULL DEFAULT '',
+    "websiteURL" TEXT NOT NULL DEFAULT '',
+    "description" TEXT NOT NULL DEFAULT '',
+    "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "CompanyInfo_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Highlight" (
+    "id" SERIAL NOT NULL,
+    "title" TEXT NOT NULL DEFAULT '',
+    "image" VARCHAR(255),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "description" TEXT NOT NULL,
+
+    CONSTRAINT "Highlight_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "SocialMedia" (
+    "id" SERIAL NOT NULL,
+    "facebook" TEXT NOT NULL DEFAULT '',
+    "instagram" TEXT NOT NULL DEFAULT '',
+    "twitter" TEXT NOT NULL DEFAULT '',
+    "linkedIn" TEXT NOT NULL DEFAULT '',
+
+    CONSTRAINT "SocialMedia_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Contact" (
+    "id" SERIAL NOT NULL,
+    "family_name" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "phone" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+
+    CONSTRAINT "Contact_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "_ProductToTag" (
     "A" INTEGER NOT NULL,
     "B" INTEGER NOT NULL,
@@ -327,6 +382,9 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Admin_userId_key" ON "Admin"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Category_name_key" ON "Category"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Product_sku_key" ON "Product"("sku");
@@ -357,6 +415,9 @@ CREATE UNIQUE INDEX "Coupon_code_key" ON "Coupon"("code");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Supplier_email_key" ON "Supplier"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "CompanyInfo_email_key" ON "CompanyInfo"("email");
 
 -- CreateIndex
 CREATE INDEX "_ProductToTag_B_index" ON "_ProductToTag"("B");

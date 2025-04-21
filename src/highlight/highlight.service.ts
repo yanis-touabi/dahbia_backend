@@ -4,52 +4,44 @@ import {
   NotFoundException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { CreateBrandDto } from './dto/create-brand.dto';
-import { UpdateBrandDto } from './dto/update-brand.dto';
+import { CreateHighlightDto } from './dto/create-highlight.dto';
+import { UpdateHighlightDto } from './dto/update-highlight.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { FileService } from '../shared/file/file.service';
 
 @Injectable()
-export class BrandService {
+export class HighlightService {
   constructor(
     private prisma: PrismaService,
     private fileService: FileService,
   ) {}
 
   async create(
-    createBrandDto: CreateBrandDto,
-    brandImage: Express.Multer.File[],
+    createHighlightDto: CreateHighlightDto,
+    highlightImage: Express.Multer.File[],
   ) {
     try {
-      const brand = await this.prisma.brand.findFirst({
-        where: {
-          name: createBrandDto.name,
-        },
-      });
-      if (brand) {
-        throw new HttpException('Brand already exist', 400);
+      let imageHighlight = '';
+      if (highlightImage) {
+        imageHighlight = await this.fileService.saveImage(
+          highlightImage[0],
+        );
       }
 
-      let imageBrand = '';
-      // Save the brand image
-      if (brandImage) {
-        imageBrand = await this.fileService.saveImage(brandImage[0]);
-      }
-
-      const newBrand = await this.prisma.brand.create({
+      const newHighlight = await this.prisma.highlight.create({
         data: {
-          ...createBrandDto,
-          image: imageBrand,
+          ...createHighlightDto,
+          image: imageHighlight,
         },
       });
       return {
         status: 200,
-        message: 'Brand created successfully',
-        data: newBrand,
+        message: 'Highlight created successfully',
+        data: newHighlight,
       };
     } catch (error) {
       console.error('Error in create:', {
-        name: createBrandDto.name,
+        title: createHighlightDto.title,
         error,
       });
       throw new InternalServerErrorException(
@@ -60,23 +52,12 @@ export class BrandService {
 
   async findAll() {
     try {
-      // Base URL for serving images
-      const baseUrl = 'http://localhost:4000'; // Change this as needed
-
-      const brands = await this.prisma.brand.findMany();
-
-      if (brands.length !== 0) {
-        // Format image URLs
-        const formattedBrands = brands.map((brand) => ({
-          ...brand,
-          image: brand.image ? `${baseUrl}${brand.image}` : null,
-        }));
-      }
+      const highlights = await this.prisma.highlight.findMany();
       return {
         status: 200,
-        message: 'Brands found',
-        length: brands.length,
-        data: brands,
+        message: 'Highlights found',
+        length: highlights.length,
+        data: highlights,
       };
     } catch (error) {
       console.error('Error in findAll:', error);
@@ -88,20 +69,20 @@ export class BrandService {
 
   async findOne(id: number) {
     try {
-      const brand = await this.prisma.brand.findUnique({
+      const highlight = await this.prisma.highlight.findUnique({
         where: {
           id: id,
         },
       });
 
-      if (!brand) {
-        throw new NotFoundException('Brand not found');
+      if (!highlight) {
+        throw new NotFoundException('Highlight not found');
       }
 
       return {
         status: 200,
-        message: 'Brand found',
-        data: brand,
+        message: 'Highlight found',
+        data: highlight,
       };
     } catch (error) {
       console.error('Error in findOne:', { id, error });
@@ -116,49 +97,46 @@ export class BrandService {
 
   async update(
     id: number,
-    updateBrandDto: UpdateBrandDto,
-    brandImage: Express.Multer.File[],
+    updateHighlightDto: UpdateHighlightDto,
+    highlightImage: Express.Multer.File[],
   ) {
     try {
-      const brand = await this.prisma.brand.findUnique({
+      const highlight = await this.prisma.highlight.findUnique({
         where: {
           id: id,
         },
       });
 
-      if (!brand) {
-        throw new NotFoundException('Brand not found');
+      if (!highlight) {
+        throw new NotFoundException('Highlight not found');
       }
 
-      let image = brand.image;
+      let image = highlight.image;
 
-      if (brandImage && brandImage.length > 0) {
-        // Delete old image cover
+      if (highlightImage && highlightImage.length > 0) {
         if (image) {
           await this.fileService.deleteImage(image);
         }
-
-        // Save the new image cover
-        image = await this.fileService.saveImage(brandImage[0]);
+        image = await this.fileService.saveImage(highlightImage[0]);
       }
 
-      const updatedBrand = await this.prisma.brand.update({
+      const updatedHighlight = await this.prisma.highlight.update({
         where: { id },
         data: {
-          ...updateBrandDto,
+          ...updateHighlightDto,
           image,
         },
       });
 
       return {
         status: 200,
-        message: 'Brand updated successfully',
-        data: updatedBrand,
+        message: 'Highlight updated successfully',
+        data: updatedHighlight,
       };
     } catch (error) {
       console.error('Error in update:', {
         id,
-        updateBrandDto,
+        updateHighlightDto,
         error,
       });
       if (error instanceof NotFoundException) {
@@ -172,21 +150,21 @@ export class BrandService {
 
   async remove(id: number): Promise<void> {
     try {
-      const brand = await this.prisma.brand.findUnique({
+      const highlight = await this.prisma.highlight.findUnique({
         where: {
           id: id,
         },
       });
-      if (!brand) {
-        throw new NotFoundException('Brand not found');
+      if (!highlight) {
+        throw new NotFoundException('Highlight not found');
       }
-      await this.prisma.brand.delete({
+      await this.prisma.highlight.delete({
         where: {
           id: id,
         },
       });
-      if (brand.image) {
-        await this.fileService.deleteImage(brand.image);
+      if (highlight.image) {
+        await this.fileService.deleteImage(highlight.image);
       }
     } catch (error) {
       console.error('Error in remove:', { id, error });

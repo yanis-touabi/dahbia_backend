@@ -524,6 +524,68 @@ async function main() {
   }
 
   console.log('Database seeded successfully!');
+
+  // Add Company Info
+  await prisma.companyInfo.create({
+    data: {
+      companyName: 'Jewelry Store',
+      address: '123 Main Street',
+      city: 'New York',
+      state: 'NY',
+      zipCode: '10001',
+      country: 'United States',
+      phoneNumber: '+1234567890',
+      email: 'contact@jewelrystore.com',
+      websiteURL: 'https://jewelrystore.com',
+      description: 'Premium jewelry store since 1990',
+    },
+  });
+
+  // Add Highlights
+  await prisma.highlight.createMany({
+    data: [
+      {
+        title: 'Summer Collection',
+        description: 'Discover our new summer jewelry collection',
+        image: 'https://example.com/summer-collection.jpg',
+      },
+      {
+        title: 'Free Shipping',
+        description: 'Free shipping on all orders over $100',
+        image: 'https://example.com/free-shipping.jpg',
+      },
+    ],
+  });
+
+  // Add Social Media
+  await prisma.socialMedia.create({
+    data: {
+      facebook: 'https://facebook.com/jewelrystore',
+      instagram: 'https://instagram.com/jewelrystore',
+      twitter: 'https://twitter.com/jewelrystore',
+      linkedIn: 'https://linkedin.com/company/jewelrystore',
+    },
+  });
+
+  // Add Contacts
+  await prisma.contact.createMany({
+    data: [
+      {
+        family_name: 'Smith',
+        name: 'John',
+        email: 'john.smith@example.com',
+        phone: '+1234567890',
+        description: 'Inquiry about gold rings',
+      },
+      {
+        family_name: 'Johnson',
+        name: 'Sarah',
+        email: 'sarah.j@example.com',
+        phone: '+1987654321',
+        description: 'Question about custom orders',
+      },
+    ],
+  });
 }
 
 main()

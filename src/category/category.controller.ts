@@ -33,8 +33,8 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
-  // @Roles([Role.ADMIN])
-  // @UseGuards(AuthGuard)
+  @Roles([Role.ADMIN])
+  @UseGuards(AuthGuard)
   @UseInterceptors(
     FileFieldsInterceptor([{ name: 'categoryImage', maxCount: 1 }]),
   )
@@ -89,8 +89,8 @@ export class CategoryController {
   }
 
   @Patch(':id')
-  // @Roles([Role.ADMIN])
-  // @UseGuards(AuthGuard)
+  @Roles([Role.ADMIN])
+  @UseGuards(AuthGuard)
   @UseInterceptors(
     FileFieldsInterceptor([{ name: 'categoryImage', maxCount: 1 }]),
   )

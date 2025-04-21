@@ -18,6 +18,10 @@ import { ProductSpecificationModule } from './productSpecification/productSpecif
 import { CartModule } from './cart/cart.module';
 import { OrderModule } from './order/order.module';
 import { ShippingModule } from './shipping/shipping.module';
+import { SocialMediaModule } from './socialMedia/socialMedia.module';
+import { ContactModule } from './contact/contact.module';
+import { CompanyInfoModule } from './company-info/company-info.module';
+import { HighlightModule } from './highlight/highlight.module';
 import { SharedModule } from './shared/shared.module';
 import { MailModule } from './mail/mail.module';
 
@@ -56,6 +60,10 @@ import { MailModule } from './mail/mail.module';
     CartModule,
     OrderModule,
     ShippingModule,
+    SocialMediaModule,
+    ContactModule,
+    CompanyInfoModule,
+    HighlightModule,
     SharedModule,
   ],
 })

@@ -30,12 +30,14 @@ export class ProductService {
         'create',
       );
 
+      console.log('createProductDto', createProductDto);
+
       const { specifications, ...productData } = createProductDto;
 
       return this.prisma.$transaction(async (tx) => {
         // Save the image cover
         let imageCover = null;
-        if (imageCoverFile || imageCoverFile.length > 0) {
+        if (imageCoverFile || imageCoverFile?.length > 0) {
           imageCover = await this.fileService.saveImage(
             imageCoverFile[0],
           );
@@ -43,7 +45,7 @@ export class ProductService {
 
         // Save the images
         const images = [];
-        if (imageFiles && imageFiles.length > 0) {
+        if (imageFiles && imageFiles?.length > 0) {
           for (const imageFile of imageFiles) {
             const imageUrl =
               await this.fileService.saveImage(imageFile);

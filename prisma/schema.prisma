@@ -117,7 +117,7 @@ model Brand {
   products Product[]
 }
 
-//! add isFavorite field
+//! dont know if we should insert an image cover or not
 model Product {
   id             Int      @id @default(autoincrement())
   sku            String?  @unique @db.VarChar(50)
@@ -128,6 +128,7 @@ model Product {
   images         String[]
   sold           Int      @default(0)
   isBestSeller   Boolean  @default(false)
+  isFavorite     Boolean  @default(false)
   gender         Gender?  @default(UNISEX)
   isPromo        Boolean  @default(false)
   isFreeShipping Boolean  @default(false)
@@ -386,6 +387,48 @@ model Supplier {
   updatedAt DateTime @updatedAt
 
   products Product[]
+}
+
+model CompanyInfo {
+  id          Int       @id @default(autoincrement())
+  companyName String    @default("")
+  address     String    @default("")
+  city        String    @default("")
+  state       String    @default("")
+  zipCode     String    @default("")
+  country     String    @default("")
+  phoneNumber String    @default("")
+  email       String    @unique @default("")
+  websiteURL  String    @default("")
+  description String    @default("")
+  createdAt   DateTime? @default(now())
+  updatedAt   DateTime? @default(now())
+}
+
+model Highlight {
+  id          Int      @id @default(autoincrement())
+  title       String   @default("")
+  image       String?  @db.VarChar(255)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  description String
+}
+
+model SocialMedia {
+  id        Int    @id @default(autoincrement())
+  facebook  String @default("")
+  instagram String @default("")
+  twitter   String @default("")
+  linkedIn  String @default("")
+}
+
+model Contact {
+  id          Int    @id @default(autoincrement())
+  family_name String
+  name        String
+  email       String
+  phone       String
+  description String
 }
 
 // ********************************* VIEW MODELS *********************************
