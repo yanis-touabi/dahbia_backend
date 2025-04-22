@@ -119,8 +119,6 @@ export class ProductController {
   }
 
   @Get(':id')
-  @Roles([Role.USER, Role.ADMIN])
-  @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Get a single Product' })
   @ApiResponse({ status: 200, description: 'Product details.' })
   findOne(@Param('id', ParseIntPipe) id: number) {

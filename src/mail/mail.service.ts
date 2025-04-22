@@ -13,15 +13,18 @@ export class MailService {
   ) {
     try {
       await this.mailerService.sendMail({
-        from: `Ecommerce-Nest.JS <${process.env.EMAIL_USERNAME}>`,
+        from: `2belegant <${process.env.EMAIL_USERNAME}>`,
         to,
-        subject,
+        subject: 'Réinitialisation de votre mot de passe',
         template, // Template file (e.g., 'order-confirmation')
         context,
       });
-      console.log(`Email sent to ${to}`);
+      console.log(`Email de réinitialisation envoyé à ${to}`);
     } catch (error) {
-      console.error('Error sending email:', error);
+      console.error(
+        'Erreur lors de l’envoi de l’e-mail de réinitialisation :',
+        error,
+      );
     }
   }
 
@@ -33,13 +36,13 @@ export class MailService {
   ) {
     try {
       await this.mailerService.sendMail({
-        from: `Ecommerce-Nest.JS <${process.env.EMAIL_USERNAME}>`,
+        from: `2belegant <${process.env.EMAIL_USERNAME}>`,
         to,
         subject,
         template,
         context,
       });
-      console.log(`Email sent to ${to}`);
+      console.log(`Email envoyé à ${to}`);
     } catch (error) {
       console.error('Error sending email:', error);
     }
@@ -53,16 +56,16 @@ export class MailService {
     // notify the store owner
     await this.sendOrderNotification(
       storeOwnerEmail,
-      'order successfully registered',
-      'customer-notification',
+      'Nouvelle commande reçue',
+      'admin-notification', // template for admin
       orderDetails,
     );
 
     // notify the customer
     await this.sendOrderNotification(
       customerEmail,
-      'New Order Received',
-      'admin-notification',
+      'Confirmation de votre commande',
+      'customer-notification', // template for customer
       orderDetails,
     );
   }

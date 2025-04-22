@@ -155,7 +155,7 @@ export class AuthService {
       // Send reset password email
       await this.mailService.sendResetPasswordEmail(
         email,
-        'Reset your password',
+        'Réinitialisation de votre mot de passe',
         'reset-password',
         code,
       );

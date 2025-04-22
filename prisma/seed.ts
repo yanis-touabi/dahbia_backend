@@ -4,6 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { WILAYAS } from './dummy_data/wilaya';
 
 const prisma = new PrismaClient();
+let orderCounter = 1;
 
 // Function to generate random user data
 function generateUserData() {
@@ -100,11 +101,13 @@ function generateOrderData(
   addressId: number,
   shippingId: number,
 ) {
+  const orderNumber = String(orderCounter).padStart(5, '0');
+  orderCounter++;
   return {
     userId,
     addressId,
     shippingId,
-    orderNumber: faker.string.uuid(),
+    orderNumber,
     subtotal: faker.number.float({
       min: 10,
       max: 1000,
