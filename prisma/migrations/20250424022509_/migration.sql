@@ -327,7 +327,12 @@ CREATE TABLE "CompanyInfo" (
     "phoneNumber" TEXT NOT NULL DEFAULT '',
     "email" TEXT NOT NULL DEFAULT '',
     "websiteURL" TEXT NOT NULL DEFAULT '',
+    "visitingHours" TEXT NOT NULL DEFAULT '',
     "description" TEXT NOT NULL DEFAULT '',
+    "facebook" TEXT NOT NULL DEFAULT '',
+    "instagram" TEXT NOT NULL DEFAULT '',
+    "twitter" TEXT NOT NULL DEFAULT '',
+    "linkedIn" TEXT NOT NULL DEFAULT '',
     "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
 
@@ -344,17 +349,6 @@ CREATE TABLE "Highlight" (
     "description" TEXT NOT NULL,
 
     CONSTRAINT "Highlight_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "SocialMedia" (
-    "id" SERIAL NOT NULL,
-    "facebook" TEXT NOT NULL DEFAULT '',
-    "instagram" TEXT NOT NULL DEFAULT '',
-    "twitter" TEXT NOT NULL DEFAULT '',
-    "linkedIn" TEXT NOT NULL DEFAULT '',
-
-    CONSTRAINT "SocialMedia_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable

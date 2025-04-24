@@ -54,8 +54,33 @@ export class CreateCompanyInfoDto {
   @MaxLength(255)
   websiteURL: string;
 
+  @ApiProperty({ example: '8:00AM - 5:00PM' })
+  @IsOptional()
+  @MaxLength(255)
+  visitingHours: string;
+
   @ApiProperty({ example: 'About our jewelry store...' })
   @IsString()
   @IsOptional()
   description: string;
+
+  @ApiProperty({ example: 'https://facebook.com/yourpage' })
+  @IsUrl()
+  @IsOptional()
+  facebook: string;
+
+  @ApiProperty({ example: 'https://instagram.com/yourpage' })
+  @IsUrl()
+  @IsOptional()
+  instagram: string;
+
+  @ApiProperty({ example: 'https://twitter.com/yourpage' })
+  @IsUrl()
+  @IsOptional()
+  twitter: string;
+
+  @ApiProperty({ example: 'https://linkedin.com/company/yourpage' })
+  @IsUrl()
+  @IsOptional()
+  linkedIn: string;
 }

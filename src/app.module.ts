@@ -20,7 +20,7 @@ import { ProductSpecificationModule } from './productSpecification/productSpecif
 import { CartModule } from './cart/cart.module';
 import { OrderModule } from './order/order.module';
 import { ShippingModule } from './shipping/shipping.module';
-import { SocialMediaModule } from './socialMedia/socialMedia.module';
+// import { SocialMediaModule } from './socialMedia/socialMedia.module';
 import { ContactModule } from './contact/contact.module';
 import { CompanyInfoModule } from './company-info/company-info.module';
 import { HighlightModule } from './highlight/highlight.module';
@@ -73,7 +73,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     CartModule,
     OrderModule,
     ShippingModule,
-    SocialMediaModule,
+    // SocialMediaModule,
     ContactModule,
     CompanyInfoModule,
     HighlightModule,

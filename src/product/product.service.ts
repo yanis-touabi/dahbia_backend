@@ -201,9 +201,6 @@ export class ProductService {
       const page = Math.max(1, dto.page);
       const limit = Math.min(Math.max(1, dto.limit), 100); // Limit max page size to 100
 
-      // Base URL for serving images
-      const baseUrl = 'http://localhost:4000'; // Change this as needed
-
       // Build where clause with type safety
       const where: Prisma.ProductWhereInput = {
         deletedAt: null,
@@ -317,15 +314,15 @@ export class ProductService {
       ]);
 
       // Map products to include full image URLs
-      const formattedProducts = products.map((product) => ({
-        ...product,
-        imageCover: product.imageCover
-          ? `${baseUrl}${product.imageCover}`
-          : null,
-        images: product.images
-          ? product.images.map((image) => `${baseUrl}${image}`)
-          : [],
-      }));
+      // const formattedProducts = products.map((product) => ({
+      //   ...product,
+      //   imageCover: product.imageCover
+      //     ? `${baseUrl}${product.imageCover}`
+      //     : null,
+      //   images: product.images
+      //     ? product.images.map((image) => `${baseUrl}${image}`)
+      //     : [],
+      // }));
 
       // Calculate pagination metadata
       const totalPages = Math.ceil(total / limit);
@@ -333,7 +330,7 @@ export class ProductService {
       return {
         status: 200,
         message: 'Products retrieved successfully',
-        data: formattedProducts,
+        data: products,
         meta: {
           total,
           page,
@@ -353,8 +350,6 @@ export class ProductService {
 
   async findOne(id: number) {
     try {
-      const baseUrl = 'http://localhost:4000'; // Change this as needed
-
       const product = await this.prisma.product.findUnique({
         where: { id, deletedAt: null },
         include: {
@@ -378,21 +373,10 @@ export class ProductService {
         );
       }
 
-      // Format image URLs
-      const formattedProduct = {
-        ...product,
-        imageCover: product.imageCover
-          ? `${baseUrl}${product.imageCover}`
-          : null,
-        images: product.images
-          ? product.images.map((image) => `${baseUrl}${image}`)
-          : [],
-      };
-
       return {
         status: 200,
         message: 'Product retrieved successfully',
-        data: formattedProduct,
+        data: product,
       };
     } catch (error) {
       console.error('Error in find a unique product:', { id, error });

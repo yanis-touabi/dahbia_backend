@@ -356,6 +356,8 @@ async function main() {
       data: {
         name: faker.company.name(),
         description: faker.lorem.sentence(),
+        image: faker.image.urlLoremFlickr({ category: 'fashion' }),
+        website: faker.internet.url(),
       },
     });
   }
@@ -541,6 +543,11 @@ async function main() {
       email: 'contact@jewelrystore.com',
       websiteURL: 'https://jewelrystore.com',
       description: 'Premium jewelry store since 1990',
+      visitingHours: 'Mon-Fri: 9am-5pm, Sat-Sun: 10am-4pm',
+      facebook: 'https://facebook.com/jewelrystore',
+      instagram: 'https://instagram.com/jewelrystore',
+      twitter: 'https://twitter.com/jewelrystore',
+      linkedIn: 'https://linkedin.com/company/jewelrystore',
     },
   });
 
@@ -561,14 +568,14 @@ async function main() {
   });
 
   // Add Social Media
-  await prisma.socialMedia.create({
-    data: {
-      facebook: 'https://facebook.com/jewelrystore',
-      instagram: 'https://instagram.com/jewelrystore',
-      twitter: 'https://twitter.com/jewelrystore',
-      linkedIn: 'https://linkedin.com/company/jewelrystore',
-    },
-  });
+  // await prisma.socialMedia.create({
+  //   data: {
+  //     facebook: 'https://facebook.com/jewelrystore',
+  //     instagram: 'https://instagram.com/jewelrystore',
+  //     twitter: 'https://twitter.com/jewelrystore',
+  //     linkedIn: 'https://linkedin.com/company/jewelrystore',
+  //   },
+  // });
 
   // Add Contacts
   await prisma.contact.createMany({

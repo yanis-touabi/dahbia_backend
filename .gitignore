@@ -44,3 +44,4 @@ lerna-debug.log*
 # put the public folder in the gitignore
 /public/images/*
 /prisma/migrations2
+/prisma/migrations1

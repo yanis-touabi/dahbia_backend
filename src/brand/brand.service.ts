@@ -60,18 +60,8 @@ export class BrandService {
 
   async findAll() {
     try {
-      // Base URL for serving images
-      const baseUrl = 'http://localhost:4000'; // Change this as needed
-
       const brands = await this.prisma.brand.findMany();
 
-      if (brands.length !== 0) {
-        // Format image URLs
-        const formattedBrands = brands.map((brand) => ({
-          ...brand,
-          image: brand.image ? `${baseUrl}${brand.image}` : null,
-        }));
-      }
       return {
         status: 200,
         message: 'Brands found',

@@ -64,20 +64,7 @@ export class CategoryService {
 
   async findAll() {
     try {
-      // Base URL for serving images
-      const baseUrl = 'http://localhost:4000'; // Change this as needed
-
       const category = await this.prisma.category.findMany();
-
-      if (category.length !== 0) {
-        // Format image URLs
-        const formattedCategory = category.map((category) => ({
-          ...category,
-          image: category.image
-            ? `${baseUrl}${category.image}`
-            : null,
-        }));
-      }
 
       return {
         status: 200,
