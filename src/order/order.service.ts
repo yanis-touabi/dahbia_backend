@@ -385,7 +385,7 @@ export class OrderService {
 
   async getOrders() {
     try {
-      const orders = await this.prisma.order.findMany();
+      const orders = await this.prisma.orderDetails.findMany();
 
       return {
         status: 200,
@@ -405,9 +405,9 @@ export class OrderService {
 
   async getOrderById(id: number) {
     try {
-      const order = await this.prisma.order.findUnique({
+      const order = await this.prisma.orderDetails.findUnique({
         where: {
-          id: id,
+          orderId: id,
         },
       });
 
@@ -433,7 +433,7 @@ export class OrderService {
 
   async getOrderItems(orderId: number) {
     try {
-      const orderItems = await this.prisma.orderItem.findMany({
+      const orderItems = await this.prisma.orderItemDetails.findMany({
         where: {
           orderId: orderId,
         },
