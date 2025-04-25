@@ -30,8 +30,6 @@ export class ProductService {
         'create',
       );
 
-      console.log('createProductDto', createProductDto);
-
       const { specifications, ...productData } = createProductDto;
 
       return this.prisma.$transaction(async (tx) => {
