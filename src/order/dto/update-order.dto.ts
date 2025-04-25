@@ -8,13 +8,13 @@ import {
 import { OrderStatus, PaymentStatus } from '@prisma/client';
 
 export class UpdateOrderDto {
-  @IsNumber()
-  @IsNotEmpty()
-  id: number;
+  // @IsNumber()
+  // @IsNotEmpty()
+  // id: number;
 
   @IsEnum(OrderStatus)
   @IsOptional()
-  orderStatus?: OrderStatus;
+  status?: OrderStatus;
 
   @IsEnum(PaymentStatus)
   @IsOptional()

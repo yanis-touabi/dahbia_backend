@@ -19,6 +19,7 @@ import { SpecificationModule } from './specifications/specifications.module';
 import { ProductSpecificationModule } from './productSpecification/productSpecification.module';
 import { CartModule } from './cart/cart.module';
 import { OrderModule } from './order/order.module';
+import { TagModule } from './tag/tag.module';
 import { ShippingModule } from './shipping/shipping.module';
 // import { SocialMediaModule } from './socialMedia/socialMedia.module';
 import { ContactModule } from './contact/contact.module';
@@ -77,6 +78,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     ContactModule,
     CompanyInfoModule,
     HighlightModule,
+    TagModule,
     SharedModule,
   ],
   providers: [

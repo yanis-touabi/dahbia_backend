@@ -30,6 +30,7 @@ export class OrderController {
     description: 'Order created successfully.',
   })
   @UseGuards(AuthGuard)
+  @Roles([Role.ADMIN])
   async create(
     @Body(new ValidationPipe()) createOrderDto: CreateOrderDto,
     @Request() req,
@@ -51,31 +52,36 @@ export class OrderController {
     @Param('id', ParseIntPipe) id: number,
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
     updateOrderDto: UpdateOrderDto,
-    @Request() req,
   ) {
-    // extract the user from the token
-    const user = req.user;
-    return this.orderService.updateOrder(id, updateOrderDto, user);
+    return this.orderService.updateOrder(id, updateOrderDto);
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all orders (Admin only)' })
   @Roles([Role.ADMIN])
-  async getOrders(@Request() req) {
-    const user = req.user;
-    return this.orderService.getOrders(user);
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Get all orders (Admin only)' })
+  async getAllOrders() {
+    return this.orderService.getOrders();
+  }
+
+  @Get(':id')
+  @Roles([Role.ADMIN])
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Get a single order by id' }) // Describe endpoint
+  @ApiResponse({ status: 200, description: 'Order details.' }) // Response info
+  getOrderById(@Param('id', ParseIntPipe) id: number) {
+    return this.orderService.getOrderById(id);
   }
 
   @Get(':orderId/items')
+  @Roles([Role.ADMIN])
+  @UseGuards(AuthGuard)
   @ApiOperation({
     summary: 'Get order items by order ID (Admin only)',
   })
-  @Roles([Role.ADMIN])
   async getOrderItems(
     @Param('orderId', ParseIntPipe) orderId: number,
-    @Request() req,
   ) {
-    const user = req.user;
-    return this.orderService.getOrderItems(orderId, user);
+    return this.orderService.getOrderItems(orderId);
   }
 }

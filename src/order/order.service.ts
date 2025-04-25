@@ -9,6 +9,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { Prisma } from '@prisma/client';
 import { MailService } from 'src/mail/mail.service';
 import { User } from '@prisma/client';
+import { UpdateOrderDto } from './dto/update-order.dto';
 
 @Injectable()
 export class OrderService {
@@ -246,19 +247,14 @@ export class OrderService {
     }
   }
 
-  async updateOrder(
-    id: number,
-    updateOrderDto: any,
-    user: any, // Assuming the user object is passed from the AuthGuard
-  ) {
+  async updateOrder(id: number, updateOrderDto: UpdateOrderDto) {
     try {
-      // 1. Validate that only an admin can update orderStatus and paymentStatus.
-      if (user.role !== 'ADMIN') {
-        throw new UnauthorizedException(
-          'Only admins can update orders.',
-        );
-      }
-
+      // get the order from the database before the update
+      const orderBeforeUpdate = await this.prisma.order.findUnique({
+        where: {
+          id: id,
+        },
+      });
       // 2. Fetch the order items details using the OrderItemDetails view
       const orderItemDetails =
         await this.prisma.orderItemDetails.findMany({
@@ -271,20 +267,10 @@ export class OrderService {
         );
       }
 
-      const updateData: Prisma.OrderUpdateInput = {};
-
-      if (updateOrderDto.orderStatus) {
-        updateData.status = updateOrderDto.orderStatus;
-      }
-
-      if (updateOrderDto.paymentStatus) {
-        updateData.paymentStatus = updateOrderDto.paymentStatus;
-      }
-
       // 3. Update the order
       const updatedOrder = await this.prisma.order.update({
         where: { id: id },
-        data: updateData,
+        data: updateOrderDto,
       });
 
       // 4. Fetch the updated order
@@ -294,6 +280,8 @@ export class OrderService {
 
       // 5. Inventory Management
       if (
+        (orderBeforeUpdate.status !== 'DELIVERED' ||
+          orderBeforeUpdate.paymentStatus !== 'PAID') &&
         fetchedOrder.status === 'DELIVERED' &&
         fetchedOrder.paymentStatus === 'PAID'
       ) {
@@ -330,10 +318,10 @@ export class OrderService {
           throw new Error('Inventory update failed');
         }
       } else if (
-        updateOrderDto.orderStatus === 'CANCELLED' &&
-        updateOrderDto.paymentStatus === 'REFUNDED' &&
-        fetchedOrder.status === 'DELIVERED' &&
-        fetchedOrder.paymentStatus === 'PAID'
+        (orderBeforeUpdate.status !== 'CANCELLED' ||
+          orderBeforeUpdate.paymentStatus !== 'REFUNDED') &&
+        fetchedOrder.status === 'CANCELLED' &&
+        fetchedOrder.paymentStatus === 'REFUNDED'
       ) {
         try {
           await this.prisma.$transaction(async (tx) => {
@@ -381,7 +369,6 @@ export class OrderService {
       console.error('Error in update order:', {
         id,
         updateOrderDto,
-        user,
         error,
       });
       if (
@@ -396,14 +383,8 @@ export class OrderService {
     }
   }
 
-  async getOrders(user: any) {
+  async getOrders() {
     try {
-      if (user.role !== 'ADMIN') {
-        throw new UnauthorizedException(
-          'Only admins can access this route.',
-        );
-      }
-
       const orders = await this.prisma.order.findMany();
 
       return {
@@ -412,7 +393,7 @@ export class OrderService {
         data: orders,
       };
     } catch (error) {
-      console.error('Error in get orders:', { user, error });
+      console.error('Error in get orders:', error);
       if (error instanceof UnauthorizedException) {
         throw error;
       }
@@ -422,14 +403,36 @@ export class OrderService {
     }
   }
 
-  async getOrderItems(orderId: number, user: any) {
+  async getOrderById(id: number) {
     try {
-      if (user.role !== 'ADMIN') {
-        throw new UnauthorizedException(
-          'Only admins can access this route.',
-        );
+      const order = await this.prisma.order.findUnique({
+        where: {
+          id: id,
+        },
+      });
+
+      if (!order) {
+        throw new NotFoundException('Brand not found');
       }
 
+      return {
+        status: 200,
+        message: 'Brand found',
+        data: order,
+      };
+    } catch (error) {
+      console.error('Error in findOne:', { id, error });
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        'An unexpected error occurred during findOne',
+      );
+    }
+  }
+
+  async getOrderItems(orderId: number) {
+    try {
       const orderItems = await this.prisma.orderItem.findMany({
         where: {
           orderId: orderId,
@@ -444,7 +447,6 @@ export class OrderService {
     } catch (error) {
       console.error('Error in get order items:', {
         orderId,
-        user,
         error,
       });
       if (error instanceof UnauthorizedException) {

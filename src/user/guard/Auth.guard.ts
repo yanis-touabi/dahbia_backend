@@ -27,13 +27,18 @@ export class AuthGuard implements CanActivate {
     }
 
     if (!token) {
+      console.log('maybe here');
       throw new UnauthorizedException();
     }
+
+    console.log('je suis la');
 
     try {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET,
       });
+
+      console.log('rani hna !!');
 
       if (payload.id && payload.role == Role.ADMIN) {
         request['user'] = payload;
@@ -45,7 +50,6 @@ export class AuthGuard implements CanActivate {
         payload.role === '' ||
         !roles.includes(payload.role)
       ) {
-        console.log(payload);
         throw new UnauthorizedException();
       }
 

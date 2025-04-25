@@ -362,6 +362,31 @@ async function main() {
     });
   }
 
+  // Create Tags
+  const TAGS = [
+    { name: 'Summer Collection' },
+    { name: 'Winter Collection' },
+    { name: 'Gold' },
+    { name: 'Silver' },
+    { name: 'Diamond' },
+    { name: 'Luxury' },
+    { name: 'Minimalist' },
+    { name: 'Vintage' },
+    { name: 'Engagement' },
+    { name: 'Wedding' },
+    { name: 'Birthstone' },
+    { name: 'Pearl' },
+    { name: 'Gemstone' },
+    { name: 'Handmade' },
+    { name: 'Limited Edition' },
+  ];
+
+  await prisma.tag.createMany({
+    data: TAGS,
+  });
+
+  const tags = await prisma.tag.findMany();
+
   // Helper function to get a random item from an array
   function getRandom<T>(array: T[]): T {
     return array[Math.floor(Math.random() * array.length)];
@@ -375,10 +400,18 @@ async function main() {
   const products = [];
   for (let i = 0; i < NUM_PRODUCTS; i++) {
     const product = await prisma.product.create({
-      data: generateProductData(
-        getRandom(category).id,
-        getRandom(brand).id,
-      ),
+      data: {
+        ...generateProductData(
+          getRandom(category).id,
+          getRandom(brand).id,
+        ),
+        tags: {
+          connect: [
+            { id: getRandom(tags).id },
+            { id: getRandom(tags).id },
+          ],
+        },
+      },
     });
     products.push(product);
 
