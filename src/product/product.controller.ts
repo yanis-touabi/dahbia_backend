@@ -108,7 +108,7 @@ export class ProductController {
     );
   }
 
-  @Post('allProducts')
+  @Get('allProducts')
   @ApiOperation({ summary: 'Get all Products' })
   @ApiResponse({ status: 200, description: 'List of all products.' })
   findAll(
