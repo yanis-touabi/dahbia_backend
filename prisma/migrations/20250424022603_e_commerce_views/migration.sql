@@ -114,6 +114,7 @@ SELECT
     u."firstName" AS "customerName",
     u."lastName" AS "customerLastName",
     u.email AS "customerEmail",
+    u."phoneNumber",
     a."addressLine1" AS "shippingAddress",
     a.commune AS "shippingCommune",
     a."wilayaId" AS "shippingWilayaId",

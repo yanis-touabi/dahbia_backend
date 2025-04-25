@@ -383,14 +383,36 @@ export class OrderService {
     }
   }
 
-  async getOrders() {
+  async getOrders(page = 1, limit = 10) {
     try {
-      const orders = await this.prisma.orderDetails.findMany();
+      // Validate pagination parameters
+      page = Math.max(1, page);
+      limit = Math.min(Math.max(1, limit), 100); // Limit max page size to 100
+
+      // Execute single transaction for both count and find
+      const [total, orders] = await this.prisma.$transaction([
+        this.prisma.orderDetails.count(),
+        this.prisma.orderDetails.findMany({
+          skip: (page - 1) * limit,
+          take: limit,
+        }),
+      ]);
+
+      // Calculate pagination metadata
+      const totalPages = Math.ceil(total / limit);
 
       return {
         status: 200,
         message: 'Orders retrieved successfully',
         data: orders,
+        meta: {
+          total,
+          page,
+          limit,
+          totalPages,
+          hasNextPage: page * limit < total,
+          hasPreviousPage: page > 1,
+        },
       };
     } catch (error) {
       console.error('Error in get orders:', error);

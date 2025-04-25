@@ -497,6 +497,7 @@ view OrderDetails {
   customerName       String
   customerLastName   String?
   customerEmail      String
+  phoneNumber        String?
   shippingAddress    String
   shippingCommune    String
   shippingWilayaId   Int
