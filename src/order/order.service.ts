@@ -10,7 +10,6 @@ import { Prisma } from '@prisma/client';
 import { MailService } from 'src/mail/mail.service';
 import { User } from '@prisma/client';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
 
 @Injectable()
 export class OrderService {
@@ -323,10 +322,6 @@ export class OrderService {
           orderBeforeUpdate.paymentStatus !== 'REFUNDED') &&
         fetchedOrder.status === 'CANCELLED' &&
         fetchedOrder.paymentStatus === 'REFUNDED'
-        (orderBeforeUpdate.status !== 'CANCELLED' ||
-          orderBeforeUpdate.paymentStatus !== 'REFUNDED') &&
-        fetchedOrder.status === 'CANCELLED' &&
-        fetchedOrder.paymentStatus === 'REFUNDED'
       ) {
         try {
           await this.prisma.$transaction(async (tx) => {
@@ -412,9 +407,7 @@ export class OrderService {
   async getOrderById(id: number) {
     try {
       const order = await this.prisma.orderDetails.findUnique({
-      const order = await this.prisma.orderDetails.findUnique({
         where: {
-          orderId: id,
           orderId: id,
         },
       });
@@ -441,7 +434,6 @@ export class OrderService {
 
   async getOrderItems(orderId: number) {
     try {
-      const orderItems = await this.prisma.orderItemDetails.findMany({
       const orderItems = await this.prisma.orderItemDetails.findMany({
         where: {
           orderId: orderId,
