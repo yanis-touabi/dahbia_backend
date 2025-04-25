@@ -300,6 +300,7 @@ export class ProductService {
             category: { select: { id: true, name: true } },
             brand: { select: { id: true, name: true } },
             supplier: { select: { id: true, name: true } },
+            tags: true,
             productSpecification: {
               include: {
                 size: true,
