@@ -215,6 +215,16 @@ export class ProductService {
               }),
             },
           },
+          dto.isBestSeller !== undefined
+            ? { isBestSeller: dto.isBestSeller }
+            : undefined,
+          dto.isPromo !== undefined
+            ? { isPromo: dto.isPromo }
+            : undefined,
+          dto.isFavorite !== undefined
+            ? { isFavorite: dto.isFavorite }
+            : undefined,
+          dto.gender ? { gender: dto.gender } : undefined,
         ].filter(Boolean),
       };
 

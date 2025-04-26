@@ -1,5 +1,12 @@
-import { IsOptional, IsNumber, IsString } from 'class-validator';
+import {
+  IsOptional,
+  IsNumber,
+  IsString,
+  IsBoolean,
+  IsEnum,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Gender } from '@prisma/client';
 
 export class FindAllProductsDto {
   @ApiProperty({
@@ -111,7 +118,66 @@ export class FindAllProductsDto {
     description: 'The material to filter products by',
     required: false,
   })
-  @IsOptional()
   @IsString()
+  @IsOptional()
   material?: string;
+
+  @ApiProperty({
+    example: true,
+    description: 'Indicates if the order is best seller',
+    required: false,
+  })
+  @IsBoolean({
+    message: 'is best seller must be a boolean',
+  })
+  @IsOptional()
+  isBestSeller: boolean;
+
+  @ApiProperty({
+    example: true,
+    description: 'Indicates if the order is in promo or not',
+    required: false,
+  })
+  @IsBoolean({
+    message: 'is promo must be a boolean',
+  })
+  @IsEnum([true, false], {
+    message: 'is promo must be true or false',
+  })
+  @IsOptional()
+  // @Transform(({ value }) => {
+  //   if (typeof value === 'boolean') return value; // Skip transformation if already boolean
+  //   return value === 'true';
+  // })
+  isPromo: boolean;
+
+  @ApiProperty({
+    example: true,
+    description: 'Indicates if the product is favorite or not',
+    required: false,
+  })
+  @IsBoolean({
+    message: 'isFavorite must be a boolean',
+  })
+  @IsEnum([true, false], {
+    message: 'isFavorite must be true or false',
+  })
+  @IsOptional()
+  // @Transform(({ value }) => {
+  //   if (typeof value === 'boolean') return value; // Skip transformation if already boolean
+  //   return value === 'true';
+  // })
+  isFavorite: boolean;
+
+  @ApiProperty({
+    example: 'MALE',
+    description: 'The gender the product is intended for',
+    enum: Gender,
+    required: false,
+  })
+  @IsOptional()
+  @IsEnum(Gender, {
+    message: 'gender must be MALE, FEMALE or UNISEX',
+  })
+  gender: Gender;
 }
