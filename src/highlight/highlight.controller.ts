@@ -49,6 +49,7 @@ export class HighlightController {
         },
         title: { type: 'string' },
         description: { type: 'string' },
+        isBestSeller: { type: 'boolean' },
       },
     },
   })
@@ -105,6 +106,7 @@ export class HighlightController {
         },
         title: { type: 'string' },
         description: { type: 'string' },
+        isBestSeller: { type: 'boolean' },
       },
     },
   })

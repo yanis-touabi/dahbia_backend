@@ -411,12 +411,13 @@ model CompanyInfo {
 }
 
 model Highlight {
-  id          Int      @id @default(autoincrement())
-  title       String   @default("")
-  image       String?  @db.VarChar(255)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  description String
+  id           Int      @id @default(autoincrement())
+  title        String   @default("")
+  description  String?
+  image        String?  @db.VarChar(255)
+  isBestSeller Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Contact {

@@ -1,10 +1,13 @@
 import {
+  IsBoolean,
+  IsEnum,
   IsOptional,
   IsString,
   MaxLength,
   MinLength,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 
 export class CreateHighlightDto {
   @ApiProperty({
@@ -27,5 +30,20 @@ export class CreateHighlightDto {
   @MaxLength(500, {
     message: 'description must be at most 500 characters',
   })
+  @IsOptional()
   description: string;
+
+  @ApiProperty({
+    example: true,
+    description: 'Indicates if the highlight is for the best seller',
+    required: false,
+  })
+  @IsBoolean({
+    message: 'is best seller must be a boolean',
+  })
+  @IsEnum([true, false], {
+    message: 'is best seller must be true or false',
+  })
+  @Transform(({ value }) => value === 'true')
+  isBestSeller: boolean;
 }

@@ -14,7 +14,6 @@ export class TagService {
 
   async create(createTagDto: CreateTagDto) {
     try {
-      console.log('createTagDto', createTagDto);
       const tag = await this.prisma.tag.findUnique({
         where: { name: createTagDto.name },
       });
