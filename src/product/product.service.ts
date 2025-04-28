@@ -98,6 +98,7 @@ export class ProductService {
             category: true,
             brand: true,
             supplier: true,
+            tags: true,
             productSpecification: {
               include: {
                 size: true,
@@ -365,6 +366,7 @@ export class ProductService {
           category: true,
           brand: true,
           supplier: true,
+          tags: true,
           productSpecification: {
             include: {
               size: true,
@@ -471,6 +473,7 @@ export class ProductService {
             category: true,
             brand: true,
             supplier: true,
+            tags: true,
             productSpecification: {
               include: {
                 size: true,
