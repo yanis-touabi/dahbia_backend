@@ -7,6 +7,7 @@ import {
   IsOptional,
   IsArray,
   IsInt,
+  IsString,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 
@@ -32,30 +33,24 @@ export class UpdateProductDto extends PartialType(CreateProductDto) {
   @IsOptional()
   @IsArray()
   @IsInt({ each: true })
+  tagIds: number[];
+
+  @ApiProperty({
+    example: ['/images/product1.jpg', '/images/product2.jpg'],
+    description: 'Array of image paths to delete',
+    required: false,
+  })
+  @IsOptional()
+  @IsArray()
   @Transform(({ value }) => {
     if (typeof value === 'string') {
-      try {
-        // Try parsing as JSON first
-        const parsed = JSON.parse(value);
-
-        // If it's an array, map to numbers
-        if (Array.isArray(parsed)) {
-          return parsed.map(Number);
-        }
-
-        // If it's a single number/string, wrap it into an array
-        return [Number(parsed)];
-      } catch (e) {
-        // If JSON parsing fails (like "1,2,3"), fallback to splitting manually
-        return value
-          .split(',')
-          .map((item) => Number(item.trim()))
-          .filter((item) => !isNaN(item)); // remove invalid numbers
-      }
+      return value
+        .split(',')
+        .map((item) => item.trim()) // Trim whitespace
+        .filter((item) => item.length > 0); // Optional: remove empty strings
     }
-
-    // If not a string, just return as is
     return value;
   })
-  tagIds: number[];
+  @IsString({ each: true })
+  imagesToDelete: string[];
 }

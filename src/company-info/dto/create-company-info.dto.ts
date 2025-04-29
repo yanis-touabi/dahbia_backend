@@ -4,8 +4,10 @@ import {
   IsEmail,
   IsUrl,
   MaxLength,
+  IsNumber,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 
 export class CreateCompanyInfoDto {
   @ApiProperty({ example: 'My Jewelry Store' })
@@ -83,4 +85,20 @@ export class CreateCompanyInfoDto {
   @IsUrl()
   @IsOptional()
   linkedIn: string;
+
+  @ApiProperty({
+    example: 100,
+    description: 'The latitude of the company',
+  })
+  @IsNumber({}, { message: 'latitude Must be a Number' })
+  @Transform(({ value }) => parseFloat(value))
+  latitude: number;
+
+  @ApiProperty({
+    example: 100,
+    description: 'The longitude of the company',
+  })
+  @IsNumber({}, { message: 'longitude Must be a Number' })
+  @Transform(({ value }) => parseFloat(value))
+  longitude: number;
 }

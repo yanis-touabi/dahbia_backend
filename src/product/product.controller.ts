@@ -196,6 +196,12 @@ export class ProductController {
           description:
             'Array of tag IDs to associate with the product',
         },
+        imagesToDelete: {
+          type: 'array',
+          items: { type: 'string' },
+          nullable: true,
+          description: 'Array of image paths to delete',
+        },
       },
     },
   })

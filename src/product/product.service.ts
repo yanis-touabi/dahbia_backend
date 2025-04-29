@@ -466,27 +466,33 @@ export class ProductService {
           );
         }
 
+        // Handle image deletions if specified
+        if (
+          updateProductDto.imagesToDelete &&
+          updateProductDto.imagesToDelete.length > 0
+        ) {
+          await Promise.all(
+            updateProductDto.imagesToDelete.map((imgPath) =>
+              this.fileService.deleteImage(imgPath),
+            ),
+          );
+          // Remove deleted images from the array
+          images = (product.images || []).filter(
+            (img) => !updateProductDto.imagesToDelete.includes(img),
+          );
+        }
+
+        // Add new images if provided
         if (imageFiles && imageFiles.length > 0) {
-          // Delete old images
-          if (product.images && product.images.length > 0) {
-            await Promise.all(
-              product.images.map((img) =>
-                this.fileService.deleteImage(img),
-              ),
-            );
-          }
-          // Save the images
-          images = [];
-          if (imageFiles && imageFiles.length > 0) {
-            for (const imageFile of imageFiles) {
-              const imageUrl =
-                await this.fileService.saveImage(imageFile);
-              images.push(imageUrl);
-            }
+          for (const imageFile of imageFiles) {
+            const imageUrl =
+              await this.fileService.saveImage(imageFile);
+            images.push(imageUrl);
           }
         }
 
-        const { tagIds, ...restUpdateData } = updateProductDto;
+        const { tagIds, imagesToDelete, ...restUpdateData } =
+          updateProductDto;
 
         const updatedProduct = await tx.product.update({
           where: { id },
