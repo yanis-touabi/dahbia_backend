@@ -16,7 +16,6 @@ import {
 import { Gender } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { Optional } from '@nestjs/common';
 
 export class ProductSpecificationDto {
   @ApiProperty({
@@ -46,7 +45,6 @@ export class ProductSpecificationDto {
   @IsOptional()
   @IsInt({ message: 'colorId must be a valid integer' })
   @IsPositive({ message: 'colorId must be a positive number' })
-  @Optional()
   @Transform(({ value }) => (value ? parseFloat(value) : null))
   colorId: number;
   @ApiProperty({
@@ -57,7 +55,6 @@ export class ProductSpecificationDto {
   @IsOptional()
   @IsInt({ message: 'materialId must be a valid integer' })
   @IsPositive({ message: 'materialId must be a positive number' })
-  @Optional()
   @Transform(({ value }) => (value ? parseFloat(value) : null))
   materialId: number;
 }
@@ -141,9 +138,9 @@ export class CreateProductDto {
     required: false,
   })
   @IsOptional()
-  @IsEnum(Gender, {
-    message: 'gender must be MALE, FEMALE or UNISEX',
-  })
+  // @IsEnum(Gender, {
+  //   message: 'gender must be MALE, FEMALE or UNISEX',
+  // })
   gender: Gender;
 
   @ApiProperty({
@@ -190,9 +187,6 @@ export class CreateProductDto {
   @IsBoolean({
     message: 'is free shipping must be a boolean',
   })
-  @IsEnum([true, false], {
-    message: 'is free shipping must be true or false',
-  })
   @IsOptional()
   @Transform(({ value }) => {
     if (typeof value === 'boolean') return value; // Skip transformation if already boolean
@@ -209,9 +203,6 @@ export class CreateProductDto {
   @IsBoolean({
     message: 'is promo must be a boolean',
   })
-  @IsEnum([true, false], {
-    message: 'is promo must be true or false',
-  })
   @IsOptional()
   @Transform(({ value }) => {
     if (typeof value === 'boolean') return value; // Skip transformation if already boolean
@@ -226,9 +217,6 @@ export class CreateProductDto {
   })
   @IsBoolean({
     message: 'isFavorite must be a boolean',
-  })
-  @IsEnum([true, false], {
-    message: 'isFavorite must be true or false',
   })
   @IsOptional()
   @Transform(({ value }) => {
@@ -279,4 +267,39 @@ export class CreateProductDto {
       : [];
   })
   specifications: ProductSpecificationDto[];
+
+  @ApiProperty({
+    example: [1, 2, 3],
+    description: 'An array of tag IDs to associate with the product',
+    required: false,
+  })
+  @IsOptional()
+  @IsArray()
+  @IsInt({ each: true })
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      try {
+        // Try parsing as JSON first
+        const parsed = JSON.parse(value);
+
+        // If it's an array, map to numbers
+        if (Array.isArray(parsed)) {
+          return parsed.map(Number);
+        }
+
+        // If it's a single number/string, wrap it into an array
+        return [Number(parsed)];
+      } catch (e) {
+        // If JSON parsing fails (like "1,2,3"), fallback to splitting manually
+        return value
+          .split(',')
+          .map((item) => Number(item.trim()))
+          .filter((item) => !isNaN(item)); // remove invalid numbers
+      }
+    }
+
+    // If not a string, just return as is
+    return value;
+  })
+  tagIds: number[];
 }

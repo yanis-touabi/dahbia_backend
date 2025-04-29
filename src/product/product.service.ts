@@ -51,14 +51,22 @@ export class ProductService {
           }
         }
 
+        const { tagIds, ...restProductData } = productData;
+
         // Create the product
         const newProduct = await tx.product.create({
           data: {
-            ...productData,
+            ...restProductData,
             imageCover: imageCover,
             images: images,
             priceAfterDiscount:
               productData.priceAfterDiscount || null,
+            tags:
+              tagIds && tagIds.length > 0
+                ? {
+                    connect: tagIds.map((id) => ({ id })),
+                  }
+                : undefined,
           },
         });
 
@@ -179,6 +187,22 @@ export class ProductService {
         if (!supplier) {
           throw new NotFoundException(
             `Supplier with ID ${dto.supplierId} not found`,
+          );
+        }
+      }
+
+      // Verify tags exist if provided
+      if (dto.tagIds && dto.tagIds.length > 0) {
+        const existingTags = await this.prisma.tag.findMany({
+          where: { id: { in: dto.tagIds } },
+        });
+
+        if (existingTags.length !== dto.tagIds.length) {
+          const missingTagIds = dto.tagIds.filter(
+            (id) => !existingTags.some((tag) => tag.id === id),
+          );
+          throw new NotFoundException(
+            `Tags with IDs ${missingTagIds.join(', ')} not found`,
           );
         }
       }
@@ -462,12 +486,19 @@ export class ProductService {
           }
         }
 
+        const { tagIds, ...restUpdateData } = updateProductDto;
+
         const updatedProduct = await tx.product.update({
           where: { id },
           data: {
-            ...updateProductDto,
+            ...restUpdateData,
             imageCover: imageCover,
             images: images,
+            tags: tagIds
+              ? {
+                  set: tagIds.map((id) => ({ id })),
+                }
+              : undefined,
           },
           include: {
             category: true,

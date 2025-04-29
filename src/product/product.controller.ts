@@ -25,7 +25,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes, ApiBody } from '@nestjs/swagger';
 
-@ApiTags('Product') // Organizes endpoints in Swagger UI
+@ApiTags('Product')
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
@@ -72,7 +72,7 @@ export class ProductController {
         isFavorite: { type: 'boolean', nullable: true },
         isPromo: { type: 'boolean', nullable: true },
         specifications: {
-          type: 'array', // Define as array
+          type: 'array',
           items: {
             type: 'object',
             properties: {
@@ -84,14 +84,21 @@ export class ProductController {
           },
           nullable: true,
         },
+        tagIds: {
+          type: 'array',
+          items: { type: 'number' },
+          nullable: true,
+          description:
+            'Array of tag IDs to associate with the product',
+        },
       },
     },
   })
-  @ApiOperation({ summary: 'Create a new Product' }) // Describe endpoint
+  @ApiOperation({ summary: 'Create a new Product' })
   @ApiResponse({
     status: 201,
     description: 'Product successfully created.',
-  }) // Response info
+  })
   create(
     @UploadedFiles()
     files: {
@@ -170,7 +177,7 @@ export class ProductController {
         isFavorite: { type: 'boolean', nullable: true },
         isPromo: { type: 'boolean', nullable: true },
         specifications: {
-          type: 'array', // Define as array
+          type: 'array',
           items: {
             type: 'object',
             properties: {
@@ -181,6 +188,13 @@ export class ProductController {
             },
           },
           nullable: true,
+        },
+        tagIds: {
+          type: 'array',
+          items: { type: 'number' },
+          nullable: true,
+          description:
+            'Array of tag IDs to associate with the product',
         },
       },
     },
