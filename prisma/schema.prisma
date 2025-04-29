@@ -416,6 +416,7 @@ model Highlight {
   id           Int      @id @default(autoincrement())
   title        String   @default("")
   description  String?
+  subtitle     String?
   image        String?  @db.VarChar(255)
   isBestSeller Boolean  @default(false)
   createdAt    DateTime @default(now())

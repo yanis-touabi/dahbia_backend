@@ -49,6 +49,7 @@ export class HighlightController {
         },
         title: { type: 'string' },
         description: { type: 'string' },
+        subtitle: { type: 'string' },
         isBestSeller: { type: 'boolean', nullable: true },
       },
     },
