@@ -20,9 +20,6 @@ export class UpdateProductDto extends PartialType(CreateProductDto) {
   @IsBoolean({
     message: 'is best seller must be a boolean',
   })
-  @IsEnum([true, false], {
-    message: 'is best seller must be true or false',
-  })
   @IsOptional()
   @Transform(({ value }) => value === 'true')
   isBestSeller: boolean;

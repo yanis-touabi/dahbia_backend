@@ -132,9 +132,6 @@ export class CreateUserDto {
   @IsBoolean({
     message: 'active must be a boolean',
   })
-  @IsEnum([true, false], {
-    message: 'active must be true or false',
-  })
   @IsOptional()
   isActive: boolean;
 

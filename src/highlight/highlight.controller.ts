@@ -49,7 +49,7 @@ export class HighlightController {
         },
         title: { type: 'string' },
         description: { type: 'string' },
-        isBestSeller: { type: 'boolean' },
+        isBestSeller: { type: 'boolean', nullable: true },
       },
     },
   })

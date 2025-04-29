@@ -141,9 +141,6 @@ export class FindAllProductsDto {
   @IsBoolean({
     message: 'is promo must be a boolean',
   })
-  @IsEnum([true, false], {
-    message: 'is promo must be true or false',
-  })
   @IsOptional()
   // @Transform(({ value }) => {
   //   if (typeof value === 'boolean') return value; // Skip transformation if already boolean
@@ -158,9 +155,6 @@ export class FindAllProductsDto {
   })
   @IsBoolean({
     message: 'isFavorite must be a boolean',
-  })
-  @IsEnum([true, false], {
-    message: 'isFavorite must be true or false',
   })
   @IsOptional()
   // @Transform(({ value }) => {

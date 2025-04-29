@@ -41,9 +41,10 @@ export class CreateHighlightDto {
   @IsBoolean({
     message: 'is best seller must be a boolean',
   })
-  @IsEnum([true, false], {
-    message: 'is best seller must be true or false',
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (typeof value === 'boolean') return value; // Skip transformation if already boolean
+    return value === 'true';
   })
-  @Transform(({ value }) => value === 'true')
   isBestSeller: boolean;
 }
