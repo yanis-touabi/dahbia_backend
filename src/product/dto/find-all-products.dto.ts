@@ -4,6 +4,7 @@ import {
   IsString,
   IsBoolean,
   IsEnum,
+  IsArray,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Gender } from '@prisma/client';
@@ -76,6 +77,17 @@ export class FindAllProductsDto {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @ApiProperty({
+    example: ['tag1', 'tag2'],
+    description:
+      'Array of tag names to filter products by (case-insensitive)',
+    required: false,
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  tagNames?: string[];
 
   @ApiProperty({
     example: 'price',

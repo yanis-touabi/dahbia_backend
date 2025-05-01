@@ -220,9 +220,11 @@ export class ProductService {
 
   async findAll(dto: FindAllProductsDto) {
     try {
-      // Validate pagination parameters
-      const page = Math.max(1, dto.page);
-      const limit = Math.min(Math.max(1, dto.limit), 100); // Limit max page size to 100
+      // Handle pagination parameters - make them optional
+      const page = dto.page ? Math.max(1, dto.page) : 1;
+      const limit = dto.limit
+        ? Math.min(Math.max(1, dto.limit), 100)
+        : undefined; // No limit if not provided
 
       // Build where clause with type safety
       const where: Prisma.ProductWhereInput = {
@@ -250,6 +252,18 @@ export class ProductService {
             ? { isFavorite: dto.isFavorite }
             : undefined,
           dto.gender ? { gender: dto.gender } : undefined,
+          dto.tagNames && dto.tagNames.length > 0
+            ? {
+                tags: {
+                  some: {
+                    name: {
+                      in: dto.tagNames,
+                      mode: 'insensitive' as const,
+                    },
+                  },
+                },
+              }
+            : undefined,
         ].filter(Boolean),
       };
 
@@ -326,7 +340,7 @@ export class ProductService {
       const [total, products] = await this.prisma.$transaction([
         this.prisma.product.count({ where }),
         this.prisma.product.findMany({
-          skip: (page - 1) * limit,
+          skip: limit ? (page - 1) * limit : undefined,
           take: limit,
           where,
           include: {
@@ -347,19 +361,8 @@ export class ProductService {
         }),
       ]);
 
-      // Map products to include full image URLs
-      // const formattedProducts = products.map((product) => ({
-      //   ...product,
-      //   imageCover: product.imageCover
-      //     ? `${baseUrl}${product.imageCover}`
-      //     : null,
-      //   images: product.images
-      //     ? product.images.map((image) => `${baseUrl}${image}`)
-      //     : [],
-      // }));
-
-      // Calculate pagination metadata
-      const totalPages = Math.ceil(total / limit);
+      // Calculate pagination metadata only if limit is provided
+      const totalPages = limit ? Math.ceil(total / limit) : 1;
 
       return {
         status: 200,
