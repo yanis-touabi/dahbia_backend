@@ -29,8 +29,6 @@ export class OrderController {
     status: 201,
     description: 'Order created successfully.',
   })
-  @UseGuards(AuthGuard)
-  @Roles([Role.ADMIN])
   async create(
     @Body(new ValidationPipe()) createOrderDto: CreateOrderDto,
     @Request() req,
