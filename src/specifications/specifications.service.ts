@@ -46,6 +46,17 @@ export class SpecificationService {
   }
 
   async removeSize(id: number) {
+    const usedInProducts =
+      await this.prisma.productSpecification.findFirst({
+        where: { sizeId: id },
+      });
+
+    if (usedInProducts) {
+      throw new ConflictException(
+        'Cannot delete size - it is being used in product specifications',
+      );
+    }
+
     return this.prisma.size.delete({
       where: { id },
     });
@@ -86,6 +97,17 @@ export class SpecificationService {
   }
 
   async removeColor(id: number) {
+    const usedInProducts =
+      await this.prisma.productSpecification.findFirst({
+        where: { colorId: id },
+      });
+
+    if (usedInProducts) {
+      throw new ConflictException(
+        'Cannot delete color - it is being used in product specifications',
+      );
+    }
+
     return this.prisma.color.delete({
       where: { id },
     });
@@ -129,6 +151,17 @@ export class SpecificationService {
   }
 
   async removeMaterial(id: number) {
+    const usedInProducts =
+      await this.prisma.productSpecification.findFirst({
+        where: { materialId: id },
+      });
+
+    if (usedInProducts) {
+      throw new ConflictException(
+        'Cannot delete material - it is being used in product specifications',
+      );
+    }
+
     return this.prisma.material.delete({
       where: { id },
     });

@@ -27,6 +27,7 @@ import { CompanyInfoModule } from './company-info/company-info.module';
 import { HighlightModule } from './highlight/highlight.module';
 import { SharedModule } from './shared/shared.module';
 import { MailModule } from './mail/mail.module';
+import { WilayaModule } from './wilaya/wilaya.module';
 import * as redisStore from 'cache-manager-ioredis';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 
@@ -79,6 +80,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     CompanyInfoModule,
     HighlightModule,
     TagModule,
+    WilayaModule,
     SharedModule,
   ],
   providers: [
