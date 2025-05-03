@@ -494,8 +494,14 @@ export class ProductService {
           }
         }
 
-        const { tagIds, imagesToDelete, ...restUpdateData } =
-          updateProductDto;
+        const {
+          tagIds,
+          imagesToDelete,
+          categoryId,
+          brandId,
+          supplierId,
+          ...restUpdateData
+        } = updateProductDto;
 
         const updatedProduct = await tx.product.update({
           where: { id },
@@ -506,6 +512,21 @@ export class ProductService {
             tags: tagIds
               ? {
                   set: tagIds.map((id) => ({ id })),
+                }
+              : undefined,
+            category: categoryId
+              ? {
+                  connect: { id: categoryId },
+                }
+              : undefined,
+            brand: brandId
+              ? {
+                  connect: { id: brandId },
+                }
+              : undefined,
+            supplier: supplierId
+              ? {
+                  connect: { id: supplierId },
                 }
               : undefined,
           },
