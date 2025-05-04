@@ -13,13 +13,13 @@ export class UpdateProductInventoryDto {
   @IsOptional()
   quantity?: number;
 
-  @ApiProperty({
-    example: '2023-12-31T23:59:59Z',
-    description: 'The date when the product inventory was deleted',
-    required: false,
-    nullable: true,
-  })
-  @IsOptional()
-  @Type(() => Date)
-  deletedAt?: Date | null;
+  // @ApiProperty({
+  //   example: '2023-12-31T23:59:59Z',
+  //   description: 'The date when the product inventory was deleted',
+  //   required: false,
+  //   nullable: true,
+  // })
+  // @IsOptional()
+  // @Type(() => Date)
+  // deletedAt?: Date | null;
 }

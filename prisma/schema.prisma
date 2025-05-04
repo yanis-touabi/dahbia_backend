@@ -182,6 +182,8 @@ model ProductSpecification {
   productInventory ProductInventory?
   cartItem         CartItem[]
   orderItem        OrderItem[]
+
+  @@unique([productId, sizeId, colorId, materialId])
 }
 
 model ProductInventory {

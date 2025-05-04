@@ -92,7 +92,7 @@ export class ProductInventoryService {
       // Check if inventory exists
       const existingInventory =
         await this.prisma.productInventory.findUnique({
-          where: { id },
+          where: { productSpecificationId: id },
         });
 
       if (!existingInventory || existingInventory.deletedAt) {
@@ -109,7 +109,7 @@ export class ProductInventoryService {
 
       const updatedInventory =
         await this.prisma.productInventory.update({
-          where: { id },
+          where: { productSpecificationId: id },
           data: {
             quantity: updateProductInventoryDto.quantity,
             modifiedAt: new Date(),
