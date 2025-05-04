@@ -120,7 +120,7 @@ model Brand {
 //! dont know if we should insert an image cover or not
 model Product {
   id             Int      @id @default(autoincrement())
-  sku            String?  @unique @db.VarChar(50)
+  sku            String?  @db.VarChar(50)
   name           String   @db.VarChar(255)
   description    String   @db.Text
   price          Decimal  @db.Decimal(10, 2)
