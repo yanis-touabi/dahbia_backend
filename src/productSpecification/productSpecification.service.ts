@@ -64,6 +64,11 @@ export class ProductSpecificationService {
             colorId: createDto.colorId,
             materialId: createDto.materialId,
           },
+          include: {
+            color: true,
+            size: true,
+            material: true,
+          },
         });
 
       if (!specification) {
