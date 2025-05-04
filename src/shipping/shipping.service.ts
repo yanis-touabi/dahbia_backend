@@ -31,6 +31,13 @@ export class ShippingService {
 
       const newShipping = await this.prisma.shipping.create({
         data: createShippingDto,
+        include: {
+          wilaya: {
+            select: {
+              name: true,
+            },
+          },
+        },
       });
       return {
         status: 200,

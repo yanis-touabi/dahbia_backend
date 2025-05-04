@@ -30,8 +30,6 @@ export class WilayaController {
   constructor(private readonly wilayaService: WilayaService) {}
 
   @Post()
-  @Roles([Role.ADMIN])
-  @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Create a new Wilaya' })
   @ApiResponse({
     status: 201,
