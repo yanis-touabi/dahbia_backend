@@ -67,7 +67,7 @@ export class CompanyInfoService {
         where: { id },
       });
       if (!companyInfo) {
-        throw new NotFoundException('Company info not found');
+        return new NotFoundException('Company info not found');
       }
 
       const updated = await this.prisma.companyInfo.update({
@@ -96,7 +96,7 @@ export class CompanyInfoService {
         where: { id },
       });
       if (!companyInfo) {
-        throw new NotFoundException('Company info not found');
+        return new NotFoundException('Company info not found');
       }
       await this.prisma.companyInfo.delete({
         where: { id },

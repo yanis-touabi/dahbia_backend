@@ -585,20 +585,15 @@ async function main() {
   });
 
   // Add Highlights
-  await prisma.highlight.createMany({
-    data: [
-      {
-        title: 'Summer Collection',
-        description: 'Discover our new summer jewelry collection',
-        image: 'https://example.com/summer-collection.jpg',
-      },
-      {
-        title: 'Free Shipping',
-        description: 'Free shipping on all orders over $100',
-        image: 'https://example.com/free-shipping.jpg',
-      },
-    ],
-  });
+  // await prisma.highlight.createMany({
+  //   data: [
+  //     {
+  //       title: 'Summer Collection',
+  //       description: 'Discover our new summer jewelry collection',
+  //       image: 'https://example.com/summer-collection.jpg',
+  //     },
+  //   ],
+  // });
 
   // Add Social Media
   // await prisma.socialMedia.create({

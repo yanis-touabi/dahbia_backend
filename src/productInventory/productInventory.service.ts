@@ -62,7 +62,7 @@ export class ProductInventoryService {
       );
 
       if (!inventory || inventory.deletedAt) {
-        throw new NotFoundException('Product inventory not found');
+        return new NotFoundException('Product inventory not found');
       }
 
       return {
@@ -96,7 +96,7 @@ export class ProductInventoryService {
         });
 
       if (!existingInventory || existingInventory.deletedAt) {
-        throw new NotFoundException('Product inventory not found');
+        return new NotFoundException('Product inventory not found');
       }
 
       // Validate quantity
@@ -104,7 +104,7 @@ export class ProductInventoryService {
         updateProductInventoryDto.quantity !== undefined &&
         updateProductInventoryDto.quantity < 0
       ) {
-        throw new HttpException('Quantity cannot be negative', 400);
+        return new HttpException('Quantity cannot be negative', 400);
       }
 
       const updatedInventory =
@@ -128,7 +128,7 @@ export class ProductInventoryService {
         error,
       });
       if (error.code === 'P2025') {
-        throw new NotFoundException('Product inventory not found');
+        return new NotFoundException('Product inventory not found');
       }
       throw new InternalServerErrorException(
         'An unexpected error occurred during product inventory update',
@@ -146,7 +146,7 @@ export class ProductInventoryService {
       );
 
       if (!inventory || inventory.deletedAt) {
-        throw new NotFoundException('Product inventory not found');
+        return new NotFoundException('Product inventory not found');
       }
 
       await this.prisma.productInventory.update({
@@ -166,7 +166,7 @@ export class ProductInventoryService {
         error,
       });
       if (error.code === 'P2025') {
-        throw new NotFoundException('Product inventory not found');
+        return new NotFoundException('Product inventory not found');
       }
       throw new InternalServerErrorException(
         'An unexpected error occurred during product inventory deletion',

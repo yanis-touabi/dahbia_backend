@@ -53,7 +53,7 @@ export class ContactService {
       });
 
       if (!contact) {
-        throw new NotFoundException('Contact not found');
+        return new NotFoundException('Contact not found');
       }
 
       return {
@@ -78,7 +78,7 @@ export class ContactService {
         where: { id },
       });
       if (!contact) {
-        throw new NotFoundException('Contact not found');
+        return new NotFoundException('Contact not found');
       }
 
       const updated = await this.prisma.contact.update({
@@ -107,7 +107,7 @@ export class ContactService {
         where: { id },
       });
       if (!contact) {
-        throw new NotFoundException('Contact not found');
+        return new NotFoundException('Contact not found');
       }
       await this.prisma.contact.delete({
         where: { id },

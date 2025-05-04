@@ -81,7 +81,7 @@ export class ShippingService {
       });
 
       if (!shipping) {
-        throw new NotFoundException('Shipping not found');
+        return new NotFoundException('Shipping not found');
       }
 
       return {
@@ -109,7 +109,7 @@ export class ShippingService {
       });
 
       if (!shipping) {
-        throw new NotFoundException('Shipping not found');
+        return new NotFoundException('Shipping not found');
       }
 
       const updatedShipping = await this.prisma.shipping.update({
@@ -148,7 +148,7 @@ export class ShippingService {
       });
 
       if (!shipping) {
-        throw new NotFoundException('Shipping not found');
+        return new NotFoundException('Shipping not found');
       }
 
       await this.prisma.shipping.delete({

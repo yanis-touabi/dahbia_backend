@@ -21,7 +21,7 @@ export class SubCategoryService {
       });
 
       if (subCategory) {
-        throw new HttpException('subCategory already exist', 400);
+        return new HttpException('subCategory already exist', 400);
       }
 
       const category = await this.prisma.category.findFirst({
@@ -31,7 +31,7 @@ export class SubCategoryService {
       });
 
       if (!category) {
-        throw new NotFoundException('Category not found');
+        return new NotFoundException('Category not found');
       }
 
       const newSubCategory = await this.prisma.subCategory.create({
@@ -96,7 +96,7 @@ export class SubCategoryService {
         },
       });
       if (!subCategory) {
-        throw new NotFoundException('subCategory not found');
+        return new NotFoundException('subCategory not found');
       }
       return {
         status: 200,
@@ -125,7 +125,7 @@ export class SubCategoryService {
         },
       });
       if (!subCategory) {
-        throw new NotFoundException('subCategory not found');
+        return new NotFoundException('subCategory not found');
       }
 
       const updatedSubCategory = await this.prisma.subCategory.update(
@@ -168,7 +168,7 @@ export class SubCategoryService {
         },
       });
       if (!subCategory) {
-        throw new NotFoundException('subCategory not found');
+        return new NotFoundException('subCategory not found');
       }
       await this.prisma.subCategory.delete({
         where: {

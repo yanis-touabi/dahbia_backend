@@ -34,7 +34,7 @@ export class AuthService {
         },
       });
       if (user) {
-        throw new HttpException('User already exist', 400);
+        return new HttpException('User already exist', 400);
       }
       const password = await bcrypt.hash(
         signUpDto.password,
@@ -94,7 +94,7 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new NotFoundException('User Not Found');
+        return new NotFoundException('User Not Found');
       }
 
       const isMatch = await bcrypt.compare(
@@ -138,7 +138,7 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new NotFoundException('User Not Found');
+        return new NotFoundException('User Not Found');
       }
 
       // Generate 6-digit verification code
@@ -189,11 +189,11 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new NotFoundException('User Not Found');
+        return new NotFoundException('User Not Found');
       }
 
       if (user.verificationCode !== code) {
-        throw new UnauthorizedException('Invalid code');
+        return new UnauthorizedException('Invalid code');
       }
 
       await this.prisma.user.update({
@@ -234,7 +234,7 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new NotFoundException('User Not Found');
+        return new NotFoundException('User Not Found');
       }
 
       const password = await bcrypt.hash(

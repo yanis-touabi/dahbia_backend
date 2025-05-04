@@ -28,7 +28,7 @@ export class CategoryService {
       });
 
       if (category) {
-        throw new HttpException('Category already exist', 400);
+        return new HttpException('Category already exist', 400);
       }
 
       let imageCategory = '';
@@ -89,7 +89,7 @@ export class CategoryService {
         },
       });
       if (!category) {
-        throw new NotFoundException('Category not found');
+        return new NotFoundException('Category not found');
       }
       return {
         status: 200,
@@ -118,7 +118,7 @@ export class CategoryService {
       });
 
       if (!category) {
-        throw new NotFoundException('Category not found');
+        return new NotFoundException('Category not found');
       }
 
       let image = category.image;
@@ -169,7 +169,7 @@ export class CategoryService {
         },
       });
       if (!category) {
-        throw new NotFoundException('Category not found');
+        return new NotFoundException('Category not found');
       }
       if (category.image) {
         await this.fileService.deleteImage(category.image);

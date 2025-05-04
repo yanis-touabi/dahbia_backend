@@ -21,6 +21,21 @@ export class HighlightService {
     highlightImage: Express.Multer.File[],
   ) {
     try {
+      // check for highlight unicity
+      const existingHighlight =
+        await this.prisma.highlight.findUnique({
+          where: {
+            isBestSeller: createHighlightDto.isBestSeller,
+          },
+        });
+
+      if (existingHighlight) {
+        return new HttpException(
+          'Highlight already exists, please modify the existing one',
+          400,
+        );
+      }
+
       let imageHighlight = '';
       if (highlightImage) {
         imageHighlight = await this.fileService.saveImage(
@@ -76,7 +91,7 @@ export class HighlightService {
       });
 
       if (!highlight) {
-        throw new NotFoundException('Highlight not found');
+        return new NotFoundException('Highlight not found');
       }
 
       return {
@@ -101,6 +116,22 @@ export class HighlightService {
     highlightImage: Express.Multer.File[],
   ) {
     try {
+      // check if highlight exists and unique
+      const isHighlightExist = await this.prisma.highlight.findUnique(
+        {
+          where: {
+            isBestSeller: updateHighlightDto.isBestSeller,
+          },
+        },
+      );
+
+      if (isHighlightExist) {
+        return new HttpException(
+          `Highlight with isBestSeller equal to ${updateHighlightDto.isBestSeller} already exists`,
+          400,
+        );
+      }
+
       const highlight = await this.prisma.highlight.findUnique({
         where: {
           id: id,
@@ -108,7 +139,7 @@ export class HighlightService {
       });
 
       if (!highlight) {
-        throw new NotFoundException('Highlight not found');
+        return new NotFoundException('Highlight not found');
       }
 
       let image = highlight.image;
@@ -148,7 +179,7 @@ export class HighlightService {
     }
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: number) {
     try {
       const highlight = await this.prisma.highlight.findUnique({
         where: {
@@ -156,7 +187,7 @@ export class HighlightService {
         },
       });
       if (!highlight) {
-        throw new NotFoundException('Highlight not found');
+        return new NotFoundException('Highlight not found');
       }
       await this.prisma.highlight.delete({
         where: {

@@ -38,7 +38,7 @@ export class CouponController {
   ) {
     const isExpired = new Date(createCouponDto.endDate) > new Date();
     if (!isExpired) {
-      throw new HttpException("Coupon can't be expired", 400);
+      return new HttpException("Coupon can't be expired", 400);
     }
     return this.couponService.create(createCouponDto);
   }
@@ -76,7 +76,7 @@ export class CouponController {
   ) {
     const isExpired = new Date(updateCouponDto.endDate) > new Date();
     if (!isExpired) {
-      throw new HttpException("Coupon can't be expired", 400);
+      return new HttpException("Coupon can't be expired", 400);
     }
     return this.couponService.update(id, updateCouponDto);
   }

@@ -20,7 +20,7 @@ export class CouponService {
         },
       });
       if (coupon) {
-        throw new HttpException('Coupon already exist', 400);
+        return new HttpException('Coupon already exist', 400);
       }
 
       const newCoupon = await this.prisma.coupon.create({
@@ -74,7 +74,7 @@ export class CouponService {
         },
       });
       if (!coupon) {
-        throw new NotFoundException('Coupon not found');
+        return new NotFoundException('Coupon not found');
       }
 
       return {
@@ -101,7 +101,7 @@ export class CouponService {
         },
       });
       if (!coupon) {
-        throw new NotFoundException('Coupon not found');
+        return new NotFoundException('Coupon not found');
       }
 
       const updatedCoupon = await this.prisma.coupon.update({
@@ -137,7 +137,7 @@ export class CouponService {
     }
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: number) {
     try {
       const coupon = await this.prisma.coupon.findUnique({
         where: {
@@ -145,7 +145,7 @@ export class CouponService {
         },
       });
       if (!coupon) {
-        throw new NotFoundException('Coupon not found');
+        return new NotFoundException('Coupon not found');
       }
       await this.prisma.coupon.delete({
         where: {

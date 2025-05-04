@@ -18,7 +18,7 @@ export class SpecificationService {
     });
 
     if (existingSize) {
-      throw new ConflictException(
+      return new ConflictException(
         'Size with this name already exists',
       );
     }
@@ -52,7 +52,7 @@ export class SpecificationService {
       });
 
     if (usedInProducts) {
-      throw new ConflictException(
+      return new ConflictException(
         'Cannot delete size - it is being used in product specifications',
       );
     }
@@ -69,7 +69,7 @@ export class SpecificationService {
     });
 
     if (existingColor) {
-      throw new ConflictException(
+      return new ConflictException(
         'Color with this name already exists',
       );
     }
@@ -103,7 +103,7 @@ export class SpecificationService {
       });
 
     if (usedInProducts) {
-      throw new ConflictException(
+      return new ConflictException(
         'Cannot delete color - it is being used in product specifications',
       );
     }
@@ -120,7 +120,7 @@ export class SpecificationService {
     });
 
     if (existingMaterial) {
-      throw new ConflictException(
+      return new ConflictException(
         'Material with this name already exists',
       );
     }
@@ -157,7 +157,7 @@ export class SpecificationService {
       });
 
     if (usedInProducts) {
-      throw new ConflictException(
+      return new ConflictException(
         'Cannot delete material - it is being used in product specifications',
       );
     }

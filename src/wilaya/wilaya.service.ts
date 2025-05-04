@@ -63,7 +63,7 @@ export class WilayaService {
         where: { id },
       });
       if (!wilaya) {
-        throw new NotFoundException('Wilaya not found');
+        return new NotFoundException('Wilaya not found');
       }
       return {
         status: 200,
@@ -87,7 +87,7 @@ export class WilayaService {
         where: { id },
       });
       if (!wilaya) {
-        throw new NotFoundException('Wilaya not found');
+        return new NotFoundException('Wilaya not found');
       }
 
       const updatedWilaya = await this.prisma.wilaya.update({
@@ -120,7 +120,7 @@ export class WilayaService {
         where: { id },
       });
       if (!wilaya) {
-        throw new NotFoundException('Wilaya not found');
+        return new NotFoundException('Wilaya not found');
       }
       await this.prisma.wilaya.delete({
         where: { id },

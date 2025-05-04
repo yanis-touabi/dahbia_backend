@@ -85,7 +85,7 @@ export class ProductService {
                 },
               });
             if (!productSpecification) {
-              throw new Error(
+              return new Error(
                 'Failed to create product specification',
               );
             }
@@ -149,7 +149,7 @@ export class ProductService {
         });
 
         if (product) {
-          throw new ConflictException(
+          return new ConflictException(
             `Product with name ${dto.name} already exists`,
           );
         }
@@ -161,7 +161,7 @@ export class ProductService {
           where: { id: dto.categoryId },
         });
         if (!category) {
-          throw new NotFoundException(
+          return new NotFoundException(
             `Category with ID ${dto.categoryId} not found`,
           );
         }
@@ -173,7 +173,7 @@ export class ProductService {
           where: { id: dto.brandId },
         });
         if (!brand) {
-          throw new NotFoundException(
+          return new NotFoundException(
             `Brand with ID ${dto.brandId} not found`,
           );
         }
@@ -185,7 +185,7 @@ export class ProductService {
           where: { id: dto.supplierId },
         });
         if (!supplier) {
-          throw new NotFoundException(
+          return new NotFoundException(
             `Supplier with ID ${dto.supplierId} not found`,
           );
         }
@@ -201,7 +201,7 @@ export class ProductService {
           const missingTagIds = dto.tagIds.filter(
             (id) => !existingTags.some((tag) => tag.id === id),
           );
-          throw new NotFoundException(
+          return new NotFoundException(
             `Tags with IDs ${missingTagIds.join(', ')} not found`,
           );
         }
@@ -406,7 +406,7 @@ export class ProductService {
       });
 
       if (!product) {
-        throw new NotFoundException(
+        return new NotFoundException(
           `Product with ID ${id} not found`,
         );
       }
@@ -442,7 +442,7 @@ export class ProductService {
       });
 
       if (!product) {
-        throw new NotFoundException(
+        return new NotFoundException(
           `Product with ID ${id} not found`,
         );
       }
@@ -577,7 +577,7 @@ export class ProductService {
       });
 
       if (!product) {
-        throw new NotFoundException(
+        return new NotFoundException(
           `Product with ID ${id} not found`,
         );
       }

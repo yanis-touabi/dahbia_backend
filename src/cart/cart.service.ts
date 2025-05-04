@@ -51,7 +51,7 @@ export class CartService {
     });
 
     if (!cart) {
-      throw new NotFoundException(`Cart with ID ${id} not found`);
+      return new NotFoundException(`Cart with ID ${id} not found`);
     }
 
     return cart;
@@ -77,7 +77,7 @@ export class CartService {
     });
 
     if (!cart) {
-      throw new NotFoundException(
+      return new NotFoundException(
         `Cart with session ID ${sessionId} not found`,
       );
     }

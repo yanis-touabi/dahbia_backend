@@ -19,7 +19,7 @@ export class ProductSpecificationService {
       });
 
       if (!product) {
-        throw new NotFoundException(
+        return new NotFoundException(
           `Product with ID ${productId} not found`,
         );
       }
@@ -51,7 +51,7 @@ export class ProductSpecificationService {
         });
 
       if (existingSpec) {
-        throw new ConflictException(
+        return new ConflictException(
           'Product specification with these attributes already exists',
         );
       }
@@ -67,7 +67,7 @@ export class ProductSpecificationService {
         });
 
       if (!specification) {
-        throw new NotFoundException(
+        return new NotFoundException(
           'Product specification not created',
         );
       }
@@ -130,7 +130,7 @@ export class ProductSpecificationService {
         });
 
       if (!specification) {
-        throw new NotFoundException(
+        return new NotFoundException(
           `Product specification with ID ${id} not found`,
         );
       }

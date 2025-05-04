@@ -27,7 +27,7 @@ export class BrandService {
         },
       });
       if (brand) {
-        throw new HttpException('Brand already exist', 400);
+        return new HttpException('Brand already exist', 400);
       }
 
       let imageBrand = '';
@@ -85,7 +85,7 @@ export class BrandService {
       });
 
       if (!brand) {
-        throw new NotFoundException('Brand not found');
+        return new NotFoundException('Brand not found');
       }
 
       return {
@@ -117,7 +117,7 @@ export class BrandService {
       });
 
       if (!brand) {
-        throw new NotFoundException('Brand not found');
+        return new NotFoundException('Brand not found');
       }
 
       let image = brand.image;
@@ -160,7 +160,7 @@ export class BrandService {
     }
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: number) {
     try {
       const brand = await this.prisma.brand.findUnique({
         where: {
@@ -168,7 +168,7 @@ export class BrandService {
         },
       });
       if (!brand) {
-        throw new NotFoundException('Brand not found');
+        return new NotFoundException('Brand not found');
       }
       await this.prisma.brand.delete({
         where: {

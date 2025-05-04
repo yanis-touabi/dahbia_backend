@@ -63,7 +63,7 @@ export class TagService {
         where: { id },
       });
       if (!tag) {
-        throw new NotFoundException('Tag not found');
+        return new NotFoundException('Tag not found');
       }
       return {
         status: 200,
@@ -87,7 +87,7 @@ export class TagService {
         where: { id },
       });
       if (!tag) {
-        throw new NotFoundException('Tag not found');
+        return new NotFoundException('Tag not found');
       }
 
       const updatedTag = await this.prisma.tag.update({
@@ -116,7 +116,7 @@ export class TagService {
         where: { id },
       });
       if (!tag) {
-        throw new NotFoundException('Tag not found');
+        return new NotFoundException('Tag not found');
       }
       await this.prisma.tag.delete({
         where: { id },

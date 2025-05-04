@@ -20,7 +20,7 @@ export class SuppliersService {
         },
       });
       if (supplier) {
-        throw new HttpException('supplier already exist', 400);
+        return new HttpException('supplier already exist', 400);
       }
 
       const newSupplier = await this.prisma.supplier.create({
@@ -72,7 +72,7 @@ export class SuppliersService {
       });
 
       if (!supplier) {
-        throw new NotFoundException('Supplier not found');
+        return new NotFoundException('Supplier not found');
       }
 
       return {
@@ -100,7 +100,7 @@ export class SuppliersService {
       });
 
       if (!supplier) {
-        throw new NotFoundException('Supplier not found');
+        return new NotFoundException('Supplier not found');
       }
 
       const updatedSupplier = await this.prisma.supplier.update({

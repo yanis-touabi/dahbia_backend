@@ -38,7 +38,7 @@ export class CartController {
       // Unauthenticated user - use sessionId from cookies
       const sessionId = req.cookies?.sessionId;
       if (!sessionId) {
-        throw new BadRequestException(
+        return new BadRequestException(
           'Session ID is required for unauthenticated users',
         );
       }
