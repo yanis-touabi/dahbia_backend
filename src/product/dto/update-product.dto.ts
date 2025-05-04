@@ -22,7 +22,10 @@ export class UpdateProductDto extends PartialType(CreateProductDto) {
     message: 'is best seller must be a boolean',
   })
   @IsOptional()
-  @Transform(({ value }) => value === 'true')
+  @Transform(({ value }) => {
+    if (typeof value === 'boolean') return value; // Skip transformation if already boolean
+    return value === 'true';
+  })
   isBestSeller: boolean;
 
   @ApiProperty({
