@@ -123,7 +123,7 @@ export class CreateProductDto {
     required: false,
   })
   @IsNumber({}, { message: 'priceAfterDiscount Must be a Number' })
-  @Min(1, { message: 'priceAfterDiscount must be at least 1 L.E' })
+  @Min(0, { message: 'priceAfterDiscount must be at least 1 L.E' })
   @Max(20000, {
     message: 'priceAfterDiscount must be at max 20000 L.E',
   })
