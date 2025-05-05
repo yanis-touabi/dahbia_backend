@@ -9,12 +9,14 @@ import {
   Param,
   ParseIntPipe,
   Get,
+  Query,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthGuard } from 'src/user/guard/Auth.guard';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { FindAllOrdersDto } from './dto/find-all-orders.dto';
 import { Roles } from 'src/user/decorator/roles.decorator';
 import { Role } from '@prisma/client';
 
@@ -57,9 +59,17 @@ export class OrderController {
   @Get()
   @Roles([Role.ADMIN])
   @UseGuards(AuthGuard)
-  @ApiOperation({ summary: 'Get all orders (Admin only)' })
-  async getAllOrders() {
-    return this.orderService.getOrders();
+  @ApiOperation({
+    summary:
+      'Get all orders with pagination and filters (Admin only)',
+    description:
+      'Supports pagination, filtering by status/date, and sorting',
+  })
+  async getAllOrders(
+    @Query(new ValidationPipe({ transform: true }))
+    findAllOrdersDto: FindAllOrdersDto,
+  ) {
+    return this.orderService.getOrders(findAllOrdersDto);
   }
 
   @Get(':id')

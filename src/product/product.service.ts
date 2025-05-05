@@ -509,6 +509,7 @@ export class ProductService {
             ...restUpdateData,
             imageCover: imageCover,
             images: images,
+            isPromo: restUpdateData.priceAfterDiscount !== 0,
             tags: tagIds
               ? {
                   set: tagIds.map((id) => ({ id })),

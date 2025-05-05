@@ -10,6 +10,7 @@ import { Prisma } from '@prisma/client';
 import { MailService } from 'src/mail/mail.service';
 import { User } from '@prisma/client';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { FindAllOrdersDto } from './dto/find-all-orders.dto';
 
 @Injectable()
 export class OrderService {
@@ -383,18 +384,72 @@ export class OrderService {
     }
   }
 
-  async getOrders(page = 1, limit = 10) {
+  async getOrders(dto: FindAllOrdersDto) {
     try {
+      // Build where clause with filters
+      const where: Prisma.OrderDetailsWhereInput = {
+        AND: [
+          dto.status ? { status: { equals: dto.status } } : undefined,
+          dto.startDate
+            ? { createdAt: { gte: new Date(dto.startDate) } }
+            : undefined,
+          dto.endDate
+            ? { createdAt: { lte: new Date(dto.endDate) } }
+            : undefined,
+          dto.search
+            ? {
+                OR: [
+                  {
+                    orderNumber: {
+                      contains: dto.search,
+                      mode: 'insensitive' as const,
+                    },
+                  },
+                  {
+                    customerName: {
+                      contains: dto.search,
+                      mode: 'insensitive' as const,
+                    },
+                  },
+                  {
+                    customerEmail: {
+                      contains: dto.search,
+                      mode: 'insensitive' as const,
+                    },
+                  },
+                ],
+              }
+            : undefined,
+        ].filter(Boolean) as Prisma.OrderDetailsWhereInput[],
+      };
+
       // Validate pagination parameters
-      page = Math.max(1, page);
-      limit = Math.min(Math.max(1, limit), 100); // Limit max page size to 100
+      const page = Math.max(1, dto.page || 1);
+      const limit = Math.min(Math.max(1, dto.limit || 10), 100); // Limit max page size to 100
+
+      // Define valid sort fields
+      const validSortFields = new Set([
+        'createdAt',
+        'totalAmount',
+        'status',
+      ]);
+      const isValidSortField =
+        dto.sortField && validSortFields.has(dto.sortField);
+      const sortDirection = dto.sortOrder === 'asc' ? 'asc' : 'desc';
+
+      const orderBy: Prisma.OrderDetailsOrderByWithRelationInput = {
+        [isValidSortField ? dto.sortField : 'createdAt']:
+          sortDirection,
+      };
 
       // Execute single transaction for both count and find
       const [total, orders] = await this.prisma.$transaction([
-        this.prisma.orderDetails.count(),
+        this.prisma.orderDetails.count({ where }),
         this.prisma.orderDetails.findMany({
           skip: (page - 1) * limit,
           take: limit,
+          where,
+          orderBy,
         }),
       ]);
 
