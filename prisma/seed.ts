@@ -286,9 +286,9 @@ async function main() {
   // create the admin user
   const user = await prisma.user.create({
     data: {
-      firstName: 'yanis',
-      lastName: 'touabi',
-      email: 'yanis.touabi@gmail.com',
+      firstName: '2belegant',
+      lastName: '2belegant',
+      email: '2b.unique.and.elegant@gmail.com',
       password: bcrypt.hashSync('123456', 10),
       role: 'ADMIN',
       gender: 'MALE',
@@ -304,6 +304,8 @@ async function main() {
       permissionLevel: 0,
     },
   });
+
+  return 1;
 
   // Create Users
   const users = [];

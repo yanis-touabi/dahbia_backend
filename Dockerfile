@@ -6,6 +6,9 @@ WORKDIR /usr/src/app
 # Copy package files
 COPY package.json ./
 
+# Copy Prisma files
+COPY prisma ./prisma
+
 # Install required system packages
 RUN apt-get update -y && apt-get install -y openssl procps
 
@@ -15,13 +18,13 @@ RUN corepack enable && yarn install
 # Install nodemon globally
 RUN yarn global add nodemon
 
+# Generate Prisma client
+RUN yarn prisma generate
+
 # Copy the rest of the app
 COPY . .
 
-# Generate Prisma client (if using Prisma)
-# RUN yarn prisma:dev:deploy && yarn prisma:generate
-
-# Build the application (compiles TS to JS in dist/)
+# Build the application
 RUN yarn build
 
 # Expose app port
