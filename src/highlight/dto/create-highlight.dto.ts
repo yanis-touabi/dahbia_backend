@@ -35,9 +35,6 @@ export class CreateHighlightDto {
     description: 'The subtitle of the highlight',
   })
   @IsString({ message: 'subtitle must be a string' })
-  @MinLength(10, {
-    message: 'subtitle must be at least 10 characters',
-  })
   @MaxLength(500, {
     message: 'subtitle must be at most 500 characters',
   })
