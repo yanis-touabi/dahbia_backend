@@ -116,14 +116,14 @@ export class HighlightService {
     highlightImage: Express.Multer.File[],
   ) {
     try {
-      // check if highlight exists and unique
-      const isHighlightExist = await this.prisma.highlight.findUnique(
-        {
-          where: {
-            isBestSeller: updateHighlightDto.isBestSeller,
+      const isHighlightExist = await this.prisma.highlight.findFirst({
+        where: {
+          id: {
+            not: id,
           },
+          isBestSeller: updateHighlightDto.isBestSeller,
         },
-      );
+      });
 
       if (isHighlightExist) {
         return new HttpException(
