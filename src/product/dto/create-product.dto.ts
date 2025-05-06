@@ -82,9 +82,6 @@ export class CreateProductDto {
     description: 'The description of the product',
   })
   @IsString({ message: 'Description Must be a String' })
-  @MinLength(20, {
-    message: 'Description must be at least 20 characters',
-  })
   description: string;
 
   // @ApiProperty({

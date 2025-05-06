@@ -23,9 +23,6 @@ export class CreateCategoryDto {
     required: false,
   })
   @IsString({ message: 'description must be a string' })
-  @MinLength(10, {
-    message: 'description must be at least 10 characters',
-  })
   @MaxLength(200, {
     message: 'description must be at most 200 characters',
   })

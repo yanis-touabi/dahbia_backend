@@ -24,9 +24,6 @@ export class CreateHighlightDto {
     description: 'The description of the highlight',
   })
   @IsString({ message: 'description must be a string' })
-  @MinLength(10, {
-    message: 'description must be at least 10 characters',
-  })
   @MaxLength(500, {
     message: 'description must be at most 500 characters',
   })
