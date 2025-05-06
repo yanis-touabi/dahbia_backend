@@ -19,10 +19,13 @@ RUN yarn global add nodemon
 COPY . .
 
 # Generate Prisma client (if using Prisma)
-# RUN yarn prisma:migrate && yarn prisma:generate
+# RUN yarn prisma:dev:deploy && yarn prisma:generate
+
+# Build the application (compiles TS to JS in dist/)
+RUN yarn build
 
 # Expose app port
 EXPOSE 4000
 
-# Start the app
-CMD ["yarn", "start:dev"]
+# Start the app in production
+CMD ["yarn", "start:prod"]

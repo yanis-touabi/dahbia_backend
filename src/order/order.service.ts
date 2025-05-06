@@ -224,7 +224,7 @@ export class OrderService {
       // Move mail sending here - outside transaction
       await this.mailService.sendOrderEmails(
         email,
-        'yanis.touabi@gmail.com',
+        '2b.unique.and.elegant@gmail.com',
         {
           ...orderData.order,
           name: orderData.user.firstName,
