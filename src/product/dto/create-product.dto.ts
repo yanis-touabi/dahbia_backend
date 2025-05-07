@@ -31,32 +31,47 @@ export class ProductSpecificationDto {
     example: 1,
     description: 'The ID of the size of the product',
     required: false,
+    nullable: true, // 👈 Optional: for Swagger UI
   })
   @IsOptional()
   @IsInt({ message: 'sizeId must be a valid integer' })
   @IsPositive({ message: 'sizeId must be a positive number' })
-  @Transform(({ value }) => (value ? parseFloat(value) : null))
-  sizeId: number;
+  @Transform(({ value }) => {
+    if (value === null || value === undefined || value === '')
+      return null;
+    return parseInt(value, 10);
+  })
+  sizeId: number | null;
   @ApiProperty({
     example: 1,
     description: 'The ID of the color of the product',
     required: false,
+    nullable: true,
   })
   @IsOptional()
   @IsInt({ message: 'colorId must be a valid integer' })
   @IsPositive({ message: 'colorId must be a positive number' })
-  @Transform(({ value }) => (value ? parseFloat(value) : null))
-  colorId: number;
+  @Transform(({ value }) => {
+    if (value === null || value === undefined || value === '')
+      return null;
+    return parseInt(value, 10);
+  })
+  colorId: number | null;
   @ApiProperty({
     example: 1,
     description: 'The ID of the material of the product',
     required: false,
+    nullable: true,
   })
   @IsOptional()
   @IsInt({ message: 'materialId must be a valid integer' })
   @IsPositive({ message: 'materialId must be a positive number' })
-  @Transform(({ value }) => (value ? parseFloat(value) : null))
-  materialId: number;
+  @Transform(({ value }) => {
+    if (value === null || value === undefined || value === '')
+      return null;
+    return parseInt(value, 10);
+  })
+  materialId: number | null;
 }
 
 export class CreateProductDto {
