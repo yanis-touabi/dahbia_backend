@@ -58,7 +58,6 @@ export class FindAllOrdersDto {
   endDate?: string;
 
   @ApiProperty({
-    example: 'order name',
     description:
       'The search term to filter orders by name or description',
     required: false,

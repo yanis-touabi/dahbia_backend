@@ -427,6 +427,61 @@ export class ProductService {
     }
   }
 
+  async getProductSpecificationQuantity(
+    id: number,
+    sizeId: number,
+    colorId: number,
+    materialId: number,
+  ) {
+    try {
+      const result =
+        await this.prisma.productQuantityDetails.findUnique({
+          where: {
+            productId_sizeId_colorId_materialId: {
+              productId: id,
+              sizeId: sizeId,
+              colorId: colorId,
+              materialId: materialId,
+            },
+          },
+        });
+
+      if (!result) {
+        return new NotFoundException(
+          `Product specification not found for product ${id} with size ${sizeId}, color ${colorId}, material ${materialId}`,
+        );
+      }
+
+      return {
+        status: 200,
+        message:
+          'Product specification quantity retrieved successfully',
+        data: {
+          quantity: result.remainingQuantity || 0,
+          productSpecificationId: result.productSpecificationId,
+          productName: result.productName,
+          size: result.size,
+          color: result.color,
+          material: result.material,
+        },
+      };
+    } catch (error) {
+      console.error(
+        'Error in find the product specification quantity:',
+        {
+          id,
+          error,
+        },
+      );
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        'An unexpected error occurred during product quantity retrieval',
+      );
+    }
+  }
+
   async update(
     id: number,
     updateProductDto: UpdateProductDto,

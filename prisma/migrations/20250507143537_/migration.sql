@@ -333,6 +333,8 @@ CREATE TABLE "CompanyInfo" (
     "instagram" TEXT NOT NULL DEFAULT '',
     "twitter" TEXT NOT NULL DEFAULT '',
     "linkedIn" TEXT NOT NULL DEFAULT '',
+    "latitude" DOUBLE PRECISION,
+    "longitude" DOUBLE PRECISION,
     "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
 
@@ -343,10 +345,12 @@ CREATE TABLE "CompanyInfo" (
 CREATE TABLE "Highlight" (
     "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL DEFAULT '',
+    "description" TEXT,
+    "subtitle" TEXT,
     "image" VARCHAR(255),
+    "isBestSeller" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "description" TEXT NOT NULL,
 
     CONSTRAINT "Highlight_pkey" PRIMARY KEY ("id")
 );
@@ -381,10 +385,10 @@ CREATE UNIQUE INDEX "Admin_userId_key" ON "Admin"("userId");
 CREATE UNIQUE INDEX "Category_name_key" ON "Category"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Product_sku_key" ON "Product"("sku");
+CREATE UNIQUE INDEX "Tag_name_key" ON "Tag"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Tag_name_key" ON "Tag"("name");
+CREATE UNIQUE INDEX "ProductSpecification_productId_sizeId_colorId_materialId_key" ON "ProductSpecification"("productId", "sizeId", "colorId", "materialId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "ProductInventory_productSpecificationId_key" ON "ProductInventory"("productSpecificationId");
@@ -412,6 +416,9 @@ CREATE UNIQUE INDEX "Supplier_email_key" ON "Supplier"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "CompanyInfo_email_key" ON "CompanyInfo"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Highlight_isBestSeller_key" ON "Highlight"("isBestSeller");
 
 -- CreateIndex
 CREATE INDEX "_ProductToTag_B_index" ON "_ProductToTag"("B");

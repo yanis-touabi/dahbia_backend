@@ -293,7 +293,7 @@ async function main() {
       role: 'ADMIN',
       gender: 'MALE',
       age: 25,
-      phoneNumber: '0658294692',
+      phoneNumber: '066666666',
       isActive: true,
     },
   });
@@ -304,8 +304,6 @@ async function main() {
       permissionLevel: 0,
     },
   });
-
-  return 1;
 
   // Create Users
   const users = [];

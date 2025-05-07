@@ -492,9 +492,14 @@ view ProductQuantityDetails {
   brandName              String?
   supplierName           String?
   remainingQuantity      Decimal?
+  sizeId                 Int?
   size                   String?
+  colorId                Int?
   color                  String?
+  materialId             Int?
   material               String?
+
+  @@unique([productId, sizeId, colorId, materialId])
 }
 
 view OrderDetails {

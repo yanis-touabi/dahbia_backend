@@ -239,4 +239,26 @@ export class ProductController {
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.productService.remove(id);
   }
+
+  @Get(
+    ':productId/specification-quantity/:sizeId/:colorId/:materialId',
+  )
+  @ApiOperation({ summary: 'Get product specification quantity' })
+  @ApiResponse({
+    status: 200,
+    description: 'Product specification quantity details',
+  })
+  getProductSpecificationQuantity(
+    @Param('productId', ParseIntPipe) productId: number,
+    @Param('sizeId', ParseIntPipe) sizeId: number,
+    @Param('colorId', ParseIntPipe) colorId: number,
+    @Param('materialId', ParseIntPipe) materialId: number,
+  ) {
+    return this.productService.getProductSpecificationQuantity(
+      productId,
+      sizeId,
+      colorId,
+      materialId,
+    );
+  }
 }

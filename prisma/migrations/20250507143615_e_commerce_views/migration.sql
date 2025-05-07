@@ -70,8 +70,11 @@ SELECT
     pi."brandName",
     pi."supplierName",
     pi."remainingQuantity",
+    COALESCE(s.id, NULL) AS "sizeId",
     COALESCE(s.name, 'Unknown') AS "size",
+    COALESCE(col.id, NULL) AS "colorId",
     COALESCE(col.name, 'Unknown') AS "color",
+    COALESCE(m.id, NULL) AS "materialId",
     COALESCE(m.name, 'Unknown') AS "material"
 FROM
     (SELECT
@@ -85,6 +88,9 @@ FROM
         b.name AS "brandName",
         s.name AS "supplierName",
         ps.id AS "productSpecificationId",
+        ps."sizeId" AS "sizeId",
+        ps."colorId" AS "colorId",
+        ps."materialId" AS "materialId",
         SUM(pi.quantity) AS "remainingQuantity"
     FROM
         "ProductInventory" pi
@@ -100,11 +106,11 @@ FROM
         p.id, p.sku, p.name, p.description, p.price, p."imageCover", p.sold,
         b.name, s.name, ps.id) pi
 LEFT JOIN
-    "Size" s ON pi."productSpecificationId" = s.id
+    "Size" s ON pi."sizeId" = s.id
 LEFT JOIN
-    "Color" col ON pi."productSpecificationId" = col.id
+    "Color" col ON pi."colorId" = col.id
 LEFT JOIN
-    "Material" m ON pi."productSpecificationId" = m.id;
+    "Material" m ON pi."materialId" = m.id;
 
 
 CREATE VIEW "OrderDetails" AS
