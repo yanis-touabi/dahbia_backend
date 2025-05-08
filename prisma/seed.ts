@@ -245,16 +245,16 @@ async function main() {
     { name: 'PLATINUM' },
   ];
   const COLORS = [
-    { name: 'RED' },
-    { name: 'BLUE' },
-    { name: 'GREEN' },
-    { name: 'YELLOW' },
-    { name: 'BLACK' },
-    { name: 'WHITE' },
-    { name: 'PINK' },
-    { name: 'ORANGE' },
-    { name: 'PURPLE' },
-    { name: 'BROWN' },
+    { name: '#FF0000' }, // RED
+    { name: '#0000FF' }, // BLUE
+    { name: '#008000' }, // GREEN
+    { name: '#FFFF00' }, // YELLOW
+    { name: '#000000' }, // BLACK
+    { name: '#FFFFFF' }, // WHITE
+    { name: '#FFC0CB' }, // PINK
+    { name: '#FFA500' }, // ORANGE
+    { name: '#800080' }, // PURPLE
+    { name: '#A52A2A' }, // BROWN
   ];
 
   // inserting wilaya
@@ -304,6 +304,8 @@ async function main() {
       permissionLevel: 0,
     },
   });
+
+  return 1;
 
   // Create Users
   const users = [];
