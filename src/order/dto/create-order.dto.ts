@@ -90,6 +90,7 @@ export class CreateOrderDto {
     example: '12345',
   })
   @IsString()
+  @IsOptional()
   postalCode: string;
 
   @ApiProperty({
@@ -97,6 +98,7 @@ export class CreateOrderDto {
     example: 'USA',
   })
   @IsString()
+  @IsOptional()
   country: string;
 
   @ApiProperty({

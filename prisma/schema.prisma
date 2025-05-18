@@ -72,8 +72,8 @@ model Address {
   addressLine2 String?
   commune      String
   wilayaId     Int
-  postalCode   String
-  country      String
+  postalCode   String?
+  country      String?
   phoneNumber  String?
 
   user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)

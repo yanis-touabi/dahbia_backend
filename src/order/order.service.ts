@@ -123,9 +123,22 @@ export class OrderService {
             }
             productSpecifications.push(productSpecification);
 
-            subtotal +=
-              Number(productSpecification.product.price) *
-              item.quantity;
+            if (
+              productSpecification.product.priceAfterDiscount !=
+                null &&
+              Number(
+                productSpecification.product.priceAfterDiscount,
+              ) !== 0
+            ) {
+              subtotal +=
+                Number(
+                  productSpecification.product.priceAfterDiscount,
+                ) * item.quantity;
+            } else {
+              subtotal +=
+                Number(productSpecification.product.price) *
+                item.quantity;
+            }
 
             // // Accumulate shipping cost only for products without free shipping
             // if (!productSpecification.product.isFreeShipping) {
