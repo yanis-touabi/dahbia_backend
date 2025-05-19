@@ -425,6 +425,18 @@ export class OrderService {
                     },
                   },
                   {
+                    customerLastName: {
+                      contains: dto.search,
+                      mode: 'insensitive' as const,
+                    },
+                  },
+                  {
+                    phoneNumber: {
+                      contains: dto.search,
+                      mode: 'insensitive' as const,
+                    },
+                  },
+                  {
                     customerEmail: {
                       contains: dto.search,
                       mode: 'insensitive' as const,
