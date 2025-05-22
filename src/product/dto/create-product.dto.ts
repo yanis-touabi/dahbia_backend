@@ -184,7 +184,6 @@ export class CreateProductDto {
     description: 'The ID of the brand of the product',
     required: false,
   })
-  @IsOptional()
   @IsInt({ message: 'brandId must be a valid integer' })
   @IsPositive({ message: 'brandId must be a positive number' })
   @Transform(({ value }) => (value ? parseFloat(value) : null))

@@ -169,6 +169,8 @@ SELECT
     pi."imageCover" AS "productImageCover",
     pi."isFreeShipping",
     pi."isPromo",
+    pi."price" AS "productPrice",
+    pi."priceAfterDiscount" AS "productPriceAfterDiscount",
     pi.size,
     pi.color,
     pi.material,

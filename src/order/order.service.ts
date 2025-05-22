@@ -217,7 +217,10 @@ export class OrderService {
                   productSpecificationId: item.productSpecificationId,
                   quantity: item.quantity,
                   unitPrice: new Prisma.Decimal(
-                    productSpecifications[index].product.price as any,
+                    productSpecifications[index].product.isPromo
+                      ? productSpecifications[index].product
+                          .priceAfterDiscount
+                      : productSpecifications[index].product.price,
                   ),
                 })),
               },

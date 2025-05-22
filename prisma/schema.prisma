@@ -529,33 +529,35 @@ view OrderDetails {
 }
 
 view OrderItemDetails {
-  orderId                Int
-  orderNumber            String
-  customerName           String
-  customerEmail          String
-  shippingWilayaName     String
-  shippingCompany        String
-  status                 OrderStatus
-  productSpecificationId Int
-  orderItemQuantity      Int
-  orderItemUnitPrice     Decimal
-  totalPrice             Decimal
-  productId              Int
-  productName            String
-  productSku             String?
-  productDescription     String
-  productImageCover      String
-  isFreeShipping         Boolean
-  isPromo                Boolean
-  size                   String?
-  color                  String?
-  material               String?
-  brandName              String?
-  supplierName           String?
-  createdAt              DateTime
-  paidAt                 DateTime?
-  shippedAt              DateTime?
-  deliveredAt            DateTime?
+  orderId                   Int
+  orderNumber               String
+  customerName              String
+  customerEmail             String
+  shippingWilayaName        String
+  shippingCompany           String
+  status                    OrderStatus
+  productSpecificationId    Int
+  orderItemQuantity         Int
+  orderItemUnitPrice        Decimal
+  totalPrice                Decimal
+  productId                 Int
+  productName               String
+  productSku                String?
+  productDescription        String
+  productImageCover         String
+  isFreeShipping            Boolean
+  isPromo                   Boolean
+  productPrice              Decimal
+  productPriceAfterDiscount Decimal?
+  size                      String?
+  color                     String?
+  material                  String?
+  brandName                 String?
+  supplierName              String?
+  createdAt                 DateTime
+  paidAt                    DateTime?
+  shippedAt                 DateTime?
+  deliveredAt               DateTime?
 
   @@id([orderId, productSpecificationId]) // Define the composite primary key
 }
