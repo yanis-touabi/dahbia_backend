@@ -201,7 +201,7 @@ export class CreateProductDto {
   @IsOptional()
   @Transform(({ value }) => {
     if (typeof value === 'boolean') return value; // Skip transformation if already boolean
-    return value === 'true';
+    return value === 'false';
   })
   isFreeShipping: boolean;
 
@@ -217,7 +217,7 @@ export class CreateProductDto {
   @IsOptional()
   @Transform(({ value }) => {
     if (typeof value === 'boolean') return value; // Skip transformation if already boolean
-    return value === 'true';
+    return value === 'false';
   })
   isPromo: boolean;
 
@@ -232,7 +232,7 @@ export class CreateProductDto {
   @IsOptional()
   @Transform(({ value }) => {
     if (typeof value === 'boolean') return value; // Skip transformation if already boolean
-    return value === 'true';
+    return value === 'false';
   })
   isFavorite: boolean;
 

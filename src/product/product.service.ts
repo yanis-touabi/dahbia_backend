@@ -60,7 +60,8 @@ export class ProductService {
             imageCover: imageCover,
             images: images,
             priceAfterDiscount:
-              productData.priceAfterDiscount || null,
+              restProductData.priceAfterDiscount || null,
+            isPromo: restProductData.priceAfterDiscount > 0,
             tags:
               tagIds && tagIds.length > 0
                 ? {
