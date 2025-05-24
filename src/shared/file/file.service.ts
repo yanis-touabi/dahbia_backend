@@ -16,20 +16,38 @@ export class FileService {
       );
     }
 
-    // Ensure filename is safe
-    const sanitizedFilename = image.originalname.replace(/\s+/g, '_');
+    // Get file extension
+    const fileExt = path.extname(image.originalname);
+    // Remove extension from original name and sanitize
+    const baseName = path
+      .basename(image.originalname, fileExt)
+      .replace(/\s+/g, '_')
+      .replace(/[^a-zA-Z0-9_-]/g, ''); // Additional sanitization
+
+    // Generate date string in YYYYMMDD format
+    const dateStr = new Date()
+      .toISOString()
+      .split('T')[0]
+      .replace(/-/g, '');
+
+    // Generate 5-digit random number
+    const random5digit = Math.floor(10000 + Math.random() * 90000);
+
+    // Create unique filename
+    const uniqueFilename = `${baseName}-${dateStr}-${random5digit}${fileExt}`;
+
     const uploadPath = path.join(
       process.cwd(),
       'public',
       'images',
       image.fieldname,
-      sanitizedFilename,
+      uniqueFilename,
     );
 
     try {
-      await fs.mkdir(path.dirname(uploadPath), { recursive: true }); // Ensure directory exists
+      await fs.mkdir(path.dirname(uploadPath), { recursive: true });
       await fs.writeFile(uploadPath, image.buffer);
-      return `/images/${image.fieldname}/${sanitizedFilename}`;
+      return `/images/${image.fieldname}/${uniqueFilename}`;
     } catch (error) {
       console.error('Error saving image:', error);
       throw new HttpException(
