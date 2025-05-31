@@ -362,13 +362,26 @@ export class ProductService {
         }),
       ]);
 
+      // Sort products by price (highest to lowest)
+      // For promo products, use priceAfterDiscount instead of price
+      // Default to 0 if price is null/undefined and ensure numbers
+      const sortedProducts = [...products].sort((a, b) => {
+        const priceA = Number(
+          a.isPromo ? a.priceAfterDiscount || 0 : a.price || 0,
+        );
+        const priceB = Number(
+          b.isPromo ? b.priceAfterDiscount || 0 : b.price || 0,
+        );
+        return priceB - priceA;
+      });
+
       // Calculate pagination metadata only if limit is provided
       const totalPages = limit ? Math.ceil(total / limit) : 1;
 
       return {
         status: 200,
         message: 'Products retrieved successfully',
-        data: products,
+        data: sortedProducts,
         meta: {
           total,
           page,
