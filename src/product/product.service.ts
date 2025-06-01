@@ -332,71 +332,53 @@ export class ProductService {
         dto.sortField && validSortFields.has(dto.sortField);
       const sortDirection = dto.sortOrder === 'asc' ? 'asc' : 'desc';
 
+      // Default to sorting by price descending if no sort specified
       const orderBy: Prisma.ProductOrderByWithRelationInput = {
-        [isValidSortField ? dto.sortField : 'createdAt']:
-          sortDirection,
+        [isValidSortField ? dto.sortField : 'price']: dto.sortField
+          ? sortDirection
+          : 'desc',
       };
 
-      // First get sorted product IDs from the view with pagination
-      let sortedProducts =
-        await this.prisma.productSortedByPrice.findMany({
-          skip: limit ? (page - 1) * limit : undefined,
-          take: limit,
-          orderBy: { effectivePrice: 'desc' },
-          select: { id: true },
-        });
+      // First get total count
+      const total = await this.prisma.product.count({ where: where });
 
-      // Get the IDs of the sorted products
-      const sortedProductIds = sortedProducts.map((p) => p.id);
-
-      // Add ID filter to the existing where clause
-      const finalWhere: Prisma.ProductWhereInput = {
-        ...where,
-        id: { in: sortedProductIds },
-      };
-
-      // Execute single transaction for both count and find
-      const [total, products] = await this.prisma.$transaction([
-        this.prisma.product.count({ where: finalWhere }),
-        this.prisma.product.findMany({
-          where: finalWhere,
-          include: {
-            category: { select: { id: true, name: true } },
-            brand: { select: { id: true, name: true } },
-            supplier: { select: { id: true, name: true } },
-            tags: true,
-            productSpecification: {
-              include: {
-                size: true,
-                color: true,
-                material: true,
-                productInventory: true,
-              },
+      // Get all products sorted by price (descending)
+      const allProducts = await this.prisma.product.findMany({
+        where: where,
+        orderBy: orderBy,
+        include: {
+          category: { select: { id: true, name: true } },
+          brand: { select: { id: true, name: true } },
+          supplier: { select: { id: true, name: true } },
+          tags: true,
+          productSpecification: {
+            include: {
+              size: true,
+              color: true,
+              material: true,
+              productInventory: true,
             },
           },
-        }),
-      ]);
-
-      // Sort products by price (highest to lowest)
-      // For promo products, use priceAfterDiscount instead of price
-      // Default to 0 if price is null/undefined and ensure numbers
-      sortedProducts = [...products].sort((a, b) => {
-        const priceA = Number(
-          a.isPromo ? a.priceAfterDiscount || 0 : a.price || 0,
-        );
-        const priceB = Number(
-          b.isPromo ? b.priceAfterDiscount || 0 : b.price || 0,
-        );
-        return priceB - priceA;
+        },
       });
 
-      // Calculate pagination metadata only if limit is provided
-      const totalPages = limit ? Math.ceil(total / limit) : 1;
+      // Apply pagination manually after sorting
+      const startIndex = limit ? (page - 1) * limit : 0;
+      const endIndex = limit
+        ? startIndex + limit
+        : allProducts.length;
+      const products = allProducts.slice(startIndex, endIndex);
+
+      // Default to limit 10 if not specified
+      const finalLimit = limit || 10;
+
+      // Calculate pagination metadata
+      const totalPages = Math.ceil(total / finalLimit);
 
       return {
         status: 200,
         message: 'Products retrieved successfully',
-        data: sortedProducts,
+        data: products,
         meta: {
           total,
           page,
