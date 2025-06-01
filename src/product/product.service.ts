@@ -337,13 +337,29 @@ export class ProductService {
           sortDirection,
       };
 
-      // Execute single transaction for both count and find
-      const [total, products] = await this.prisma.$transaction([
-        this.prisma.product.count({ where }),
-        this.prisma.product.findMany({
+      // First get sorted product IDs from the view with pagination
+      let sortedProducts =
+        await this.prisma.productSortedByPrice.findMany({
           skip: limit ? (page - 1) * limit : undefined,
           take: limit,
-          where,
+          orderBy: { effectivePrice: 'desc' },
+          select: { id: true },
+        });
+
+      // Get the IDs of the sorted products
+      const sortedProductIds = sortedProducts.map((p) => p.id);
+
+      // Add ID filter to the existing where clause
+      const finalWhere: Prisma.ProductWhereInput = {
+        ...where,
+        id: { in: sortedProductIds },
+      };
+
+      // Execute single transaction for both count and find
+      const [total, products] = await this.prisma.$transaction([
+        this.prisma.product.count({ where: finalWhere }),
+        this.prisma.product.findMany({
+          where: finalWhere,
           include: {
             category: { select: { id: true, name: true } },
             brand: { select: { id: true, name: true } },
@@ -358,14 +374,13 @@ export class ProductService {
               },
             },
           },
-          orderBy,
         }),
       ]);
 
       // Sort products by price (highest to lowest)
       // For promo products, use priceAfterDiscount instead of price
       // Default to 0 if price is null/undefined and ensure numbers
-      const sortedProducts = [...products].sort((a, b) => {
+      sortedProducts = [...products].sort((a, b) => {
         const priceA = Number(
           a.isPromo ? a.priceAfterDiscount || 0 : a.price || 0,
         );

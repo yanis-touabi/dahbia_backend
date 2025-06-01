@@ -575,3 +575,29 @@ view SupplierProduct {
   productPrice       Decimal @db.Decimal(10, 2)
   productImageCover  String
 }
+
+view ProductSortedByPrice {
+  id                 Int       @unique
+  sku                String?
+  name               String
+  description        String
+  price              Decimal
+  imageCover         String
+  images             String[]
+  sold               Int
+  isBestSeller       Boolean
+  isFavorite         Boolean
+  gender             Gender?
+  isPromo            Boolean
+  isFreeShipping     Boolean
+  priceAfterDiscount Decimal?
+  categoryId         Int
+  brandId            Int?
+  supplierId         Int?
+  createdAt          DateTime
+  updatedAt          DateTime
+  deletedAt          DateTime?
+
+  // Computed field from the view
+  effectivePrice Decimal
+}
