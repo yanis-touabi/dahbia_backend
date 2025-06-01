@@ -321,23 +321,24 @@ export class ProductService {
         ];
       }
 
-      // Define valid sort fields and default sorting
+      // Define valid sort fields
       const validSortFields = new Set([
         'name',
         'price',
         'createdAt',
         'rating',
       ]);
+
       const isValidSortField =
         dto.sortField && validSortFields.has(dto.sortField);
       const sortDirection = dto.sortOrder === 'asc' ? 'asc' : 'desc';
 
-      // Default to sorting by price descending if no sort specified
-      const orderBy: Prisma.ProductOrderByWithRelationInput = {
-        [isValidSortField ? dto.sortField : 'price']: dto.sortField
-          ? sortDirection
-          : 'desc',
-      };
+      // Only include orderBy if a valid sort field is provided
+      const orderBy:
+        | Prisma.ProductOrderByWithRelationInput
+        | undefined = isValidSortField
+        ? { [dto.sortField]: sortDirection }
+        : undefined;
 
       // First get total count
       const total = await this.prisma.product.count({ where: where });
