@@ -288,7 +288,7 @@ async function main() {
     data: {
       firstName: 'Hakim',
       lastName: 'Alileche',
-      email: 'Hakim_allileche@gmail.com',
+      email: 'hakim_alileche@gmail.com',
       password: bcrypt.hashSync('123456', 10),
       role: 'ADMIN',
       gender: 'MALE',
@@ -304,8 +304,6 @@ async function main() {
       permissionLevel: 0,
     },
   });
-
-  return 1;
 
   // Create Users
   const users = [];
@@ -568,14 +566,14 @@ async function main() {
   // Add Company Info
   await prisma.companyInfo.create({
     data: {
-      companyName: 'Jewelry Store',
-      address: '123 Main Street',
-      city: 'New York',
-      state: 'NY',
+      companyName: 'Dahbia',
+      address: 'Ain Ouessara',
+      city: 'Djelfa',
+      state: 'Dj',
       zipCode: '10001',
-      country: 'United States',
-      phoneNumber: '+1234567890',
-      email: 'contact@jewelrystore.com',
+      country: 'Algeria',
+      phoneNumber: '0658294692',
+      email: 'yanis.touabi@gmail.com',
       websiteURL: 'https://jewelrystore.com',
       description: 'Premium jewelry store since 1990',
       visitingHours: 'Mon-Fri: 9am-5pm, Sat-Sun: 10am-4pm',

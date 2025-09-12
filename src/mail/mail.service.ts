@@ -13,7 +13,7 @@ export class MailService {
   ) {
     try {
       await this.mailerService.sendMail({
-        from: `2belegant <${process.env.EMAIL_USERNAME}>`,
+        from: `dahbia <${process.env.EMAIL_USERNAME}>`,
         to,
         subject: 'Réinitialisation de votre mot de passe',
         template, // Template file (e.g., 'order-confirmation')
@@ -36,7 +36,7 @@ export class MailService {
   ) {
     try {
       await this.mailerService.sendMail({
-        from: `2belegant <${process.env.EMAIL_USERNAME}>`,
+        from: `dahbia <${process.env.EMAIL_USERNAME}>`,
         to,
         subject,
         template,

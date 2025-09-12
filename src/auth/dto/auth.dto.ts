@@ -9,7 +9,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class SignUpDto {
   // firstName
   @ApiProperty({
-    example: 'Abir',
+    example: 'Hakim',
     description: 'User first name',
   })
   @IsString({ message: 'firstName must be a string' })
@@ -22,7 +22,7 @@ export class SignUpDto {
   firstName: string;
   // lastName
   @ApiProperty({
-    example: '2belegant',
+    example: 'Alileche',
     description: 'User last name',
   })
   @IsString({ message: 'lastName must be a string' })
@@ -33,7 +33,7 @@ export class SignUpDto {
   lastName: string;
   // Email
   @ApiProperty({
-    example: '2b.unique.and.elegant@gmail.com',
+    example: 'hakim_alileche@gmail.com',
     description: 'User email',
   })
   @IsString({ message: 'Email must be a string' })
@@ -55,7 +55,7 @@ export class SignUpDto {
 export class SignInDto {
   // Email
   @ApiProperty({
-    example: '2b.unique.and.elegant@gmail.com',
+    example: 'hakim_alileche@gmail.com',
     description: 'User email',
   })
   @IsString({ message: 'Email must be a string' })
@@ -77,7 +77,7 @@ export class SignInDto {
 export class ResetPasswordDto {
   // Email
   @ApiProperty({
-    example: '2b.unique.and.elegant@gmail.com',
+    example: 'hakim_alileche@gmail.com',
     description: 'User email',
   })
   @IsString({ message: 'Email must be a string' })
@@ -87,7 +87,7 @@ export class ResetPasswordDto {
 }
 export class VerifyCodeDto {
   @ApiProperty({
-    example: '2b.unique.and.elegant@gmail.com',
+    example: 'hakim_alileche@gmail.com',
     description: 'User email',
   })
   @IsString({ message: 'Email must be a string' })
