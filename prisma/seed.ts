@@ -286,13 +286,13 @@ async function main() {
   // create the admin user
   const user = await prisma.user.create({
     data: {
-      firstName: '2belegant',
-      lastName: '2belegant',
-      email: '2b.unique.and.elegant@gmail.com',
+      firstName: 'Hakim',
+      lastName: 'Alileche',
+      email: 'Hakim_allileche@gmail.com',
       password: bcrypt.hashSync('123456', 10),
       role: 'ADMIN',
       gender: 'MALE',
-      age: 25,
+      age: 58,
       phoneNumber: '066666666',
       isActive: true,
     },
