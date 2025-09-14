@@ -60,6 +60,6 @@ async function bootstrap() {
     express.static(path.join(process.cwd(), 'public', 'images')),
   );
 
-  await app.listen(4000);
+  await app.listen(process.env.PORT || 4000);
 }
 bootstrap();
